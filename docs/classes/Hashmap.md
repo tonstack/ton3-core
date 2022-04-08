@@ -238,7 +238,7 @@ ___
 
 ### parse
 
-▸ `Static` **parse**<`K`, `V`\>(`slice`, `keySize`, `options?`): [`Hashmap`](Hashmap.md)<`K`, `V`\>
+▸ `Static` **parse**<`K`, `V`\>(`keySize`, `slice`, `options?`): [`Hashmap`](Hashmap.md)<`K`, `V`\>
 
 #### Type parameters
 
@@ -251,8 +251,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `slice` | [`Slice`](Slice.md) |
 | `keySize` | `number` |
+| `slice` | [`Slice`](Slice.md) |
 | `options?` | [`HashmapOptions`](../interfaces/HashmapOptions.md)<`K`, `V`\> |
 
 #### Returns

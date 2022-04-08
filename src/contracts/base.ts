@@ -5,10 +5,6 @@ import {
 } from '../boc'
 
 class ContractBase {
-    private code: Cell
-
-    private storage: Cell
-
     private _state: Cell
 
     private _workchain: number
@@ -16,9 +12,7 @@ class ContractBase {
     private _address: Address
 
     constructor (workchain: number, code: Cell, storage?: Cell) {
-        this.code = code
-        this.storage = storage
-        this._state = this.stateInit()
+        this._state = ContractBase.stateInit(code, storage)
         this._workchain = workchain
         this._address = new Address(`${this._workchain}:${this._state.hash()}`)
     }
@@ -35,16 +29,16 @@ class ContractBase {
         return this._state
     }
 
-    private stateInit (): Cell {
+    private static stateInit (code: Cell, storage?: Cell): Cell {
         const builder = new Builder()
 
         // split_depth: 0, special: 0, code: 1
         builder.storeBits([ 0, 0, 1 ])
-        builder.storeRef(this.code)
+        builder.storeRef(code)
 
-        if (this.storage) {
+        if (storage) {
             builder.storeBit(1)
-            builder.storeRef(this.storage)
+            builder.storeRef(storage)
         } else {
             builder.storeBit(0)
         }
