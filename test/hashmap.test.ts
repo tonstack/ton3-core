@@ -31,7 +31,7 @@ dict2.set(32781, 169)
 
 const result2 = dict2.cell()
 
-const result3 = Hashmap.parse(Slice.parse(result2), 16, { serializers, deserializers })
+const result3 = Hashmap.parse(16, Slice.parse(result2), { serializers, deserializers })
 
 console.log('----- simple - by fift')
 console.log(cell.hash())

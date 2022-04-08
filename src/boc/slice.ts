@@ -1,4 +1,4 @@
-import type { Cell } from './cell'
+import { Cell } from './cell'
 import { Coins } from '../coins'
 import { Address } from '../address'
 import {
@@ -13,20 +13,6 @@ class Slice {
 
     private _refs: Cell[]
 
-    /**
-     * Creates an instance of {@link Slice}
-     *
-     * @param {Bit[]} bits
-     * @param {Cell[]} refs
-     *
-     * @example
-     * ```ts
-     * import { Cell, Slice } from '@tonstack/tontools'
-     *
-     * const cell = new Cell()
-     * const slice = new Slice(cell)
-     * ```
-     */
     private constructor (bits: Bit[], refs: Cell[]) {
         this._bits = bits
         this._refs = refs
@@ -47,15 +33,15 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Cell, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
+     * const builder = new Builder()
      *
-     * cell.bits.writeBits([ 0, 1, 1, 0 ])
+     * builder.storeBits([ 0, 1, 1, 0 ])
      *
-     * const slice = cell.toSlice()
+     * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.skip(2).readBits(2)) // [ 1, 0 ]
+     * console.log(slice.skip(2).loadBits(2)) // [ 1, 0 ]
      * ```
      *
      * @return {this}
@@ -71,20 +57,31 @@ class Slice {
     }
 
     /**
+     * Same as .loadDict() but will return instance of {@link Slice} with unloaded dict
+     *
+     * @return {this}
+     */
+    public skipDict (): this {
+        this.loadDict()
+
+        return this
+    }
+
+    /**
      * Read ref from {@link Slice}
      *
      * @example
      * ```ts
-     * import { Cell, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
-     * const ref = new Cell()
+     * const builder = new Builder()
+     * const ref = new Builder()
      *
-     * cell.refs.push(ref)
+     * builder.storeRef(ref.cell())
      *
-     * const slice = cell.toSlice()
+     * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.readRef()) // Cell
+     * console.log(slice.loadRef()) // Cell
      * ```
      *
      * @return {Cell}
@@ -97,6 +94,11 @@ class Slice {
         return this._refs.shift()
     }
 
+    /**
+     * Same as .loadRef() but will not mutate {@link Slice}
+     *
+     * @return {Cell}
+     */
     public preloadRef (): Cell {
         if (!this._refs.length) {
             throw new Error('Slice: refs overflow.')
@@ -110,15 +112,15 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Cell, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
+     * const builder = new Builder()
      *
-     * cell.bits.writeBit(1)
+     * builder.storeBit(1)
      *
-     * const slice = cell.toSlice()
+     * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.readBit()) // 1
+     * console.log(slice.loadBit()) // 1
      * ```
      *
      * @return {Bit[]}
@@ -131,6 +133,11 @@ class Slice {
         return this._bits.shift()
     }
 
+    /**
+     * Same as .loadBit() but will not mutate {@link Slice}
+     *
+     * @return {Bit}
+     */
     public preloadBit (): Bit {
         if (!this._bits.length) {
             throw new Error('Slice: bits overflow.')
@@ -146,15 +153,15 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Cell, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
+     * const builder = new Builder()
      *
-     * cell.bits.writeBits([ 0, 1 ])
+     * builder.storeBits([ 0, 1 ])
      *
-     * const slice = cell.toSlice()
+     * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.readBits(2)) // [ 0, 1 ]
+     * console.log(slice.loadBits(2)) // [ 0, 1 ]
      * ```
      *
      * @return {Bit[]}
@@ -167,6 +174,11 @@ class Slice {
         return this._bits.splice(0, size)
     }
 
+    /**
+     * Same as .loadBits() but will not mutate {@link Slice}
+     *
+     * @return {Bit[]}
+     */
     public preloadBits (size: number): Bit[] {
         if (size < 0 || this._bits.length < size) {
             throw new Error('Slice: bits overflow.')
@@ -182,15 +194,15 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Cell, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
+     * const builder = new Builder()
      *
-     * cell.bits.writeUint(-14, 15)
+     * builder.storeUint(-14, 15)
      *
-     * const slice = cell.toSlice()
+     * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.readUint(15)) // -14
+     * console.log(slice.loadUint(15)) // -14
      * ```
      *
      * @return {number}
@@ -202,6 +214,11 @@ class Slice {
         return uint >= int ? (uint - (int * 2)) : uint
     }
 
+    /**
+     * Same as .loadInt() but will not mutate {@link Slice}
+     *
+     * @return {number}
+     */
     public preloadInt (size: number): number {
         const uint = this.preloadUint(size)
         const int = 1 << (size - 1)
@@ -216,15 +233,15 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Cell, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
+     * const builder = new Builder()
      *
-     * cell.bits.writeUint(14, 9)
+     * builder.storeUint(14, 9)
      *
-     * const slice = cell.toSlice()
+     * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.readUint(9)) // 14
+     * console.log(slice.loadUint(9)) // 14
      * ```
      *
      * @return {number}
@@ -235,6 +252,11 @@ class Slice {
         return bits.reverse().reduce((acc, bit, i) => (bit * (2 ** i) + acc), 0)
     }
 
+    /**
+     * Same as .loadUint() but will not mutate {@link Slice}
+     *
+     * @return {number}
+     */
     public preloadUint (size: number): number {
         const bits = this.preloadBits(size)
 
@@ -246,15 +268,15 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Cell, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
+     * const builder = new Builder()
      *
-     * cell.bits.writeBytes(new Uint8Array([ 255, 255 ]))
+     * builder.storeBytes(new Uint8Array([ 255, 255 ]))
      *
-     * const slice = cell.toSlice()
+     * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.readBytes(16)) // [ 255, 255 ]
+     * console.log(slice.loadBytes(16)) // [ 255, 255 ]
      * ```
      *
      * @return {Uint8Array}
@@ -265,6 +287,11 @@ class Slice {
         return bitsToBytes(bits)
     }
 
+    /**
+     * Same as .loadBytes() but will not mutate {@link Slice}
+     *
+     * @return {Uint8Array}
+     */
     public preloadBytes (size: number): Uint8Array {
         const bits = this.preloadBits(size)
 
@@ -278,15 +305,15 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Cell, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
+     * const builder = new Builder()
      *
-     * cell.bits.writeString('Привет, мир!')
+     * builder.storeString('Привет, мир!')
      *
-     * const slice = cell.toSlice()
+     * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.readString()) // 'Привет, мир!'
+     * console.log(slice.loadString()) // 'Привет, мир!'
      * ```
      *
      * @return {string}
@@ -299,6 +326,11 @@ class Slice {
         return bytesToString(bytes)
     }
 
+    /**
+     * Same as .loadString() but will not mutate {@link Slice}
+     *
+     * @return {string}
+     */
     public preloadString (size: number = null): string {
         const bytes = size === null
             ? this.preloadBytes(this._bits.length)
@@ -312,16 +344,16 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Cell, Address, Slice } from '@tonstack/tontools'
+     * import { Builder, Address, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
+     * const builder = new Builder()
      * const address = new Address('kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny')
      *
-     * cell.bits.writeAddress(address)
+     * builder.storeAddress(address)
      *
-     * const slice = cell.toSlice()
+     * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.readAddress().toString())
+     * console.log(slice.loadAddress().toString())
      * // 'kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny'
      * ```
      *
@@ -354,7 +386,12 @@ class Slice {
         throw new Error('Slice: bad address flag bits.')
     }
 
-    public preloadAddress (): Address | null {
+    /**
+     * Same as .loadAddress() but will not mutate {@link Slice}
+     *
+     * @return {Address}
+     */
+    public preloadAddress (): Address {
         const FLAG_ADDRESS_NO = [ 0, 0 ]
         const FLAG_ADDRESS = [ 1, 0 ]
         const flag = this.preloadBits(2)
@@ -386,16 +423,16 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Cell, Coins, Slice } from '@tonstack/tontools'
+     * import { Builder, Coins, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
+     * const builder = new Builder()
      * const coins = new Coins('100')
      *
-     * cell.bits.writeCoins(coins)
+     * builder.storeCoins(coins)
      *
-     * const slice = cell.toSlice()
+     * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.readCoins().toString()) // '100'
+     * console.log(slice.loadCoins().toString()) // '100'
      * ```
      *
      * @return {Coins}
@@ -414,6 +451,11 @@ class Slice {
         return this.skip(size) && new Coins(hex, true)
     }
 
+    /**
+     * Same as .loadCoins() but will not mutate {@link Slice}
+     *
+     * @return {Coins}
+     */
     public preloadCoins (): Coins {
         const length = this.preloadUint(4)
 
@@ -429,13 +471,59 @@ class Slice {
     }
 
     /**
+     * Read {@link HashmapE} as {@link Cell} from {@link Slice}
+     *
+     * @example
+     * ```ts
+     * import { Builder, Slice, HashmapE } from '@tonstack/tontools'
+     *
+     * const builder = new Builder()
+     * const dict = new HashmapE(16)
+     *
+     * builder.storeDict(dict)
+     *
+     * const slice = Slice.parse(builder.cell())
+     * const cell = slice.loadDict()
+     * ```
+     *
+     * @return {Cell}
+     */
+    public loadDict (): Cell {
+        const isEmpty = this.preloadBit() === 0
+
+        if (isEmpty) {
+            this.skip(1)
+
+            return null
+        }
+
+        return new Cell([ this.loadBit() ], [ this.loadRef() ], false)
+    }
+
+    /**
+     * Same as .loadDict() but will not mutate {@link Slice}
+     *
+     * @return {Cell}
+     */
+    public preloadDict (): Cell {
+        const isEmpty = this.preloadBit() === 0
+
+        if (isEmpty) {
+            return null
+        }
+
+        return new Cell([ this.preloadBit() ], [ this.preloadRef() ], false)
+    }
+
+    /**
      * Creates new {@link Slice} from {@link Cell}
      *
      * @example
      * ```ts
-     * import { Cell, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from '@tonstack/tontools'
      *
-     * const cell = new Cell()
+     * const builder = new Builder()
+     * const cell = builder.cell()
      * const slice = Slice.parse(cell)
      * ```
      *

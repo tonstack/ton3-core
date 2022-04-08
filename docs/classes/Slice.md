@@ -12,6 +12,7 @@
 ### Methods
 
 - [skip](Slice.md#skip)
+- [skipDict](Slice.md#skipdict)
 - [loadRef](Slice.md#loadref)
 - [preloadRef](Slice.md#preloadref)
 - [loadBit](Slice.md#loadbit)
@@ -30,6 +31,8 @@
 - [preloadAddress](Slice.md#preloadaddress)
 - [loadCoins](Slice.md#loadcoins)
 - [preloadCoins](Slice.md#preloadcoins)
+- [loadDict](Slice.md#loaddict)
+- [preloadDict](Slice.md#preloaddict)
 - [parse](Slice.md#parse)
 
 ## Accessors
@@ -62,15 +65,15 @@ Skip bits from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Cell, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
+const builder = new Builder()
 
-cell.bits.writeBits([ 0, 1, 1, 0 ])
+builder.storeBits([ 0, 1, 1, 0 ])
 
-const slice = cell.toSlice()
+const slice = Slice.parse(builder.cell())
 
-console.log(slice.skip(2).readBits(2)) // [ 1, 0 ]
+console.log(slice.skip(2).loadBits(2)) // [ 1, 0 ]
 ```
 
 #### Parameters
@@ -78,6 +81,18 @@ console.log(slice.skip(2).readBits(2)) // [ 1, 0 ]
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `size` | `number` | Total bits should be skipped |
+
+#### Returns
+
+[`Slice`](Slice.md)
+
+___
+
+### skipDict
+
+▸ **skipDict**(): [`Slice`](Slice.md)
+
+Same as .loadDict() but will return instance of [Slice](Slice.md) with unloaded dict
 
 #### Returns
 
@@ -93,16 +108,16 @@ Read ref from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Cell, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
-const ref = new Cell()
+const builder = new Builder()
+const ref = new Builder()
 
-cell.refs.push(ref)
+builder.storeRef(ref.cell())
 
-const slice = cell.toSlice()
+const slice = Slice.parse(builder.cell())
 
-console.log(slice.readRef()) // Cell
+console.log(slice.loadRef()) // Cell
 ```
 
 #### Returns
@@ -114,6 +129,8 @@ ___
 ### preloadRef
 
 ▸ **preloadRef**(): [`Cell`](Cell.md)
+
+Same as .loadRef() but will not mutate [Slice](Slice.md)
 
 #### Returns
 
@@ -129,15 +146,15 @@ Read bit from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Cell, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
+const builder = new Builder()
 
-cell.bits.writeBit(1)
+builder.storeBit(1)
 
-const slice = cell.toSlice()
+const slice = Slice.parse(builder.cell())
 
-console.log(slice.readBit()) // 1
+console.log(slice.loadBit()) // 1
 ```
 
 #### Returns
@@ -149,6 +166,8 @@ ___
 ### preloadBit
 
 ▸ **preloadBit**(): [`Bit`](../README.md#bit)
+
+Same as .loadBit() but will not mutate [Slice](Slice.md)
 
 #### Returns
 
@@ -164,15 +183,15 @@ Read bits from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Cell, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
+const builder = new Builder()
 
-cell.bits.writeBits([ 0, 1 ])
+builder.storeBits([ 0, 1 ])
 
-const slice = cell.toSlice()
+const slice = Slice.parse(builder.cell())
 
-console.log(slice.readBits(2)) // [ 0, 1 ]
+console.log(slice.loadBits(2)) // [ 0, 1 ]
 ```
 
 #### Parameters
@@ -190,6 +209,8 @@ ___
 ### preloadBits
 
 ▸ **preloadBits**(`size`): [`Bit`](../README.md#bit)[]
+
+Same as .loadBits() but will not mutate [Slice](Slice.md)
 
 #### Parameters
 
@@ -211,15 +232,15 @@ Read int from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Cell, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
+const builder = new Builder()
 
-cell.bits.writeUint(-14, 15)
+builder.storeUint(-14, 15)
 
-const slice = cell.toSlice()
+const slice = Slice.parse(builder.cell())
 
-console.log(slice.readUint(15)) // -14
+console.log(slice.loadUint(15)) // -14
 ```
 
 #### Parameters
@@ -237,6 +258,8 @@ ___
 ### preloadInt
 
 ▸ **preloadInt**(`size`): `number`
+
+Same as .loadInt() but will not mutate [Slice](Slice.md)
 
 #### Parameters
 
@@ -258,15 +281,15 @@ Read uint from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Cell, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
+const builder = new Builder()
 
-cell.bits.writeUint(14, 9)
+builder.storeUint(14, 9)
 
-const slice = cell.toSlice()
+const slice = Slice.parse(builder.cell())
 
-console.log(slice.readUint(9)) // 14
+console.log(slice.loadUint(9)) // 14
 ```
 
 #### Parameters
@@ -284,6 +307,8 @@ ___
 ### preloadUint
 
 ▸ **preloadUint**(`size`): `number`
+
+Same as .loadUint() but will not mutate [Slice](Slice.md)
 
 #### Parameters
 
@@ -305,15 +330,15 @@ Read bytes from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Cell, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
+const builder = new Builder()
 
-cell.bits.writeBytes(new Uint8Array([ 255, 255 ]))
+builder.storeBytes(new Uint8Array([ 255, 255 ]))
 
-const slice = cell.toSlice()
+const slice = Slice.parse(builder.cell())
 
-console.log(slice.readBytes(16)) // [ 255, 255 ]
+console.log(slice.loadBytes(16)) // [ 255, 255 ]
 ```
 
 #### Parameters
@@ -331,6 +356,8 @@ ___
 ### preloadBytes
 
 ▸ **preloadBytes**(`size`): `Uint8Array`
+
+Same as .loadBytes() but will not mutate [Slice](Slice.md)
 
 #### Parameters
 
@@ -352,15 +379,15 @@ Read string from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Cell, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
+const builder = new Builder()
 
-cell.bits.writeString('Привет, мир!')
+builder.storeString('Привет, мир!')
 
-const slice = cell.toSlice()
+const slice = Slice.parse(builder.cell())
 
-console.log(slice.readString()) // 'Привет, мир!'
+console.log(slice.loadString()) // 'Привет, мир!'
 ```
 
 #### Parameters
@@ -378,6 +405,8 @@ ___
 ### preloadString
 
 ▸ **preloadString**(`size?`): `string`
+
+Same as .loadString() but will not mutate [Slice](Slice.md)
 
 #### Parameters
 
@@ -399,16 +428,16 @@ Read [Address](Address.md) from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Cell, Address, Slice } from '@tonstack/tontools'
+import { Builder, Address, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
+const builder = new Builder()
 const address = new Address('kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny')
 
-cell.bits.writeAddress(address)
+builder.storeAddress(address)
 
-const slice = cell.toSlice()
+const slice = Slice.parse(builder.cell())
 
-console.log(slice.readAddress().toString())
+console.log(slice.loadAddress().toString())
 // 'kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny'
 ```
 
@@ -421,6 +450,8 @@ ___
 ### preloadAddress
 
 ▸ **preloadAddress**(): [`Address`](Address.md)
+
+Same as .loadAddress() but will not mutate [Slice](Slice.md)
 
 #### Returns
 
@@ -436,16 +467,16 @@ Read [Coins](Coins.md) from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Cell, Coins, Slice } from '@tonstack/tontools'
+import { Builder, Coins, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
+const builder = new Builder()
 const coins = new Coins('100')
 
-cell.bits.writeCoins(coins)
+builder.storeCoins(coins)
 
-const slice = cell.toSlice()
+const slice = Slice.parse(builder.cell())
 
-console.log(slice.readCoins().toString()) // '100'
+console.log(slice.loadCoins().toString()) // '100'
 ```
 
 #### Returns
@@ -458,9 +489,48 @@ ___
 
 ▸ **preloadCoins**(): [`Coins`](Coins.md)
 
+Same as .loadCoins() but will not mutate [Slice](Slice.md)
+
 #### Returns
 
 [`Coins`](Coins.md)
+
+___
+
+### loadDict
+
+▸ **loadDict**(): [`Cell`](Cell.md)
+
+Read [HashmapE](HashmapE.md) as [Cell](Cell.md) from [Slice](Slice.md)
+
+**`example`**
+```ts
+import { Builder, Slice, HashmapE } from '@tonstack/tontools'
+
+const builder = new Builder()
+const dict = new HashmapE(16)
+
+builder.storeDict(dict)
+
+const slice = Slice.parse(builder.cell())
+const cell = slice.loadDict()
+```
+
+#### Returns
+
+[`Cell`](Cell.md)
+
+___
+
+### preloadDict
+
+▸ **preloadDict**(): [`Cell`](Cell.md)
+
+Same as .loadDict() but will not mutate [Slice](Slice.md)
+
+#### Returns
+
+[`Cell`](Cell.md)
 
 ___
 
@@ -472,9 +542,10 @@ Creates new [Slice](Slice.md) from [Cell](Cell.md)
 
 **`example`**
 ```ts
-import { Cell, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from '@tonstack/tontools'
 
-const cell = new Cell()
+const builder = new Builder()
+const cell = builder.cell()
 const slice = Slice.parse(cell)
 ```
 

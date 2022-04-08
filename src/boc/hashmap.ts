@@ -315,8 +315,8 @@ class Hashmap<K = Bit[], V = Cell> {
     }
 
     protected static deserialize<K, V> (
-        slice: Slice,
         keySize: number,
+        slice: Slice,
         options?: HashmapOptions<K, V>
     ): Hashmap<K, V> {
         if (slice.bits.length < 2) {
@@ -399,11 +399,11 @@ class Hashmap<K = Bit[], V = Cell> {
     }
 
     public static parse<K = Bit[], V = Cell> (
-        slice: Slice,
         keySize: number,
+        slice: Slice,
         options?: HashmapOptions<K, V>
     ): Hashmap<K, V> {
-        return this.deserialize<K, V>(slice, keySize, options)
+        return this.deserialize<K, V>(keySize, slice, options)
     }
 }
 
@@ -429,8 +429,8 @@ class HashmapE<K = Bit[], V = Cell> extends Hashmap<K, V> {
     }
 
     protected static deserialize<K, V> (
-        slice: Slice,
         keySize: number,
+        slice: Slice,
         options?: HashmapOptions<K, V>
     ): HashmapE<K, V> {
         if (slice.bits.length !== 1) {
@@ -454,11 +454,11 @@ class HashmapE<K = Bit[], V = Cell> extends Hashmap<K, V> {
     }
 
     public static parse<K = Bit[], V = Cell> (
-        slice: Slice,
         keySize: number,
+        slice: Slice,
         options?: HashmapOptions<K, V>
     ): HashmapE<K, V> {
-        return this.deserialize<K, V>(slice, keySize, options)
+        return this.deserialize<K, V>(keySize, slice, options)
     }
 }
 
