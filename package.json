@@ -1,5 +1,5 @@
 {
-  "name": "@tonstack/ton3-core",
+  "name": "ton3-core",
   "version": "0.0.1",
   "description": "TON low-level API tools",
   "main": "./dist/index.js",
