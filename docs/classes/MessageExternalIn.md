@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / MessageExternalIn
+[ton3-core](../README.md) / MessageExternalIn
 
 # Class: MessageExternalIn
 

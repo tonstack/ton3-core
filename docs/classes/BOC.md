@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / BOC
+[ton3-core](../README.md) / BOC
 
 # Class: BOC
 

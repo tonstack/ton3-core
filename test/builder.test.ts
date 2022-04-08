@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import { TextEncoder } from 'util'
+import { Bit } from '../src/types/global'
 import { Cell, Builder, Slice } from '../src/boc'
 import { bytesToBits } from '../src/utils/helpers'
 import { Address } from '../src/address'

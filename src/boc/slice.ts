@@ -1,3 +1,4 @@
+import { Bit } from '../types/global'
 import { Cell } from './cell'
 import { Coins } from '../coins'
 import { Address } from '../address'

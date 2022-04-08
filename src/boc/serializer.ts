@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { Bit } from '../types/global'
 import { Cell } from './cell'
 import { Builder } from './builder'
 import { Slice } from './slice'

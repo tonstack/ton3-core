@@ -1,3 +1,4 @@
+import { Bit } from '../types/global'
 import { Cell } from './cell'
 import { Slice } from './slice'
 import type { Address } from '../address'

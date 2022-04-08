@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / Mnemonic
+[ton3-core](../README.md) / Mnemonic
 
 # Class: Mnemonic
 

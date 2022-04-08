@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / HashmapOptions
+[ton3-core](../README.md) / HashmapOptions
 
 # Interface: HashmapOptions<K, V\>
 

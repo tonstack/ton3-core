@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / Slice
+[ton3-core](../README.md) / Slice
 
 # Class: Slice
 

@@ -6,6 +6,7 @@ import {
     hexToBytes,
     hexToBits
 } from '../utils/helpers'
+import { Bit } from '../types/global'
 import { sha256 } from '../utils/hash'
 
 interface KeyPair {

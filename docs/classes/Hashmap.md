@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / Hashmap
+[ton3-core](../README.md) / Hashmap
 
 # Class: Hashmap<K, V\>
 

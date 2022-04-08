@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / Address
+[ton3-core](../README.md) / Address
 
 # Class: Address
 
