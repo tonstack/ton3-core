@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / HashmapE
+[ton3-core](../README.md) / HashmapE
 
 # Class: HashmapE<K, V\>
 

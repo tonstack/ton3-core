@@ -2,6 +2,7 @@ import {
     TextEncoder,
     TextDecoder
 } from 'util'
+import { Bit } from '../types/global'
 
 const isNodeEnv = typeof process === 'object' && process.title === 'node'
 

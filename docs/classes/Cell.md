@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / Cell
+[ton3-core](../README.md) / Cell
 
 # Class: Cell
 

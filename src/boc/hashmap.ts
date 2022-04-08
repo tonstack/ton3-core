@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
 
+import { Bit } from '../types/global'
 import { Builder } from './builder'
 import { Slice } from './slice'
 import type { Cell } from './cell'

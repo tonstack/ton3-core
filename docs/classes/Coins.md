@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / Coins
+[ton3-core](../README.md) / Coins
 
 # Class: Coins
 

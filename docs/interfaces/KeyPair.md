@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / KeyPair
+[ton3-core](../README.md) / KeyPair
 
 # Interface: KeyPair
 

@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / BOCOptions
+[ton3-core](../README.md) / BOCOptions
 
 # Interface: BOCOptions
 

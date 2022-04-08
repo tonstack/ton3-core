@@ -1,5 +1,6 @@
 import { Builder, Cell, BOC, Slice } from '../src/boc'
 import { Hashmap } from '../src/boc/hashmap'
+import { Bit } from '../src/types/global'
 
 const cell = BOC.fromStandard('B5EE9C72410107010025000202C8010202016203040007BEFDF21802016E05060007A08090C00005500A980005400AA879452081')
 const cell2 = BOC.fromStandard('B5EE9C7241010501001D0002012001020201CF03040009BC0068054C0007B91012180007BEFDF218CFA830D9')

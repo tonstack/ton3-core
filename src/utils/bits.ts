@@ -1,3 +1,5 @@
+import { Bit } from '../types/global'
+
 /**
  * Augment bits with 1 and leading 0 to be divisible by 8 or 4 without remainder.
  * Mostly used for BOC serialization or Cell hash calculations.

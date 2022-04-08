@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / Builder
+[ton3-core](../README.md) / Builder
 
 # Class: Builder
 

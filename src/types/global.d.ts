@@ -1,1 +1,1 @@
-declare type Bit = 1 | 0
+export declare type Bit = 1 | 0

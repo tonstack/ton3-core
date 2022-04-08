@@ -1,4 +1,4 @@
-[@tonstack/ton3-core](../README.md) / ContractBase
+[ton3-core](../README.md) / ContractBase
 
 # Class: ContractBase
 

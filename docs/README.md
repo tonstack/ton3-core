@@ -1,6 +1,6 @@
-@tonstack/ton3-core
+ton3-core
 
-# @tonstack/ton3-core
+# ton3-core
 
 ## Table of contents
 

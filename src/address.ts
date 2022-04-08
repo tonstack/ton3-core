@@ -272,8 +272,8 @@ class Address {
         const base64 = bytesToBase64(addressWithHashsum)
 
         return urlSafe
-            ? base64.replaceAll(/\//g, '_').replaceAll(/\+/g, '-')
-            : base64.replaceAll(/_/g, '/').replaceAll(/-/g, '+')
+            ? base64.replace(/\//g, '_').replace(/\+/g, '-')
+            : base64.replace(/_/g, '/').replace(/-/g, '+')
     }
 
     /**
