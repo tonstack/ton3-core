@@ -1,4 +1,4 @@
-import { Bit } from '../types/global'
+import { Bit } from '../types/bit'
 import {
     bitsToBytes,
     bitsToHex,

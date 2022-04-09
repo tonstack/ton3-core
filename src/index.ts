@@ -1,4 +1,4 @@
-import { Bit } from './types/global'
+import { Bit } from './types/bit'
 import { BOC, Cell, Slice, Builder, Hashmap, HashmapE } from './boc'
 import { Mnemonic } from './crypto/mnemonic'
 import { Address } from './address'
