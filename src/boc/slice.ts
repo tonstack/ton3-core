@@ -1,4 +1,4 @@
-import { Bit } from '../types/global'
+import { Bit } from '../types/bit'
 import { Cell } from './cell'
 import { Coins } from '../coins'
 import { Address } from '../address'
