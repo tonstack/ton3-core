@@ -72,7 +72,7 @@ class ContractBase {
         const serializers = {
             key: (bits: Bit[]): Bit[] => bits,
             value: (lib: Library): Cell => new Builder()
-                .storeBit(<Bit><any>lib.public)
+                .storeBit(Number(lib.public) as Bit)
                 .storeRef(lib.library).cell()
         }
 
