@@ -226,7 +226,7 @@ const deserializeCell = (bytes: number[], refIndexSize: number): CellData => {
     const [ refsDescriptor, bitsDescriptor ] = remainder.splice(0, 2)
 
     // Exotic cell are currently unsupported
-    // const _isExotic = !!(refsDescriptor & 8)
+    const isExotic = !!(refsDescriptor & 8)
     const isAugmented = bitsDescriptor % 2 !== 0
     const refNum = refsDescriptor % 8
     const size = Math.ceil(bitsDescriptor / 2)
@@ -241,7 +241,7 @@ const deserializeCell = (bytes: number[], refIndexSize: number): CellData => {
 
     const cell = new Builder(bits.length)
         .storeBits(bits)
-        .cell()
+        .cell(isExotic)
 
     const refIndexes: number[] = []
 

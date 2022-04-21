@@ -28,6 +28,7 @@ ton3-core
 
 - [HashmapOptions](interfaces/HashmapOptions.md)
 - [BOCOptions](interfaces/BOCOptions.md)
+- [StateInitOptions](interfaces/StateInitOptions.md)
 - [KeyPair](interfaces/KeyPair.md)
 
 ### Functions

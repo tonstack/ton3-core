@@ -98,7 +98,7 @@ class Builder {
      * Merge {@link Slice} into instance.
      *
      * @param {Slice} slice - An instance of a {@link Slice}.
-     * @return {this}
+     * @returns {this}
      */
     public storeSlice (slice: Slice): this {
         const { bits, refs } = slice
@@ -113,10 +113,11 @@ class Builder {
     }
 
     /**
-     * Add cell to instance refs
+     * Add cell to instance refs.
      *
-     * @param {Cell} ref - Cell
-     * @return {this}
+     * @param {Cell} ref - {@link Cell} to reference.
+     *
+     * @returns {this}
      */
     public storeRef (ref: Cell): this {
         this.checkRefsOverflow(1)
@@ -129,7 +130,8 @@ class Builder {
      * Store one bit in instance.
      *
      * @param {(Bit | number)} bit - 1 or 0.
-     * @return {this}
+     *
+     * @returns {this}
      */
     public storeBit (bit: Bit | number): this {
         if (bit !== 0 && bit !== 1) {
@@ -146,7 +148,8 @@ class Builder {
      * Store multiple bits as array in instance.
      *
      * @param {(Bit[] | number[])} bits - Array of 1 and/or 0.
-     * @return {this}
+     *
+     * @returns {this}
      */
     public storeBits (bits: Bit[]): this {
         this.checkBitsOverflow(bits.length)
@@ -160,7 +163,7 @@ class Builder {
      *
      * @param {(number | bigint)} value - Int.
      * @param {number} size - Size in bits of allocated space for value.
-     * @return {this}
+     * @returns {this}
      */
     public storeInt (value: number | bigint, size: number): this {
         const int = BigInt(value)
@@ -180,7 +183,8 @@ class Builder {
      *
      * @param {(number | bigint)} value - UInt.
      * @param {number} size - Size in bits of allocated space for value.
-     * @return {this}
+     *
+     * @returns {this}
      */
     public storeUint (value: number | bigint, size: number): this {
         const uint = BigInt(value)
@@ -198,7 +202,7 @@ class Builder {
      * Store a bytes array in instance.
      *
      * @param {(Uint8Array | number[])} value - Array of bytes.
-     * @return {this}
+     * @returns {this}
      */
     public storeBytes (value: Uint8Array | number[]): this {
         this.checkBitsOverflow(value.length * 8)
@@ -212,7 +216,8 @@ class Builder {
      * Store a string in instance.
      *
      * @param {string} value - Any string, Unicode is suppported.
-     * @return {this}
+     *
+     * @returns {this}
      */
     public storeString (value: string): this {
         const bytes = stringToBytes(value)
@@ -226,7 +231,8 @@ class Builder {
      * Store an {@link Address} in instance.
      *
      * @param {(Address | null)} address - Smart contract address as {@link Address} or as null.
-     * @return {this}
+     *
+     * @returns {this}
      */
     public storeAddress (address: Address | null): this {
         if (address === null) {
@@ -251,7 +257,8 @@ class Builder {
      * Store a {@link Coins} in instance.
      *
      * @param {Coins} coins - Toncoin as {@link Coins}.
-     * @return {this}
+     *
+     * @returns {this}
      */
     public storeCoins (coins: Coins): this {
         if (coins.isNegative()) {
@@ -280,7 +287,8 @@ class Builder {
      * Store a {@link HashmapE} in instance.
      *
      * @param {HashmapE} hashmap - HashmapE.
-     * @return {this}
+     *
+     * @returns {this}
      */
     public storeDict (hashmap: HashmapE<any, any>): this {
         const slice = Slice.parse(hashmap.cell())
@@ -293,7 +301,7 @@ class Builder {
     /**
      * Returns this instance copy as a new instance.
      *
-     * @return {Builder}
+     * @returns {Builder}
      */
     public clone (): Builder {
         const data = new Builder(this._size)
@@ -308,7 +316,7 @@ class Builder {
     /**
      * Returns builded {@link Cell}.
      *
-     * @return {Cell}
+     * @param {boolean} [isExotic=false] - Build exotic {@link Cell}.
      *
      * @example
      * ```typescript
@@ -319,10 +327,12 @@ class Builder {
      *     .storeBits(bits)
      *     .cell()
      * ```
+     *
+     * @returns {Cell}
      */
-    public cell (): Cell {
+    public cell (isExotic: boolean = false): Cell {
         // Use getters to get copies of an arrays
-        const cell = new Cell(this.bits, this.refs, false)
+        const cell = new Cell(this.bits, this.refs, isExotic)
 
         return cell
     }
