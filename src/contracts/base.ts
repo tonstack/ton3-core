@@ -70,15 +70,15 @@ class ContractBase {
         }
 
         const serializers = {
-            key: (bits: Bit[]): Bit[] => bits,
+            key: (hash: string): Bit[] => hexToBits(hash),
             value: (lib: Library): Cell => new Builder()
                 .storeBit(Number(lib.public) as Bit)
                 .storeRef(lib.library).cell()
         }
 
         // HashmapE 256 SimpleLib
-        const dict = new HashmapE<Bit[], Library>(256, { serializers })
-        libraries.forEach(lib => dict.set(hexToBits(lib.library.hash()), lib))
+        const dict = new HashmapE<string, Library>(256, { serializers })
+        libraries.forEach(lib => dict.set(lib.library.hash(), lib))
 
         builder.storeDict(dict)
 
