@@ -88,6 +88,5 @@ class ContractBase {
 
 export {
     ContractBase,
-    Library,
     StateInitOptions
 }
