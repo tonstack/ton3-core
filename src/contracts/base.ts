@@ -86,4 +86,8 @@ class ContractBase {
     }
 }
 
-export { ContractBase, Library, StateInitOptions }
+export {
+    ContractBase,
+    Library,
+    StateInitOptions
+}
