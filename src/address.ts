@@ -214,7 +214,7 @@ class Address {
      * Get raw or base64 representation of {@link Address}
      *
      * @param {AddressType} [type="base64"] - Can be "base64" or "raw"
-     * @param {boolean} [urlSafe=true] - Url-safe representation (only works for base64)
+     * @param {AddressOptions} [options] - Url-safe representation (only works for base64), flags, workchain setup.
      *
      * @example
      * ```ts

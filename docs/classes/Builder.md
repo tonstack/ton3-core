@@ -138,13 +138,13 @@ ___
 
 ▸ **storeRef**(`ref`): [`Builder`](Builder.md)
 
-Add cell to instance refs
+Add cell to instance refs.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `ref` | [`Cell`](Cell.md) | Cell |
+| `ref` | [`Cell`](Cell.md) | [Cell](Cell.md) to reference. |
 
 #### Returns
 
@@ -330,7 +330,7 @@ ___
 
 ### cell
 
-▸ **cell**(): [`Cell`](Cell.md)
+▸ **cell**(`isExotic?`): [`Cell`](Cell.md)
 
 Returns builded [Cell](Cell.md).
 
@@ -343,6 +343,12 @@ const cell = new Builder(bits.length)
     .storeBits(bits)
     .cell()
 ```
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `isExotic` | `boolean` | `false` |
 
 #### Returns
 
