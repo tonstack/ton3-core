@@ -78,7 +78,7 @@ class ContractBase {
 
         // HashmapE 256 SimpleLib
         const dict = new HashmapE<Bit[], Library>(256, { serializers })
-        libraries.forEach((lib) => { dict.set(hexToBits(lib.library.hash()), lib) })
+        libraries.forEach(lib => dict.set(hexToBits(lib.library.hash()), lib))
 
         builder.storeDict(dict)
 
