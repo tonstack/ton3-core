@@ -1,5 +1,5 @@
-import { Bit } from 'types/bit'
-import { hexToBits } from 'utils/helpers'
+import { Bit } from '../types/bit'
+import { hexToBits } from '../utils/helpers'
 import { Address } from '../address'
 import {
     BOC,
