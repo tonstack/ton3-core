@@ -56,7 +56,7 @@ class ContractBase {
 
     // private static stateInit (code: Cell, storage?: Cell): Cell {
     private static stateInit (options: StateInitOptions): Cell {
-        const { code, storage, libraries } = options
+        const { code, storage, libraries = [] } = options
         const builder = new Builder()
 
         // split_depth: 0, special: 0, code: 1
