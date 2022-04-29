@@ -198,6 +198,36 @@ class Builder {
         return this
     }
 
+    public storeVarInt (value: number | bigint, length: number): this {
+        // var_int$_ {n:#} len:(#< n) value:(int (len * 8)) = VarInteger n;
+
+        const int = BigInt(value)
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = Math.ceil((int.toString(2).length) / 8)
+        const sizeBits = sizeBytes * 8
+
+        this.checkBitsOverflow(size + sizeBits)
+
+        return int === 0n
+            ? this.storeUint(0, size)
+            : this.storeUint(sizeBytes, size).storeInt(value, sizeBits)
+    }
+
+    public storeVarUint (value: number | bigint, length: number): this {
+        // var_uint$_ {n:#} len:(#< n) value:(uint (len * 8)) = VarUInteger n;
+
+        const uint = BigInt(value)
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = Math.ceil((uint.toString(2).length) / 8)
+        const sizeBits = sizeBytes * 8
+
+        this.checkBitsOverflow(size + sizeBits)
+
+        return uint === 0n
+            ? this.storeUint(0, size)
+            : this.storeUint(sizeBytes, size).storeUint(value, sizeBits)
+    }
+
     /**
      * Store a bytes array in instance.
      *
@@ -253,38 +283,6 @@ class Builder {
         return this
     }
 
-    public storeVarXInteger (
-        value: number | bigint,
-        n: number,
-        type: 'VarUInteger' | 'VarInteger' = 'VarUInteger'
-    ): this {
-        /*
-        var_uint$_ {n:#} len:(#< n) value:(uint (len * 8)) = VarUInteger n;
-        var_int$_ {n:#} len:(#< n) value:(int (len * 8)) = VarInteger n;
-        */
-
-        const bvalue = BigInt(value)
-        const lenbits = Math.ceil(Math.log2(n))
-
-        if (bvalue === 0n) {
-            this.storeUint(0, lenbits)
-            return this
-        }
-
-        const len = Math.ceil((bvalue.toString(16).length) / 2)
-        const bitSize = len * 8
-
-        this.checkBitsOverflow(lenbits + bitSize)
-
-        if (type === 'VarUInteger') {
-            this.storeUint(len, lenbits).storeUint(value, bitSize)
-        } else if (type === 'VarInteger') {
-            this.storeUint(len, lenbits).storeInt(value, bitSize)
-        }
-
-        return this
-    }
-
     /**
      * Store a {@link Coins} in instance.
      *
@@ -293,8 +291,15 @@ class Builder {
      * @returns {this}
      */
     public storeCoins (coins: Coins): this {
-        if (coins.isNegative()) { throw new Error('Builder: coins value can\'t be negative.') }
-        return this.storeVarXInteger(BigInt(coins.toNano()), 16)
+        if (coins.isNegative()) {
+            throw new Error('Builder: coins value can\'t be negative.')
+        }
+
+        const nano = BigInt(coins.toNano())
+
+        this.storeVarUint(nano, 16)
+
+        return this
     }
 
     /**
