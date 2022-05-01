@@ -133,7 +133,8 @@ class Address {
     }
 
     private static parseEncoded (value: string): AddressData {
-        const bytes = base64ToBytes(value)
+        const base64 = value.replace(/-/g, '+').replace(/_/g, '/')
+        const bytes = base64ToBytes(base64)
         const data = Array.from(bytes)
         const address = data.splice(0, 34)
         const hashsum = data.splice(0, 2)

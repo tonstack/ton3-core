@@ -198,6 +198,36 @@ class Builder {
         return this
     }
 
+    public storeVarInt (value: number | bigint, length: number): this {
+        // var_int$_ {n:#} len:(#< n) value:(int (len * 8)) = VarInteger n;
+
+        const int = BigInt(value)
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = Math.ceil((int.toString(2).length) / 8)
+        const sizeBits = sizeBytes * 8
+
+        this.checkBitsOverflow(size + sizeBits)
+
+        return int === 0n
+            ? this.storeUint(0, size)
+            : this.storeUint(sizeBytes, size).storeInt(value, sizeBits)
+    }
+
+    public storeVarUint (value: number | bigint, length: number): this {
+        // var_uint$_ {n:#} len:(#< n) value:(uint (len * 8)) = VarUInteger n;
+
+        const uint = BigInt(value)
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = Math.ceil((uint.toString(2).length) / 8)
+        const sizeBits = sizeBytes * 8
+
+        this.checkBitsOverflow(size + sizeBits)
+
+        return uint === 0n
+            ? this.storeUint(0, size)
+            : this.storeUint(sizeBytes, size).storeUint(value, sizeBits)
+    }
+
     /**
      * Store a bytes array in instance.
      *
@@ -265,20 +295,9 @@ class Builder {
             throw new Error('Builder: coins value can\'t be negative.')
         }
 
-        if (coins.isZero()) {
-            this.storeUint(0, 4)
-
-            return this
-        }
-
-        const length = Math.ceil((BigInt(coins.toNano()).toString(16).length) / 2)
-        const size = length * 8
         const nano = BigInt(coins.toNano())
-        const coinsBitsSize = 4 + size
 
-        this.checkBitsOverflow(coinsBitsSize)
-        this.storeUint(length, 4)
-        this.storeUint(nano, size)
+        this.storeVarUint(nano, 16)
 
         return this
     }
