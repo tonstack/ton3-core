@@ -28,6 +28,11 @@ interface MessageExternalInOptions {
     importFee?: Coins
 }
 
+interface MessageDataOptions {
+    body?: Cell,
+    state?: Cell
+}
+
 class Message {
     private header: Cell
 
@@ -106,7 +111,7 @@ class Message {
 
 // int_msg_info$0
 class MessageInternal extends Message {
-    constructor (options: MessageInternalOptions, body?: Cell, state?: Cell) {
+    constructor (options: MessageInternalOptions, dataOptions?: MessageDataOptions) {
         const builder = new Builder()
         const {
             ihrDisabled = true,
@@ -120,6 +125,8 @@ class MessageInternal extends Message {
             createdLt = 0,
             createdAt = 0
         } = options
+
+        const { body = null, state = null } = dataOptions
 
         const header = builder
             .storeBit(0) // int_msg_info$0
@@ -142,13 +149,15 @@ class MessageInternal extends Message {
 
 // ext_in_msg_info$10
 class MessageExternalIn extends Message {
-    constructor (options: MessageExternalInOptions, body?: Cell, state?: Cell) {
+    constructor (options: MessageExternalInOptions, dataOptions?: MessageDataOptions) {
         const builder = new Builder()
         const {
             src = Address.NONE,
             dest = Address.NONE,
             importFee = new Coins(0)
         } = options
+
+        const { body = null, state = null } = dataOptions
 
         const header = builder
             .storeBits([ 1, 0 ]) // ext_in_msg_info$10
@@ -162,10 +171,7 @@ class MessageExternalIn extends Message {
 }
 
 // class MessageExternalOut extends Message {
-//     // TODO: implement
+//      TODO: implement
 // }
 
-export {
-    MessageInternal,
-    MessageExternalIn
-}
+export { MessageInternal, MessageExternalIn }
