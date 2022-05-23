@@ -174,4 +174,7 @@ class MessageExternalIn extends Message {
 //      TODO: implement
 // }
 
-export { MessageInternal, MessageExternalIn }
+export {
+    MessageInternal,
+    MessageExternalIn
+}
