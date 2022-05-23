@@ -23,15 +23,14 @@
 
 ### constructor
 
-• **new MessageExternalIn**(`options`, `body?`, `state?`)
+• **new MessageExternalIn**(`options`, `data?`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `options` | `MessageExternalInOptions` |
-| `body?` | [`Cell`](Cell.md) |
-| `state?` | [`Cell`](Cell.md) |
+| `data?` | `MessageData` |
 
 #### Overrides
 

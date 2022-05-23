@@ -24,6 +24,8 @@
 - [storeBits](Builder.md#storebits)
 - [storeInt](Builder.md#storeint)
 - [storeUint](Builder.md#storeuint)
+- [storeVarInt](Builder.md#storevarint)
+- [storeVarUint](Builder.md#storevaruint)
 - [storeBytes](Builder.md#storebytes)
 - [storeString](Builder.md#storestring)
 - [storeAddress](Builder.md#storeaddress)
@@ -219,6 +221,40 @@ Store an unsigned integer in instance.
 | :------ | :------ | :------ |
 | `value` | `number` \| `bigint` | UInt. |
 | `size` | `number` | Size in bits of allocated space for value. |
+
+#### Returns
+
+[`Builder`](Builder.md)
+
+___
+
+### storeVarInt
+
+▸ **storeVarInt**(`value`, `length`): [`Builder`](Builder.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` \| `bigint` |
+| `length` | `number` |
+
+#### Returns
+
+[`Builder`](Builder.md)
+
+___
+
+### storeVarUint
+
+▸ **storeVarUint**(`value`, `length`): [`Builder`](Builder.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` \| `bigint` |
+| `length` | `number` |
 
 #### Returns
 

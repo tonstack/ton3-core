@@ -23,15 +23,14 @@
 
 ### constructor
 
-• **new MessageInternal**(`options`, `body?`, `state?`)
+• **new MessageInternal**(`options`, `data?`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `options` | `MessageInternalOptions` |
-| `body?` | [`Cell`](Cell.md) |
-| `state?` | [`Cell`](Cell.md) |
+| `data?` | `MessageData` |
 
 #### Overrides
 
