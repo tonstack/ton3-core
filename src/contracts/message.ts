@@ -95,7 +95,7 @@ class Message {
             .cell()
     }
 
-    public sign (key?: Uint8Array): Cell {
+    public sign (key: Uint8Array): Cell {
         return this.parse(key)
     }
 
