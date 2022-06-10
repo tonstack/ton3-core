@@ -42,9 +42,9 @@ class Address {
 
     private readonly _workchain: number
 
-    private readonly _testOnly: boolean
+    private readonly _bounceable: boolean
 
-    public bounceable: boolean
+    private readonly _testOnly: boolean
 
     /**
      * Creates an instance of {@link Address}
@@ -99,9 +99,8 @@ class Address {
 
         this._hash = result.hash
         this._workchain = result.workchain
+        this._bounceable = result.bounceable
         this._testOnly = result.testOnly
-
-        this.bounceable = result.bounceable
     }
 
     public get hash (): Uint8Array {
@@ -110,6 +109,10 @@ class Address {
 
     public get workchain (): number {
         return this._workchain
+    }
+
+    public get bounceable (): boolean {
+        return this._bounceable
     }
 
     public get testOnly (): boolean {
@@ -170,7 +173,7 @@ class Address {
         const data = value.split(':')
         const workchain = parseInt(data[0], 10)
         const hash = hexToBytes(data[1])
-        const bounceable = true
+        const bounceable = false
         const testOnly = false
 
         return {
