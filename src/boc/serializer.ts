@@ -365,8 +365,17 @@ const breadthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, num
     hashmap.set(stack[0].hash, 0)
 
     // Reorder stack and hashmap if duplicate found
-    const move = (index: number): void => {
+    const reappend = (index: number): number => {
         stack.push(stack.splice(index, 1)[0])
+        stack.slice(index).forEach((el, i) => hashmap.set(el.hash, index + i))
+
+        return stack.length - 1
+    }
+
+    const swap = (from: number, to: number): void => {
+        const index = Math.min(from, to)
+
+        stack.splice(to, 0, stack.splice(from, 1)[0])
         stack.slice(index).forEach((el, i) => hashmap.set(el.hash, index + i))
     }
 
@@ -376,7 +385,17 @@ const breadthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, num
         const index = hashmap.get(hash)
 
         if (index !== undefined) {
-            return move(index)
+            const last = reappend(index)
+            const [ first ] = node.refs
+                .map(el => hashmap.get(el.hash()))
+                .filter(el => el !== undefined)
+                .sort()
+
+            if (first !== undefined && last > first) {
+                return swap(last, first)
+            }
+
+            return undefined
         }
 
         hashmap.set(hash, stack.length)

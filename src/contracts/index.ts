@@ -1,11 +1,5 @@
-import { ContractBase } from './base'
-import {
+export { ContractBase } from './base'
+export {
     MessageExternalIn,
     MessageInternal
 } from './message'
-
-export {
-    ContractBase,
-    MessageExternalIn,
-    MessageInternal
-}
