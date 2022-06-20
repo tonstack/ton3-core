@@ -443,7 +443,8 @@ class HashmapE<K = Bit[], V = Cell> extends Hashmap<K, V> {
         }
 
         const hashmap = new HashmapE<K, V>(keySize, options)
-        const nodes = Hashmap.deserializeEdge(slice, keySize)
+        const edge = Slice.parse(slice.loadRef())
+        const nodes = Hashmap.deserializeEdge(edge, keySize)
 
         for (let i = 0; i < nodes.length; i += 1) {
             const [ key, value ] = nodes[i]

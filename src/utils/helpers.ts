@@ -4,7 +4,9 @@ import {
 } from 'util'
 import { Bit } from '../types/bit'
 
-const isNodeEnv = typeof process === 'object' && process.title === 'node'
+const isNodeEnv = typeof process !== 'undefined'
+    && process.versions !== undefined
+    && process.versions.node !== undefined
 
 const uint8toInt8 = (uint8: number): number => ((uint8 << 24) >> 24)
 
