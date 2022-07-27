@@ -69,7 +69,7 @@ class Slice {
             : Slice.bitsToBigInt(bits)
 
         if (!isSafe) {
-            throw new Error('Slice: loaded value does not fit max/min safe integer value, use .loadBigInt() / .loadBigUint() methods.')
+            throw new Error('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
         }
 
         return Number(value)

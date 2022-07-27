@@ -297,6 +297,7 @@ class Builder {
 
         const nano = BigInt(coins.toNano())
 
+        // https://github.com/ton-blockchain/ton/blob/master/crypto/block/block.tlb#L116
         this.storeVarUint(nano, 16)
 
         return this
@@ -339,7 +340,7 @@ class Builder {
      *
      * @example
      * ```typescript
-     * import { Builder } from '@tonstack/tontools'
+     * import { Builder } from 'ton3-core'
      *
      * const bits = [ 1, 0, 0, 1 ]
      * const cell = new Builder(bits.length)

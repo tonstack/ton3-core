@@ -11,7 +11,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('100')
      *
@@ -38,7 +38,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('10').add(9)
      *
@@ -64,7 +64,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('10').sub(9)
      *
@@ -90,7 +90,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('10').mul(2)
      *
@@ -116,7 +116,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('10').div(2)
      *
@@ -140,7 +140,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('10')
      * const equal = new Coins('10')
@@ -164,7 +164,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('10')
      * const equal = new Coins('10')
@@ -188,7 +188,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('10')
      * const equal = new Coins('10')
@@ -212,7 +212,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('10')
      * const equal = new Coins('10')
@@ -236,7 +236,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('10')
      * const equal = new Coins('10')
@@ -260,7 +260,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const zero = new Coins('0')
      * const negative = new Coins('-1')
@@ -279,7 +279,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const zero = new Coins('0')
      * const positive = new Coins('1')
@@ -298,7 +298,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const zero = new Coins('0')
      *
@@ -316,7 +316,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('100')
      *
@@ -339,7 +339,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = new Coins('100')
      *
@@ -373,7 +373,7 @@ class Coins {
      *
      * @example
      * ```ts
-     * import { Coins } from '@tonstack/tontools'
+     * import { Coins } from 'ton3-core'
      *
      * const coins = Coins.fromNano('100000000000')
      *
