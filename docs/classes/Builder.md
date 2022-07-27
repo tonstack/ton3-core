@@ -372,7 +372,7 @@ Returns builded [Cell](Cell.md).
 
 **`example`**
 ```typescript
-import { Builder } from '@tonstack/tontools'
+import { Builder } from 'ton3-core'
 
 const bits = [ 1, 0, 0, 1 ]
 const cell = new Builder(bits.length)

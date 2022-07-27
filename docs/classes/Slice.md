@@ -21,8 +21,20 @@
 - [preloadBits](Slice.md#preloadbits)
 - [loadInt](Slice.md#loadint)
 - [preloadInt](Slice.md#preloadint)
+- [loadBigInt](Slice.md#loadbigint)
+- [preloadBigInt](Slice.md#preloadbigint)
 - [loadUint](Slice.md#loaduint)
 - [preloadUint](Slice.md#preloaduint)
+- [loadBigUint](Slice.md#loadbiguint)
+- [preloadBigUint](Slice.md#preloadbiguint)
+- [loadVarInt](Slice.md#loadvarint)
+- [preloadVarInt](Slice.md#preloadvarint)
+- [loadVarBigInt](Slice.md#loadvarbigint)
+- [preloadVarBigInt](Slice.md#preloadvarbigint)
+- [loadVarUint](Slice.md#loadvaruint)
+- [preloadVarUint](Slice.md#preloadvaruint)
+- [loadVarBigUint](Slice.md#loadvarbiguint)
+- [preloadVarBigUint](Slice.md#preloadvarbiguint)
 - [loadBytes](Slice.md#loadbytes)
 - [preloadBytes](Slice.md#preloadbytes)
 - [loadString](Slice.md#loadstring)
@@ -65,7 +77,7 @@ Skip bits from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 
@@ -108,7 +120,7 @@ Read ref from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 const ref = new Builder()
@@ -146,7 +158,7 @@ Read bit from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 
@@ -183,7 +195,7 @@ Read bits from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 
@@ -232,7 +244,7 @@ Read int from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 
@@ -273,6 +285,42 @@ Same as .loadInt() but will not mutate [Slice](Slice.md)
 
 ___
 
+### loadBigInt
+
+▸ **loadBigInt**(`size`): `bigint`
+
+Same as .loadInt() but will return {@link BigInt}
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `size` | `number` |
+
+#### Returns
+
+`bigint`
+
+___
+
+### preloadBigInt
+
+▸ **preloadBigInt**(`size`): `bigint`
+
+Same as .preloadInt() but will return {@link BigInt}
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `size` | `number` |
+
+#### Returns
+
+`bigint`
+
+___
+
 ### loadUint
 
 ▸ **loadUint**(`size`): `number`
@@ -281,7 +329,7 @@ Read uint from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 
@@ -322,6 +370,212 @@ Same as .loadUint() but will not mutate [Slice](Slice.md)
 
 ___
 
+### loadBigUint
+
+▸ **loadBigUint**(`size`): `bigint`
+
+Same as .loadUint() but will return {@link BigInt}
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `size` | `number` |
+
+#### Returns
+
+`bigint`
+
+___
+
+### preloadBigUint
+
+▸ **preloadBigUint**(`size`): `bigint`
+
+Same as .preloadUint() but will return {@link BigInt}
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `size` | `number` |
+
+#### Returns
+
+`bigint`
+
+___
+
+### loadVarInt
+
+▸ **loadVarInt**(`length`): `number`
+
+Read variable int from [Slice](Slice.md)
+
+**`example`**
+```ts
+import { Builder, Slice } from 'ton3-core'
+
+const builder = new Builder()
+
+builder.storeVarInt(-101101, 16)
+
+const slice = Slice.parse(builder.cell())
+
+console.log(slice.loadVarInt(16)) // -101101
+```
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `length` | `number` | Maximum possible number of bits used to store value?? |
+
+#### Returns
+
+`number`
+
+___
+
+### preloadVarInt
+
+▸ **preloadVarInt**(`length`): `number`
+
+Same as .loadVarInt() but will not mutate [Slice](Slice.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `length` | `number` |
+
+#### Returns
+
+`number`
+
+___
+
+### loadVarBigInt
+
+▸ **loadVarBigInt**(`length`): `bigint`
+
+Same as .loadVarInt() but will return {@link BigInt}
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `length` | `number` |
+
+#### Returns
+
+`bigint`
+
+___
+
+### preloadVarBigInt
+
+▸ **preloadVarBigInt**(`length`): `bigint`
+
+Same as .preloadVarInt() but will return {@link BigInt}
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `length` | `number` |
+
+#### Returns
+
+`bigint`
+
+___
+
+### loadVarUint
+
+▸ **loadVarUint**(`length`): `number`
+
+Read variable uint from [Slice](Slice.md)
+
+**`example`**
+```ts
+import { Builder, Slice } from 'ton3-core'
+
+const builder = new Builder()
+
+builder.storeVarUint(101101, 16)
+
+const slice = Slice.parse(builder.cell())
+
+console.log(slice.loadVarUint(16)) // 101101
+```
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `length` | `number` | Maximum possible number of bits used to store value?? |
+
+#### Returns
+
+`number`
+
+___
+
+### preloadVarUint
+
+▸ **preloadVarUint**(`length`): `number`
+
+Same as .loadVarUint() but will not mutate [Slice](Slice.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `length` | `number` |
+
+#### Returns
+
+`number`
+
+___
+
+### loadVarBigUint
+
+▸ **loadVarBigUint**(`length`): `bigint`
+
+Same as .loadVarUint() but will return {@link BigInt}
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `length` | `number` |
+
+#### Returns
+
+`bigint`
+
+___
+
+### preloadVarBigUint
+
+▸ **preloadVarBigUint**(`length`): `bigint`
+
+Same as .preloadVarUint() but will return {@link BigInt}
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `length` | `number` |
+
+#### Returns
+
+`bigint`
+
+___
+
 ### loadBytes
 
 ▸ **loadBytes**(`size`): `Uint8Array`
@@ -330,7 +584,7 @@ Read bytes from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 
@@ -379,7 +633,7 @@ Read string from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 
@@ -428,7 +682,7 @@ Read [Address](Address.md) from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Address, Slice } from '@tonstack/tontools'
+import { Builder, Address, Slice } from 'ton3-core'
 
 const builder = new Builder()
 const address = new Address('kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny')
@@ -467,7 +721,7 @@ Read [Coins](Coins.md) from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Coins, Slice } from '@tonstack/tontools'
+import { Builder, Coins, Slice } from 'ton3-core'
 
 const builder = new Builder()
 const coins = new Coins('100')
@@ -505,7 +759,7 @@ Read [HashmapE](HashmapE.md) as [Cell](Cell.md) from [Slice](Slice.md)
 
 **`example`**
 ```ts
-import { Builder, Slice, HashmapE } from '@tonstack/tontools'
+import { Builder, Slice, HashmapE } from 'ton3-core'
 
 const builder = new Builder()
 const dict = new HashmapE(16)
@@ -542,7 +796,7 @@ Creates new [Slice](Slice.md) from [Cell](Cell.md)
 
 **`example`**
 ```ts
-import { Builder, Slice } from '@tonstack/tontools'
+import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 const cell = builder.cell()
