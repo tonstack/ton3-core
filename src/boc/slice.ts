@@ -27,6 +27,54 @@ class Slice {
         return Array.from(this._refs)
     }
 
+    private static bitsToBigUint (bits: Bit[]): { value: bigint, isSafe: boolean } {
+        if (!bits.length) return { value: 0n, isSafe: true }
+
+        const value = bits
+            .reverse()
+            .reduce((acc, bit, i) => (BigInt(bit) * (2n ** BigInt(i)) + acc), 0n)
+
+        const isSafe = value <= Number.MAX_SAFE_INTEGER
+
+        return {
+            value,
+            isSafe
+        }
+    }
+
+    private static bitsToBigInt (bits: Bit[]): { value: bigint, isSafe: boolean } {
+        if (!bits.length) return { value: 0n, isSafe: true }
+
+        const { value: uint } = Slice.bitsToBigUint(bits)
+        const size = BigInt(bits.length)
+        const int = 1n << (size - 1n)
+        const value = uint >= int ? (uint - (int * 2n)) : uint
+        const isSafe = value >= Number.MIN_SAFE_INTEGER && value <= Number.MAX_SAFE_INTEGER
+
+        return {
+            value,
+            isSafe
+        }
+    }
+
+    private static bitsToIntUint (
+        bits: Bit[],
+        options: {
+            type: 'int' | 'uint'
+        }
+    ): number {
+        const { type = 'uint' } = options
+        const { value, isSafe } = type === 'uint'
+            ? Slice.bitsToBigUint(bits)
+            : Slice.bitsToBigInt(bits)
+
+        if (!isSafe) {
+            throw new Error('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+        }
+
+        return Number(value)
+    }
+
     /**
      * Skip bits from {@link Slice}
      *
@@ -34,7 +82,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      *
@@ -73,7 +121,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      * const ref = new Builder()
@@ -113,7 +161,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      *
@@ -154,7 +202,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      *
@@ -195,7 +243,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      *
@@ -209,10 +257,9 @@ class Slice {
      * @return {number}
      */
     public loadInt (size: number): number {
-        const uint = this.loadUint(size)
-        const int = 1 << (size - 1)
+        const bits = this.loadBits(size)
 
-        return uint >= int ? (uint - (int * 2)) : uint
+        return Slice.bitsToIntUint(bits, { type: 'int' })
     }
 
     /**
@@ -221,10 +268,33 @@ class Slice {
      * @return {number}
      */
     public preloadInt (size: number): number {
-        const uint = this.preloadUint(size)
-        const int = 1 << (size - 1)
+        const bits = this.preloadBits(size)
 
-        return uint >= int ? (uint - (int * 2)) : uint
+        return Slice.bitsToIntUint(bits, { type: 'int' })
+    }
+
+    /**
+     * Same as .loadInt() but will return {@link BigInt}
+     *
+     * @return {bigint}
+     */
+     public loadBigInt (size: number): bigint {
+        const bits = this.loadBits(size)
+        const { value } = Slice.bitsToBigInt(bits)
+
+        return value
+    }
+
+    /**
+     * Same as .preloadInt() but will return {@link BigInt}
+     *
+     * @return {bigint}
+     */
+    public preloadBigInt (size: number): bigint {
+        const bits = this.preloadBits(size)
+        const { value } = Slice.bitsToBigInt(bits)
+
+        return value
     }
 
     /**
@@ -234,7 +304,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      *
@@ -250,7 +320,7 @@ class Slice {
     public loadUint (size: number): number {
         const bits = this.loadBits(size)
 
-        return bits.reverse().reduce((acc, bit, i) => (bit * (2 ** i) + acc), 0)
+        return Slice.bitsToIntUint(bits, { type: 'uint' })
     }
 
     /**
@@ -261,7 +331,175 @@ class Slice {
     public preloadUint (size: number): number {
         const bits = this.preloadBits(size)
 
-        return bits.reverse().reduce((acc, bit, i) => (bit * (2 ** i) + acc), 0)
+        return Slice.bitsToIntUint(bits, { type: 'uint' })
+    }
+
+    /**
+     * Same as .loadUint() but will return {@link BigInt}
+     *
+     * @return {bigint}
+     */
+    public loadBigUint (size: number): bigint {
+        const bits = this.loadBits(size)
+        const { value } = Slice.bitsToBigUint(bits)
+
+        return value
+    }
+
+    /**
+     * Same as .preloadUint() but will return {@link BigInt}
+     *
+     * @return {bigint}
+     */
+    public preloadBigUint (size: number): bigint {
+        const bits = this.preloadBits(size)
+        const { value } = Slice.bitsToBigUint(bits)
+
+        return value
+    }
+
+    /**
+     * Read variable int from {@link Slice}
+     *
+     * @param {number} length - Maximum possible number of bits used to store value??
+     *
+     * @example
+     * ```ts
+     * import { Builder, Slice } from 'ton3-core'
+     *
+     * const builder = new Builder()
+     *
+     * builder.storeVarInt(-101101, 16)
+     *
+     * const slice = Slice.parse(builder.cell())
+     *
+     * console.log(slice.loadVarInt(16)) // -101101
+     * ```
+     *
+     * @return {number}
+     */
+    public loadVarInt (length: number): number {
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = this.loadUint(size)
+        const sizeBits = sizeBytes * 8
+
+        return this.loadInt(sizeBits)
+    }
+
+    /**
+     * Same as .loadVarInt() but will not mutate {@link Slice}
+     *
+     * @return {number}
+     */
+    public preloadVarInt (length: number): number {
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = this.preloadUint(size)
+        const sizeBits = sizeBytes * 8
+        const bits = this.preloadBits(size + sizeBits).slice(size)
+
+        return Slice.bitsToIntUint(bits, { type: 'int' })
+    }
+
+    /**
+     * Same as .loadVarInt() but will return {@link BigInt}
+     *
+     * @return {bigint}
+     */
+     public loadVarBigInt (length: number): bigint {
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = this.loadUint(size)
+        const sizeBits = sizeBytes * 8
+        const bits = this.loadBits(sizeBits)
+        const { value } = Slice.bitsToBigInt(bits)
+
+        return value
+    }
+
+    /**
+     * Same as .preloadVarInt() but will return {@link BigInt}
+     *
+     * @return {bigint}
+     */
+    public preloadVarBigInt (length: number): bigint {
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = this.preloadUint(size)
+        const sizeBits = sizeBytes * 8
+        const bits = this.preloadBits(size + sizeBits).slice(size)
+        const { value } = Slice.bitsToBigInt(bits)
+
+        return value
+    }
+
+    /**
+     * Read variable uint from {@link Slice}
+     *
+     * @param {number} length - Maximum possible number of bits used to store value??
+     *
+     * @example
+     * ```ts
+     * import { Builder, Slice } from 'ton3-core'
+     *
+     * const builder = new Builder()
+     *
+     * builder.storeVarUint(101101, 16)
+     *
+     * const slice = Slice.parse(builder.cell())
+     *
+     * console.log(slice.loadVarUint(16)) // 101101
+     * ```
+     *
+     * @return {number}
+     */
+    public loadVarUint (length: number): number {
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = this.loadUint(size)
+        const sizeBits = sizeBytes * 8
+
+        return this.loadUint(sizeBits)
+    }
+
+    /**
+     * Same as .loadVarUint() but will not mutate {@link Slice}
+     *
+     * @return {number}
+     */
+    public preloadVarUint (length: number): number {
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = this.preloadUint(size)
+        const sizeBits = sizeBytes * 8
+        const bits = this.preloadBits(size + sizeBits).slice(size)
+
+        return Slice.bitsToIntUint(bits, { type: 'uint' })
+    }
+
+    /**
+     * Same as .loadVarUint() but will return {@link BigInt}
+     *
+     * @return {bigint}
+     */
+     public loadVarBigUint (length: number): bigint {
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = this.loadUint(size)
+        const sizeBits = sizeBytes * 8
+        const bits = this.loadBits(sizeBits)
+        const { value } = Slice.bitsToBigUint(bits)
+
+        return value
+    }
+
+    /**
+     * Same as .preloadVarUint() but will return {@link BigInt}
+     *
+     * @return {bigint}
+     */
+    public preloadVarBigUint (length: number): bigint {
+        const size = Math.ceil(Math.log2(length))
+        const sizeBytes = this.preloadUint(size)
+        const sizeBits = sizeBytes * 8
+        const bits = this.preloadBits(size + sizeBits).slice(size)
+        const { value } = Slice.bitsToBigUint(bits)
+
+        return value
     }
 
     /**
@@ -269,7 +507,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      *
@@ -306,7 +544,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      *
@@ -345,7 +583,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Address, Slice } from '@tonstack/tontools'
+     * import { Builder, Address, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      * const address = new Address('kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny')
@@ -424,7 +662,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Coins, Slice } from '@tonstack/tontools'
+     * import { Builder, Coins, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      * const coins = new Coins('100')
@@ -439,17 +677,9 @@ class Slice {
      * @return {Coins}
      */
     public loadCoins (): Coins {
-        const length = this.preloadUint(4)
+        const coins = this.loadVarUint(16)
 
-        if (length === 0) {
-            return this.skip(4) && new Coins(0)
-        }
-
-        const size = 4 + (length * 8)
-        const bits = this.preloadBits(size)
-        const hex = `0x${bitsToHex(bits.splice(4))}`
-
-        return this.skip(size) && new Coins(hex, true)
+        return new Coins(coins, true)
     }
 
     /**
@@ -458,17 +688,9 @@ class Slice {
      * @return {Coins}
      */
     public preloadCoins (): Coins {
-        const length = this.preloadUint(4)
+        const coins = this.preloadVarUint(16)
 
-        if (length === 0) {
-            return new Coins(0)
-        }
-
-        const size = 4 + (length * 8)
-        const bits = this.preloadBits(size)
-        const hex = `0x${bitsToHex(bits.splice(4))}`
-
-        return new Coins(hex, true)
+        return new Coins(coins, true)
     }
 
     /**
@@ -476,7 +698,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Slice, HashmapE } from '@tonstack/tontools'
+     * import { Builder, Slice, HashmapE } from 'ton3-core'
      *
      * const builder = new Builder()
      * const dict = new HashmapE(16)
@@ -521,7 +743,7 @@ class Slice {
      *
      * @example
      * ```ts
-     * import { Builder, Slice } from '@tonstack/tontools'
+     * import { Builder, Slice } from 'ton3-core'
      *
      * const builder = new Builder()
      * const cell = builder.cell()

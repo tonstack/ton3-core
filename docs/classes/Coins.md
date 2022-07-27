@@ -36,7 +36,7 @@ Add value to instance value
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('10').add(9)
 
@@ -65,7 +65,7 @@ Subtract value from instance value
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('10').sub(9)
 
@@ -94,7 +94,7 @@ Multiplies instance value by value
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('10').mul(2)
 
@@ -123,7 +123,7 @@ Divides instance value by value
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('10').div(2)
 
@@ -152,7 +152,7 @@ Checks if instance value equal another [Coins](Coins.md) instance value
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('10')
 const equal = new Coins('10')
@@ -181,7 +181,7 @@ Checks if instance value greater than another [Coins](Coins.md) instance value
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('10')
 const equal = new Coins('10')
@@ -210,7 +210,7 @@ Checks if instance value greater than or equal another [Coins](Coins.md) instanc
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('10')
 const equal = new Coins('10')
@@ -239,7 +239,7 @@ Checks if instance value lesser than another [Coins](Coins.md) instance value
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('10')
 const equal = new Coins('10')
@@ -268,7 +268,7 @@ Checks if instance value lesser than or equal another [Coins](Coins.md) instance
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('10')
 const equal = new Coins('10')
@@ -297,7 +297,7 @@ Checks if instance value is negative
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const zero = new Coins('0')
 const negative = new Coins('-1')
@@ -319,7 +319,7 @@ Checks if instance value is positive
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const zero = new Coins('0')
 const positive = new Coins('1')
@@ -341,7 +341,7 @@ Checks if instance value equals zero
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const zero = new Coins('0')
 
@@ -362,7 +362,7 @@ Returns string representation of instance in coins
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('100')
 
@@ -383,7 +383,7 @@ Returns string representation of instance in nanocoins
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('100')
 
@@ -406,7 +406,7 @@ Creates instance of Coins from value in nano
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = Coins.fromNano('100000000000')
 
@@ -433,7 +433,7 @@ Creates an instance of [Coins](Coins.md)
 
 **`example`**
 ```ts
-import { Coins } from '@tonstack/tontools'
+import { Coins } from 'ton3-core'
 
 const coins = new Coins('100')
 

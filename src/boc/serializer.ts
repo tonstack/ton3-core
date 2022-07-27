@@ -301,56 +301,58 @@ const depthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, numbe
     // TODO: fix multiple root cells serialization
 
     const hashmap = new Map<string, number>()
-    const nodes: CellNode[] = [ { cell: root, children: root.refs.length, scanned: 0 } ]
-    const stack: { cell: Cell, hash: string }[] = [ { cell: root, hash: root.hash() } ]
+    const stack: CellNode[] = [ { cell: root, children: root.refs.length, scanned: 0 } ]
+    const cells: { cell: Cell, hash: string }[] = [ { cell: root, hash: root.hash() } ]
 
-    hashmap.set(stack[0].hash, 0)
+    hashmap.set(cells[0].hash, 0)
 
-    // Reorder stack and hashmap if duplicate found
-    const move = (index: number): void => {
-        stack.push(stack.splice(index, 1)[0])
-        stack.slice(index).forEach((el, i) => hashmap.set(el.hash, index + i))
+    // Add cell to cells list and to hashmap
+    const append = (node: Cell, hash: string): void => {
+        cells.push({ cell: node, hash })
+        hashmap.set(hash, cells.length - 1)
     }
 
-    // Add tree node to ordered stack
-    const add = (node: CellNode): void => {
+    // Reorder cells list and hashmap if duplicate found
+    const reappend = (index: number): void => {
+        cells.push(cells.splice(index, 1)[0])
+        cells.slice(index).forEach((el, i) => hashmap.set(el.hash, index + i))
+    }
+
+    // Process tree node to ordered cells list
+    const process = (node: CellNode): void => {
         // eslint-disable-next-line no-plusplus, no-param-reassign
         const ref = node.cell.refs[node.scanned++]
         const hash = ref.hash()
         const index = hashmap.get(hash)
 
-        if (index !== undefined) {
-            return move(index)
-        }
+        stack.push({ cell: ref, children: ref.refs.length, scanned: 0 })
 
-        hashmap.set(hash, stack.length)
-        nodes.push({ cell: ref, children: ref.refs.length, scanned: 0 })
-        stack.push({ cell: ref, hash })
-
-        return undefined
+        return index === undefined
+            ? append(ref, hash)
+            : reappend(index)
     }
 
     // Loop through multi-tree and make depth-first search till last node
-    while (nodes.length) {
-        let current = nodes[nodes.length - 1]
+    while (stack.length) {
+        let current = stack[stack.length - 1]
 
         if (current.children !== current.scanned) {
-            add(current)
+            process(current)
         } else {
-            while (nodes.length && current && current.children === current.scanned) {
-                nodes.pop()
+            while (stack.length && current && current.children === current.scanned) {
+                stack.pop()
 
-                current = nodes[nodes.length - 1]
+                current = stack[stack.length - 1]
             }
 
             if (current !== undefined) {
-                add(current)
+                process(current)
             }
         }
     }
 
     return {
-        cells: stack.map(el => el.cell),
+        cells: cells.map(el => el.cell),
         hashmap
     }
 }
@@ -359,65 +361,50 @@ const breadthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, num
     // TODO: fix multiple root cells serialization
 
     const hashmap = new Map<string, number>()
-    const nodes: Cell[] = [ root ]
-    const stack: { cell: Cell, hash: string }[] = [ { cell: root, hash: root.hash() } ]
+    const stack: Cell[] = [ root ]
+    const cells: { cell: Cell, hash: string }[] = [ { cell: root, hash: root.hash() } ]
 
-    hashmap.set(stack[0].hash, 0)
+    hashmap.set(cells[0].hash, 0)
 
-    // Reorder stack and hashmap if duplicate found
-    const reappend = (index: number): number => {
-        stack.push(stack.splice(index, 1)[0])
-        stack.slice(index).forEach((el, i) => hashmap.set(el.hash, index + i))
-
-        return stack.length - 1
+    // Add cell to cells list and to hashmap
+    const append = (node: Cell, hash: string): void => {
+        cells.push({ cell: node, hash })
+        hashmap.set(hash, cells.length - 1)
     }
 
-    const swap = (from: number, to: number): void => {
-        const index = Math.min(from, to)
-
-        stack.splice(to, 0, stack.splice(from, 1)[0])
-        stack.slice(index).forEach((el, i) => hashmap.set(el.hash, index + i))
+    // Reorder cells list and hashmap if duplicate found
+    const reappend = (index: number): void => {
+        // Move cell to the last position of array
+        cells.push(cells.splice(index, 1)[0])
+        // Change hash indexes after pulling cell from the middle of an array
+        cells.slice(index).forEach((el, i) => hashmap.set(el.hash, index + i))
     }
 
-    // Add tree node to ordered stack
-    const add = (node: Cell): void => {
+    // Process tree node to ordered cells list
+    const process = (node: Cell): void => {
         const hash = node.hash()
         const index = hashmap.get(hash)
 
-        if (index !== undefined) {
-            const last = reappend(index)
-            const [ first ] = node.refs
-                .map(el => hashmap.get(el.hash()))
-                .filter(el => el !== undefined)
-                .sort()
+        stack.push(node)
 
-            if (first !== undefined && last > first) {
-                return swap(last, first)
-            }
-
-            return undefined
-        }
-
-        hashmap.set(hash, stack.length)
-        nodes.push(node)
-        stack.push({ cell: node, hash })
-
-        return undefined
+        return index === undefined
+            ? append(node, hash)
+            : reappend(index)
     }
 
     // Loop through multi-tree and make breadth-first search till last node
-    while (nodes.length) {
-        const { length } = nodes
+    while (stack.length) {
+        const { length } = stack
 
-        nodes.forEach((node) => {
-            node.refs.forEach(ref => add(ref))
+        stack.forEach((node) => {
+            node.refs.forEach(ref => process(ref))
         })
 
-        nodes.splice(0, length)
+        stack.splice(0, length)
     }
 
     return {
-        cells: stack.map(el => el.cell),
+        cells: cells.map(el => el.cell),
         hashmap
     }
 }

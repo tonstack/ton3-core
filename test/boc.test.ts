@@ -30,7 +30,7 @@ describe('BOC', () => {
                 has_cache_bits: false,
                 has_index: true,
                 hash_crc32: true,
-                topological_order: 'depth-first',
+                topological_order: 'breadth-first',
                 flags: 2
             })
             const hex3 = BOC.toHex(cells3)
@@ -62,7 +62,7 @@ describe('BOC', () => {
                 has_cache_bits: false,
                 has_index: true,
                 hash_crc32: true,
-                topological_order: 'depth-first',
+                topological_order: 'breadth-first',
                 flags: 2
             })
             const cell3 = BOC.fromStandard(hex1)
@@ -102,7 +102,7 @@ describe('BOC', () => {
                 has_cache_bits: false,
                 has_index: true,
                 hash_crc32: true,
-                topological_order: 'depth-first',
+                topological_order: 'breadth-first',
                 flags: 2
             })
             const cells3 = BOC.from(base641)
@@ -126,7 +126,7 @@ describe('BOC', () => {
                 has_cache_bits: false,
                 has_index: true,
                 hash_crc32: true,
-                topological_order: 'depth-first',
+                topological_order: 'breadth-first',
                 flags: 2
             })
             const cell3 = BOC.fromStandard(base641)
@@ -146,7 +146,7 @@ describe('BOC', () => {
                 has_cache_bits: false,
                 has_index: true,
                 hash_crc32: true,
-                topological_order: 'depth-first',
+                topological_order: 'breadth-first',
                 flags: 2
             })
             const cells3 = BOC.from(hex1)
@@ -170,7 +170,7 @@ describe('BOC', () => {
                 has_cache_bits: false,
                 has_index: true,
                 hash_crc32: true,
-                topological_order: 'depth-first',
+                topological_order: 'breadth-first',
                 flags: 2
             })
             const cell3 = BOC.fromStandard(hex1)

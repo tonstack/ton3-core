@@ -51,7 +51,7 @@ Next formats can be used as constructor argument:
 
 **`example`**
 ```ts
-import { Address } from '@tonstack/tontools'
+import { Address } from 'ton3-core'
 
 const bytes = new Uint8Array() // containing workchain and address hash bytes
 const address = new Address('kf/8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15+KsQHFLbKSMiYIny')
@@ -117,7 +117,7 @@ Get raw or base64 representation of [Address](Address.md)
 
 **`example`**
 ```ts
-import { Address } from '@tonstack/tontools'
+import { Address } from 'ton3-core'
 
 const raw = '-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260'
 const address = new Address(raw)
