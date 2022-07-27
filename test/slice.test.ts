@@ -327,6 +327,156 @@ describe('Slice', () => {
         })
     })
 
+    describe('#loadVarInt(), #preloadVarInt()', () => {
+        it('should load negative variable int', () => {
+            const int = -14
+
+            builder.storeVarInt(int, 4)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.loadVarInt(4)
+            const result2 = slice.bits.length
+
+            expect(result1).to.eq(int)
+            expect(result2).to.eq(0)
+        })
+
+        it('should load positive variable int', () => {
+            const int = 14
+
+            builder.storeVarInt(int, 4)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.loadVarInt(4)
+            const result2 = slice.bits.length
+
+            expect(result1).to.eq(int)
+            expect(result2).to.eq(0)
+        })
+
+        it('should preload negative variable int without splicing bits', () => {
+            const int = -14
+
+            builder.storeVarInt(int, 4)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.preloadVarInt(4)
+            const result2 = slice.bits.length
+
+            expect(result1).to.eq(int)
+            expect(result2).to.eq(10)
+        })
+
+        it('should preload positive variable int without splicing bits', () => {
+            const int = 14
+
+            builder.storeVarInt(int, 4)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.preloadVarInt(4)
+            const result2 = slice.bits.length
+
+            expect(result1).to.eq(int)
+            expect(result2).to.eq(10)
+        })
+
+        it('should throw error on overflow', () => {
+            const slice = Slice.parse(builder.cell())
+            const result1 = () => slice.loadVarInt(4)
+            const result2 = () => slice.preloadVarInt(4)
+
+            expect(result1).to.throw('Slice: bits overflow.')
+            expect(result2).to.throw('Slice: bits overflow.')
+        })
+
+        it('should throw error on loading positive variable BigInt', () => {
+            builder.storeVarInt(BigInt(Number.MAX_SAFE_INTEGER) + 100n, 16)
+
+            const slice = Slice.parse(builder.cell())
+
+            const result1 = () => slice.preloadVarInt(16)
+            const result2 = () => slice.loadVarInt(16)
+
+            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+        })
+
+        it('should throw error on loading negative variable BigInt', () => {
+            builder.storeVarInt(BigInt(Number.MIN_SAFE_INTEGER) - 100n, 16)
+
+            const slice = Slice.parse(builder.cell())
+
+            const result1 = () => slice.preloadVarInt(16)
+            const result2 = () => slice.loadVarInt(16)
+
+            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+        })
+    })
+
+    describe('#loadVarBigInt(), #preloadVarBigInt()', () => {
+        it('should load negative variable bigint', () => {
+            const bigint = BigInt(Number.MIN_SAFE_INTEGER) - 100n
+
+            builder.storeVarInt(bigint, 16)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.loadVarBigInt(16)
+            const result2 = slice.bits.length
+
+            expect(result1).to.eq(bigint)
+            expect(result2).to.eq(0)
+        })
+
+        it('should load positive variable bigint', () => {
+            const bigint = BigInt(Number.MAX_SAFE_INTEGER) + 100n
+
+            builder.storeVarInt(bigint, 16)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.loadVarBigInt(16)
+            const result2 = slice.bits.length
+
+            expect(result1).to.eq(bigint)
+            expect(result2).to.eq(0)
+        })
+
+        it('should preload negative variable bigint without splicing bits', () => {
+            const bigint = BigInt(Number.MIN_SAFE_INTEGER) - 100n
+
+            builder.storeVarInt(bigint, 16)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.preloadVarBigInt(16)
+            const result2 = slice.bits.length
+
+            expect(result1).to.eq(bigint)
+            expect(result2).to.eq(60)
+        })
+
+        it('should preload positive variable bigint without splicing bits', () => {
+            const bigint = BigInt(Number.MAX_SAFE_INTEGER) + 100n
+
+            builder.storeVarInt(bigint, 16)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.preloadVarBigInt(16)
+            const result2 = slice.bits.length
+
+            expect(result1).to.eq(bigint)
+            expect(result2).to.eq(60)
+        })
+
+        it('should throw error on overflow', () => {
+            const slice = Slice.parse(builder.cell())
+            const result1 = () => slice.loadVarBigInt(16)
+            const result2 = () => slice.preloadVarBigInt(16)
+
+            expect(result1).to.throw('Slice: bits overflow.')
+            expect(result2).to.throw('Slice: bits overflow.')
+        })
+    })
+
     describe('#loadUint(), #preloadUint()', () => {
         it('should load uint', () => {
             const uint = 14
