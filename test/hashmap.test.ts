@@ -1,57 +1,83 @@
+import { expect } from 'chai'
 import { Builder, Cell, BOC, Slice } from '../src/boc'
-import { HashmapE } from '../src/boc/hashmap'
+import { Hashmap, HashmapE } from '../src/boc/hashmap'
 import { Bit } from '../src/types/bit'
 
-const cell = BOC.fromStandard('B5EE9C72410106010020000101C0010202C8020302016204050007BEFDF2180007A68054C00007A08090C08D16037D')
-const cell2 = BOC.fromStandard('B5EE9C7241010501001D0002012001020201CF03040009BC0068054C0007B91012180007BEFDF218CFA830D9')
+describe('Hashmap', () => {
+    describe('#constructor()', () => {
+        // ...
+    })
 
-const serializers = {
-    key: (k: number): Bit[] => new Builder().storeUint(k, 16).bits,
-    value: (v: number): Cell => new Builder().storeUint(v, 16).cell()
-}
+    describe('should (de)serialize dict with mixed empty edges', () => {
+        const BOC_NETWORK_CONFIG = BOC.fromStandard('te6cckEBEwEAVwACASABAgIC2QMEAgm3///wYBESAgEgBQYCAWIODwIBIAcIAgHODQ0CAdQNDQIBIAkKAgEgCxACASAQDAABWAIBIA0NAAEgAgEgEBAAAdQAAUgAAfwAAdwXk+eF')
+        const KEYS_NETWORK_CONFIG = [ 0, 1, 9, 10, 12, 14, 15, 16, 17, 32, 34, 36, -1001, -1000 ]
 
-const deserializers = {
-    key: (k: Bit[]): number => Slice.parse(new Builder().storeBits(k).cell()).loadUint(16),
-    value: (v: Cell): number => Slice.parse(v).loadUint(16)
-}
+        const deserializers = {
+            key: (k: Bit[]): number => Slice.parse(new Builder().storeBits(k).cell()).loadInt(32),
+            value: (v: Cell): Cell => v
+        }
 
-const dict = new HashmapE<number, number>(16, { serializers })
+        const parsed = [ ...Hashmap.parse(32, Slice.parse(BOC_NETWORK_CONFIG), { deserializers }) ]
 
-dict.set(13, 169)
-dict.set(17, 289)
-dict.set(239, 57121)
+        expect(parsed.map(el => el[0])).to.eql(KEYS_NETWORK_CONFIG)
+        expect(parsed.map(el => el[1]).every(cell => !cell.bits.length)).to.equal(true)
+    })
 
-const result = dict.cell()
+    describe('should (de)serialize dict with both edges', () => {
+        const BOC_FIFT = BOC.fromStandard('B5EE9C7241010501001D0002012001020201CF03040009BC0068054C0007B91012180007BEFDF218CFA830D9')
 
-const test11 = BOC.toHexStandard(result)
-const test22 = BOC.fromStandard(test11)
+        const serializers = {
+            key: (k: number): Bit[] => new Builder().storeUint(k, 16).bits,
+            value: (v: number): Cell => new Builder().storeUint(v, 16).cell()
+        }
 
-const dict2 = new HashmapE<number, number>(16, { serializers })
+        const deserializers = {
+            key: (k: Bit[]): number => Slice.parse(new Builder().storeBits(k).cell()).loadUint(16),
+            value: (v: Cell): number => Slice.parse(v).loadUint(16)
+        }
 
-dict2.set(17, 289)
-dict2.set(239, 57121)
-dict2.set(32781, 169)
+        const dict = new Hashmap<number, number>(16, { serializers, deserializers })
 
-const result2 = dict2.cell()
+        dict.set(17, 289)
+        dict.set(239, 57121)
+        dict.set(32781, 169)
 
-const result3 = HashmapE.parse(16, Slice.parse(result2), { serializers, deserializers })
+        const result = [ ...dict ]
+        const parsed = [ ...Hashmap.parse(16, Slice.parse(BOC_FIFT), { deserializers }) ]
 
-const result4 = HashmapE.parse(16, Slice.parse(result), { serializers, deserializers })
+        expect(parsed.map(el => el[0])).to.eql(result.map(el => el[0]))
+        expect(parsed.map(el => el[1])).to.eql(result.map(el => el[1]))
+    })
+})
 
-console.log('----- simple - by fift' + '\n')
-console.log(cell.hash() + '\n')
-console.log(cell.print())
-console.log('----- simple - by ton3' + '\n')
-console.log(result.hash() + '\n')
-console.log(result.print())
-console.log('----- both-edges - by fift' + '\n')
-console.log(cell2.hash() + '\n')
-console.log(cell2.print())
-console.log('----- both-edges - by ton3' + '\n')
-console.log(result2.hash() + '\n')
-console.log(result2.print())
-console.log([ ...result3 ])
-console.log([ ...result4 ])
-console.log('------------------------------')
-console.log(JSON.stringify(cell))
-console.log(JSON.stringify(test22))
+describe('HashmapE', () => {
+    describe('#constructor()', () => {
+        // ...
+    })
+
+    describe('should (de)serialize dict with empty right edges', () => {
+        const BOC_FIFT = BOC.fromStandard('B5EE9C72410106010020000101C0010202C8020302016204050007BEFDF2180007A68054C00007A08090C08D16037D')
+
+        const serializers = {
+            key: (k: number): Bit[] => new Builder().storeUint(k, 16).bits,
+            value: (v: number): Cell => new Builder().storeUint(v, 16).cell()
+        }
+
+        const deserializers = {
+            key: (k: Bit[]): number => Slice.parse(new Builder().storeBits(k).cell()).loadUint(16),
+            value: (v: Cell): number => Slice.parse(v).loadUint(16)
+        }
+
+        const dict = new HashmapE<number, number>(16, { serializers, deserializers })
+
+        dict.set(13, 169)
+        dict.set(17, 289)
+        dict.set(239, 57121)
+
+        const result = [ ...dict ]
+        const parsed = [ ...HashmapE.parse(16, Slice.parse(BOC_FIFT), { deserializers }) ]
+
+        expect(parsed.map(el => el[0])).to.eql(result.map(el => el[0]))
+        expect(parsed.map(el => el[1])).to.eql(result.map(el => el[1]))
+    })
+})

@@ -171,8 +171,10 @@ class Hashmap<K = Bit[], V = Cell> {
     protected static serializeEdge (nodes: HashmapNode[]): Cell {
         // hme_empty$0
         if (!nodes.length) {
+            const label = this.serializeLabelShort([])
+
             return new Builder()
-                .storeBit(0)
+                .storeBits(label)
                 .cell()
         }
 
