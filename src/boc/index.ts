@@ -75,7 +75,7 @@ class BOC {
      * Returns deserialized standard BOC root cell.
      *
      * @static
-     * @param {(Uint8Array | string)} data - Bytes or HEX of serialized BOC.
+     * @param {(Uint8Array | string)} data - Bytes, HEX or Base64 of serialized BOC.
      * @return {Cell}
      */
     public static fromStandard (data: Uint8Array | string): Cell {
