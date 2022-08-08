@@ -3,6 +3,7 @@ import { Builder, Slice } from '../src/boc'
 import { stringToBytes } from '../src/utils/helpers'
 import { Address } from '../src/address'
 import { Coins } from '../src/coins'
+import { Jettons } from '../src/jettons'
 
 describe('Slice', () => {
     let builder: Builder
@@ -881,7 +882,71 @@ describe('Slice', () => {
         it('should throw error on overflow', () => {
             const slice = Slice.parse(builder.cell())
             const result1 = () => slice.loadCoins()
-            const result2 = () => slice.loadCoins()
+            const result2 = () => slice.preloadCoins()
+
+            expect(result1).to.throw('Slice: bits overflow.')
+            expect(result2).to.throw('Slice: bits overflow.')
+        })
+    })
+
+    describe('#loadJettons(), #preloadJettons()', () => {
+        it('should load Jettons', () => {
+            const jettons = new Jettons('100.5')
+
+            builder.storeJettons(jettons)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.loadJettons(9)
+            const result2 = slice.bits.length
+
+            expect(result1.toString()).to.eql(jettons.toString())
+            expect(result2).to.eq(0)
+        })
+
+        it('should load zero Jettons', () => {
+            const jettons = new Jettons('0')
+
+            builder.storeJettons(jettons)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.loadJettons(9)
+            const result2 = slice.bits.length
+
+            expect(result1.toString()).to.eql(jettons.toString())
+            expect(result2).to.eq(0)
+        })
+
+        it('should preload Jettons without splicing bits', () => {
+            const jettons = new Jettons('100.5')
+            const size = BigInt(jettons.toNano()).toString(16).length
+
+            builder.storeJettons(jettons)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.preloadJettons(9)
+            const result2 = slice.bits.length
+
+            expect(result1.toString()).to.eql(jettons.toString())
+            expect(result2).to.eq(4 + (size * 4))
+        })
+
+        it('should preload zero Jettons without splicing bits', () => {
+            const jettons = new Jettons('0')
+
+            builder.storeJettons(jettons)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.preloadJettons(9)
+            const result2 = slice.bits.length
+
+            expect(result1.toString()).to.eql(jettons.toString())
+            expect(result2).to.eq(4)
+        })
+
+        it('should throw error on overflow', () => {
+            const slice = Slice.parse(builder.cell())
+            const result1 = () => slice.loadJettons(9)
+            const result2 = () => slice.preloadJettons(9)
 
             expect(result1).to.throw('Slice: bits overflow.')
             expect(result2).to.throw('Slice: bits overflow.')
