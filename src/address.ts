@@ -55,6 +55,7 @@ class Address {
      * - Address
      *
      * @param {(string | Address | Uint8Array)} address
+     * @param {AddressOptions} [options] - Rewrite original address workchain and flags 
      *
      * @example
      * ```ts
@@ -68,7 +69,7 @@ class Address {
      * new Address(address)
      * ```
      */
-    constructor (address: string | Address) {
+    constructor (address: string | Address, options?: AddressOptions) {
         const isAddress = Address.isAddress(address)
         const isEncoded = Address.isEncoded(address)
         const isRaw = Address.isRaw(address)
@@ -97,10 +98,16 @@ class Address {
             throw new Error('Address: can\'t parse address. Unknown type.')
         }
 
+        const {
+            workchain = result.workchain,
+            bounceable = result.bounceable,
+            testOnly = result.testOnly
+        } = options || {}
+
         this._hash = result.hash
-        this._workchain = result.workchain
-        this._bounceable = result.bounceable
-        this._testOnly = result.testOnly
+        this._workchain = workchain
+        this._bounceable = bounceable
+        this._testOnly = testOnly
     }
 
     public get hash (): Uint8Array {

@@ -42,6 +42,16 @@ describe('Address', () => {
             expect(result).to.equal(raw)
         })
 
+        it('should create Address and rewrite options', () => {
+            const result = new Address(address, {
+                workchain: 0,
+                bounceable: false,
+                testOnly: false
+            })
+
+            expect(result.toString('base64', { urlSafe: false })).to.equal('UQD8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15+KsQHFLbKSMiYJD1')
+        })
+
         it('should throw error from bad input data', () => {
             const result1 = () => new Address('bad_input')
             const result2 = () => new Address('kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYInz')

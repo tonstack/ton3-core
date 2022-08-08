@@ -40,7 +40,7 @@ Helper method for writing null addresses to {@link BitArray}
 
 ### constructor
 
-• **new Address**(`address`)
+• **new Address**(`address`, `options?`)
 
 Creates an instance of [Address](Address.md)
 
@@ -66,6 +66,7 @@ new Address(address)
 | Name | Type |
 | :------ | :------ |
 | `address` | `string` \| [`Address`](Address.md) |
+| `options?` | `AddressOptions` |
 
 ## Accessors
 
