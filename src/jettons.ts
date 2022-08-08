@@ -24,7 +24,7 @@ class Jettons {
      *
      * const jettons = new Jettons('100')
      *
-     * new Jettons(coins)
+     * new Jettons(jettons)
      * new Jettons(BigInt('100'))
      * new Jettons(100)
      * new Jettons('100')
@@ -161,7 +161,7 @@ class Jettons {
      * const equal = new Jettons('10')
      * const notEqual = new Jettons('11')
      *
-     * console.log(equal.eq(coins), notEqual.eq(coins)) // true, false
+     * console.log(equal.eq(jettons), notEqual.eq(jettons)) // true, false
      * ```
      *
      * @return {boolean}
@@ -185,7 +185,7 @@ class Jettons {
      * const equal = new Jettons('10')
      * const greater = new Jettons('11')
      *
-     * console.log(equal.gt(coins), greater.gt(coins)) // false, true
+     * console.log(equal.gt(jettons), greater.gt(jettons)) // false, true
      * ```
      *
      * @return {boolean}
@@ -209,7 +209,7 @@ class Jettons {
      * const equal = new Jettons('10')
      * const greater = new Jettons('11')
      *
-     * console.log(equal.gte(coins), greater.gte(coins)) // true, true
+     * console.log(equal.gte(jettons), greater.gte(jettons)) // true, true
      * ```
      *
      * @return {boolean}
@@ -233,7 +233,7 @@ class Jettons {
      * const equal = new Jettons('10')
      * const lesser = new Jettons('9')
      *
-     * console.log(equal.lt(coins), lesser.lt(coins)) // false, true
+     * console.log(equal.lt(jettons), lesser.lt(jettons)) // false, true
      * ```
      *
      * @return {boolean}
@@ -257,7 +257,7 @@ class Jettons {
      * const equal = new Jettons('10')
      * const lesser = new Jettons('9')
      *
-     * console.log(equal.lte(coins), lesser.lte(coins)) // true, true
+     * console.log(equal.lte(jettons), lesser.lte(jettons)) // true, true
      * ```
      *
      * @return {boolean}
@@ -327,7 +327,7 @@ class Jettons {
     }
 
     /**
-     * Returns string representation of instance in coins
+     * Returns string representation of instance in jettons
      *
      * @example
      * ```ts
@@ -406,7 +406,7 @@ class Jettons {
      *
      * const jettons = Jettons.fromNano('100000000000', 9)
      *
-     * console.log(jettons.toString()) // 100 coins
+     * console.log(jettons.toString()) // 100 jettons
      * ```
      *
      * @return {Jettons}

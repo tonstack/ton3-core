@@ -13,6 +13,7 @@
 ### Methods
 
 - [add](Coins.md#add)
+- [fromNano](Coins.md#fromnano)
 - [sub](Coins.md#sub)
 - [mul](Coins.md#mul)
 - [div](Coins.md#div)
@@ -26,7 +27,6 @@
 - [isZero](Coins.md#iszero)
 - [toString](Coins.md#tostring)
 - [toNano](Coins.md#tonano)
-- [fromNano](Coins.md#fromnano)
 
 ### Constructors
 
@@ -213,7 +213,7 @@ const jettons = new Jettons('10')
 const equal = new Jettons('10')
 const notEqual = new Jettons('11')
 
-console.log(equal.eq(coins), notEqual.eq(coins)) // true, false
+console.log(equal.eq(jettons), notEqual.eq(jettons)) // true, false
 ```
 
 #### Parameters
@@ -246,7 +246,7 @@ const jettons = new Jettons('10')
 const equal = new Jettons('10')
 const greater = new Jettons('11')
 
-console.log(equal.gt(coins), greater.gt(coins)) // false, true
+console.log(equal.gt(jettons), greater.gt(jettons)) // false, true
 ```
 
 #### Parameters
@@ -279,7 +279,7 @@ const jettons = new Jettons('10')
 const equal = new Jettons('10')
 const greater = new Jettons('11')
 
-console.log(equal.gte(coins), greater.gte(coins)) // true, true
+console.log(equal.gte(jettons), greater.gte(jettons)) // true, true
 ```
 
 #### Parameters
@@ -312,7 +312,7 @@ const jettons = new Jettons('10')
 const equal = new Jettons('10')
 const lesser = new Jettons('9')
 
-console.log(equal.lt(coins), lesser.lt(coins)) // false, true
+console.log(equal.lt(jettons), lesser.lt(jettons)) // false, true
 ```
 
 #### Parameters
@@ -345,7 +345,7 @@ const jettons = new Jettons('10')
 const equal = new Jettons('10')
 const lesser = new Jettons('9')
 
-console.log(equal.lte(coins), lesser.lte(coins)) // true, true
+console.log(equal.lte(jettons), lesser.lte(jettons)) // true, true
 ```
 
 #### Parameters
@@ -445,7 +445,7 @@ ___
 
 ▸ **toString**(): `string`
 
-Returns string representation of instance in coins
+Returns string representation of instance in jettons
 
 **`example`**
 ```ts
