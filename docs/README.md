@@ -23,6 +23,7 @@ ton3-core
 - [MessageInternal](classes/MessageInternal.md)
 - [MessageExternalIn](classes/MessageExternalIn.md)
 - [Mnemonic](classes/Mnemonic.md)
+- [Jettons](classes/Jettons.md)
 
 ### Interfaces
 
@@ -30,6 +31,7 @@ ton3-core
 - [BOCOptions](interfaces/BOCOptions.md)
 - [StateInitOptions](interfaces/StateInitOptions.md)
 - [KeyPair](interfaces/KeyPair.md)
+- [JettonsOptions](interfaces/JettonsOptions.md)
 
 ### Functions
 

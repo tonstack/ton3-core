@@ -1,42 +1,42 @@
-[ton3-core](../README.md) / Coins
+[ton3-core](../README.md) / Jettons
 
-# Class: Coins
+# Class: Jettons
 
 ## Hierarchy
 
-- [`Jettons`](Jettons.md)
+- **`Jettons`**
 
-  ↳ **`Coins`**
+  ↳ [`Coins`](Coins.md)
 
 ## Table of contents
 
 ### Methods
 
-- [add](Coins.md#add)
-- [sub](Coins.md#sub)
-- [mul](Coins.md#mul)
-- [div](Coins.md#div)
-- [eq](Coins.md#eq)
-- [gt](Coins.md#gt)
-- [gte](Coins.md#gte)
-- [lt](Coins.md#lt)
-- [lte](Coins.md#lte)
-- [isNegative](Coins.md#isnegative)
-- [isPositive](Coins.md#ispositive)
-- [isZero](Coins.md#iszero)
-- [toString](Coins.md#tostring)
-- [toNano](Coins.md#tonano)
-- [fromNano](Coins.md#fromnano)
+- [add](Jettons.md#add)
+- [sub](Jettons.md#sub)
+- [mul](Jettons.md#mul)
+- [div](Jettons.md#div)
+- [eq](Jettons.md#eq)
+- [gt](Jettons.md#gt)
+- [gte](Jettons.md#gte)
+- [lt](Jettons.md#lt)
+- [lte](Jettons.md#lte)
+- [isNegative](Jettons.md#isnegative)
+- [isPositive](Jettons.md#ispositive)
+- [isZero](Jettons.md#iszero)
+- [toString](Jettons.md#tostring)
+- [toNano](Jettons.md#tonano)
+- [fromNano](Jettons.md#fromnano)
 
 ### Constructors
 
-- [constructor](Coins.md#constructor)
+- [constructor](Jettons.md#constructor)
 
 ## Methods
 
 ### add
 
-▸ **add**(`value`): [`Coins`](Coins.md)
+▸ **add**(`value`): [`Jettons`](Jettons.md)
 
 Add value to instance value
 
@@ -53,56 +53,19 @@ console.log(jettons.toString()) // '19'
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `value` | `string` \| `number` \| `bigint` \| [`Jettons`](Jettons.md) |
 
 #### Returns
 
-[`Coins`](Coins.md)
+[`Jettons`](Jettons.md)
 
 - Current instance reference
-
-#### Inherited from
-
-[Jettons](Jettons.md).[add](Jettons.md#add)
-
-___
-
-### fromNano
-
-▸ `Static` **fromNano**(`value`): [`Coins`](Coins.md)
-
-Creates instance of Coins from value in nano
-
-**`static`**
-
-**`example`**
-```ts
-import { Coins } from 'ton3-core'
-
-const coins = Coins.fromNano('100000000000')
-
-console.log(coins.toString()) // 100 coins
-```
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` | Value in nanocoins |
-
-#### Returns
-
-[`Coins`](Coins.md)
-
-#### Overrides
-
-[Jettons](Jettons.md).[fromNano](Jettons.md#fromnano)
 
 ___
 
 ### sub
 
-▸ **sub**(`value`): [`Coins`](Coins.md)
+▸ **sub**(`value`): [`Jettons`](Jettons.md)
 
 Subtract value from instance value
 
@@ -119,23 +82,19 @@ console.log(jettons.toString()) // '1'
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `value` | `string` \| `number` \| `bigint` \| [`Jettons`](Jettons.md) |
 
 #### Returns
 
-[`Coins`](Coins.md)
+[`Jettons`](Jettons.md)
 
 - Current instance reference
-
-#### Inherited from
-
-[Jettons](Jettons.md).[sub](Jettons.md#sub)
 
 ___
 
 ### mul
 
-▸ **mul**(`value`): [`Coins`](Coins.md)
+▸ **mul**(`value`): [`Jettons`](Jettons.md)
 
 Multiplies instance value by value
 
@@ -152,23 +111,19 @@ console.log(jettons.toString()) // '20'
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `value` | `string` \| `number` \| `bigint` \| [`Jettons`](Jettons.md) |
 
 #### Returns
 
-[`Coins`](Coins.md)
+[`Jettons`](Jettons.md)
 
 - Current instance reference
-
-#### Inherited from
-
-[Jettons](Jettons.md).[mul](Jettons.md#mul)
 
 ___
 
 ### div
 
-▸ **div**(`value`): [`Coins`](Coins.md)
+▸ **div**(`value`): [`Jettons`](Jettons.md)
 
 Divides instance value by value
 
@@ -185,17 +140,13 @@ console.log(jettons.toString()) // '5'
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `value` | `string` \| `number` \| `bigint` \| [`Jettons`](Jettons.md) |
 
 #### Returns
 
-[`Coins`](Coins.md)
+[`Jettons`](Jettons.md)
 
 - Current instance reference
-
-#### Inherited from
-
-[Jettons](Jettons.md).[div](Jettons.md#div)
 
 ___
 
@@ -220,15 +171,11 @@ console.log(equal.eq(coins), notEqual.eq(coins)) // true, false
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `value` | [`Jettons`](Jettons.md) |
 
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[eq](Jettons.md#eq)
 
 ___
 
@@ -253,15 +200,11 @@ console.log(equal.gt(coins), greater.gt(coins)) // false, true
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `value` | [`Jettons`](Jettons.md) |
 
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[gt](Jettons.md#gt)
 
 ___
 
@@ -286,15 +229,11 @@ console.log(equal.gte(coins), greater.gte(coins)) // true, true
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `value` | [`Jettons`](Jettons.md) |
 
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[gte](Jettons.md#gte)
 
 ___
 
@@ -319,15 +258,11 @@ console.log(equal.lt(coins), lesser.lt(coins)) // false, true
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `value` | [`Jettons`](Jettons.md) |
 
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[lt](Jettons.md#lt)
 
 ___
 
@@ -352,15 +287,11 @@ console.log(equal.lte(coins), lesser.lte(coins)) // true, true
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `value` | [`Jettons`](Jettons.md) |
 
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[lte](Jettons.md#lte)
 
 ___
 
@@ -384,10 +315,6 @@ console.log(zero.isNegative(), negative.isNegative()) // false, true
 
 `boolean`
 
-#### Inherited from
-
-[Jettons](Jettons.md).[isNegative](Jettons.md#isnegative)
-
 ___
 
 ### isPositive
@@ -410,10 +337,6 @@ console.log(zero.isPositive(), positive.isPositive()) // true, true
 
 `boolean`
 
-#### Inherited from
-
-[Jettons](Jettons.md).[isPositive](Jettons.md#ispositive)
-
 ___
 
 ### isZero
@@ -434,10 +357,6 @@ console.log(zero.isZero()) // true
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[isZero](Jettons.md#iszero)
 
 ___
 
@@ -460,10 +379,6 @@ console.log(jettons.toString()) // '100'
 
 `string`
 
-#### Inherited from
-
-[Jettons](Jettons.md).[toString](Jettons.md#tostring)
-
 ___
 
 ### toNano
@@ -485,37 +400,60 @@ console.log(jettons.toNano()) // '100000000000'
 
 `string`
 
-#### Inherited from
+___
 
-[Jettons](Jettons.md).[toNano](Jettons.md#tonano)
+### fromNano
+
+▸ `Static` **fromNano**(`value`, `decimals?`): [`Jettons`](Jettons.md)
+
+Creates instance of Jettons from value in nano
+
+**`static`**
+
+**`example`**
+```ts
+import { Jettons } from 'ton3-core'
+
+const jettons = Jettons.fromNano('100000000000', 9)
+
+console.log(jettons.toString()) // 100 coins
+```
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `value` | `string` \| `number` \| `bigint` | `undefined` | Value in nanojettons |
+| `decimals` | `number` | `9` | - |
+
+#### Returns
+
+[`Jettons`](Jettons.md)
 
 ## Constructors
 
 ### constructor
 
-• **new Coins**(`value`, `isNano?`)
+• **new Jettons**(`value`, `options?`)
 
-Creates an instance of [Coins](Coins.md)
+Creates an instance of [Jettons](Jettons.md)
 
 **`example`**
 ```ts
-import { Coins } from 'ton3-core'
+import { Jettons } from 'ton3-core'
 
-const coins = new Coins('100')
+const jettons = new Jettons('100')
 
-new Coins(coins)
-new Coins(BigInt('100'))
-new Coins(100)
-new Coins('100')
+new Jettons(coins)
+new Jettons(BigInt('100'))
+new Jettons(100)
+new Jettons('100')
+new Jettons('100000', { isNano: true, decimals: 3 })
 ```
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) | `undefined` |
-| `isNano` | `boolean` | `false` |
-
-#### Overrides
-
-[Jettons](Jettons.md).[constructor](Jettons.md#constructor)
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` \| `number` \| `bigint` \| [`Jettons`](Jettons.md) |
+| `options?` | [`JettonsOptions`](../interfaces/JettonsOptions.md) |

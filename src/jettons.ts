@@ -49,7 +49,7 @@ class Jettons {
     /**
      * Add value to instance value
      *
-     * @param {(Jettons | bigint | number | string)} value
+     * @param {(this | bigint | number | string)} value
      *
      * @example
      * ```ts
@@ -60,9 +60,9 @@ class Jettons {
      * console.log(jettons.toString()) // '19'
      * ```
      *
-     * @return {Jettons} - Current instance reference
+     * @return {this} - Current instance reference
      */
-    public add (value: Jettons | bigint | number | string): Jettons {
+    public add (value: this | bigint | number | string): this {
         Jettons.checkJettonsType(value)
 
         const nano = new Decimal(value.toString()).mul(this.multiplier)
@@ -75,7 +75,7 @@ class Jettons {
     /**
      * Subtract value from instance value
      *
-     * @param {(Jettons | bigint | number | string)} value
+     * @param {(this | bigint | number | string)} value
      *
      * @example
      * ```ts
@@ -86,9 +86,9 @@ class Jettons {
      * console.log(jettons.toString()) // '1'
      * ```
      *
-     * @return {Jettons} - Current instance reference
+     * @return {this} - Current instance reference
      */
-    public sub (value: Jettons | bigint | number | string): Jettons {
+    public sub (value: this | bigint | number | string): this {
         Jettons.checkJettonsType(value)
 
         const nano = new Decimal(value.toString()).mul(this.multiplier)
@@ -101,7 +101,7 @@ class Jettons {
     /**
      * Multiplies instance value by value
      *
-     * @param {(Jettons | bigint | number | string)} value
+     * @param {(this | bigint | number | string)} value
      *
      * @example
      * ```ts
@@ -112,9 +112,9 @@ class Jettons {
      * console.log(jettons.toString()) // '20'
      * ```
      *
-     * @return {Jettons} - Current instance reference
+     * @return {this} - Current instance reference
      */
-    public mul (value: Jettons | bigint | number | string): Jettons {
+    public mul (value: this | bigint | number | string): this {
         Jettons.checkJettonsType(value)
 
         const multiplier = value.toString()
@@ -127,7 +127,7 @@ class Jettons {
     /**
      * Divides instance value by value
      *
-     * @param {(Jettons | bigint | number | string)} value
+     * @param {(this | bigint | number | string)} value
      *
      * @example
      * ```ts
@@ -138,9 +138,9 @@ class Jettons {
      * console.log(jettons.toString()) // '5'
      * ```
      *
-     * @return {Jettons} - Current instance reference
+     * @return {this} - Current instance reference
      */
-    public div (value: Jettons | bigint | number | string): Jettons {
+    public div (value: this | bigint | number | string): this {
         Jettons.checkJettonsType(value)
 
         const divider = new Decimal(value.toString())
@@ -166,7 +166,7 @@ class Jettons {
      *
      * @return {boolean}
      */
-    public eq (value: Jettons): boolean {
+    public eq (value: this): boolean {
         Jettons.checkJettonsType(value)
 
         const nano = new Decimal(value.toNano())
@@ -190,7 +190,7 @@ class Jettons {
      *
      * @return {boolean}
      */
-    public gt (value: Jettons): boolean {
+    public gt (value: this): boolean {
         Jettons.checkJettonsType(value)
 
         const nano = new Decimal(value.toNano())
@@ -214,7 +214,7 @@ class Jettons {
      *
      * @return {boolean}
      */
-    public gte (value: Jettons): boolean {
+    public gte (value: this): boolean {
         Jettons.checkJettonsType(value)
 
         const nano = new Decimal(value.toNano())
@@ -238,7 +238,7 @@ class Jettons {
      *
      * @return {boolean}
      */
-    public lt (value: Jettons): boolean {
+    public lt (value: this): boolean {
         Jettons.checkJettonsType(value)
 
         const nano = new Decimal(value.toNano())
@@ -262,7 +262,7 @@ class Jettons {
      *
      * @return {boolean}
      */
-    public lte (value: Jettons): boolean {
+    public lte (value: this): boolean {
         Jettons.checkJettonsType(value)
 
         const nano = new Decimal(value.toNano())

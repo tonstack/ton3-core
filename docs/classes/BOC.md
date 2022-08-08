@@ -61,7 +61,7 @@ Returns deserialized standard BOC root cell.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `data` | `string` \| `Uint8Array` | Bytes or HEX of serialized BOC. |
+| `data` | `string` \| `Uint8Array` | Bytes, HEX or Base64 of serialized BOC. |
 
 #### Returns
 

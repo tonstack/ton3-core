@@ -43,6 +43,8 @@
 - [preloadAddress](Slice.md#preloadaddress)
 - [loadCoins](Slice.md#loadcoins)
 - [preloadCoins](Slice.md#preloadcoins)
+- [loadJettons](Slice.md#loadjettons)
+- [preloadJettons](Slice.md#preloadjettons)
 - [loadDict](Slice.md#loaddict)
 - [preloadDict](Slice.md#preloaddict)
 - [parse](Slice.md#parse)
@@ -748,6 +750,56 @@ Same as .loadCoins() but will not mutate [Slice](Slice.md)
 #### Returns
 
 [`Coins`](Coins.md)
+
+___
+
+### loadJettons
+
+▸ **loadJettons**(`decimals`): [`Jettons`](Jettons.md)
+
+Read [Jettons](Jettons.md) from [Slice](Slice.md)
+
+**`example`**
+```ts
+import { Builder, Jettons, Slice } from 'ton3-core'
+
+const builder = new Builder()
+const jettons = new Jettons('100', { decimals: 9 })
+
+builder.storeJettons(jettons)
+
+const slice = Slice.parse(builder.cell())
+
+console.log(slice.loadJettons(9).toString()) // '100'
+```
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `decimals` | `number` | Number of decimals after comma |
+
+#### Returns
+
+[`Jettons`](Jettons.md)
+
+___
+
+### preloadJettons
+
+▸ **preloadJettons**(`decimals`): [`Jettons`](Jettons.md)
+
+Same as .loadJettons() but will not mutate [Slice](Slice.md)
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `decimals` | `number` | Number of decimals after comma |
+
+#### Returns
+
+[`Jettons`](Jettons.md)
 
 ___
 
