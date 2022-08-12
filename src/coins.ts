@@ -37,13 +37,17 @@ class Coins {
         Coins.checkCoinsType(value)
         Coins.checkCoinsDecimals(decimals)
 
-        //Decimal.set({ precision: decimals })
+        const decimal = new Decimal(value.toString())
+
+        if (decimal.dp() > decimals) {
+            throw new Error(`Invalid Coins value, decimals places "${decimal.dp()}" can't be greater than selected "${decimals}"`)
+        }
 
         this.decimals = decimals
         this.multiplier = (1 * 10) ** this.decimals
         this.value = !isNano
-            ? new Decimal(value.toString()).mul(this.multiplier)
-            : new Decimal(value.toString())
+            ? decimal.mul(this.multiplier)
+            : decimal
     }
 
     /**

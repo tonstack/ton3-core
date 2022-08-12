@@ -45,16 +45,52 @@ describe('Coins', () => {
             expect(result2.toString()).to.equal(value2.toString())
         })
 
+        it('should create Coins from nano', () => {
+            const value1 = '10'
+            const value2 = '20.555'
+            const result1 = new Coins(10_000_000_000, { isNano: true })
+            const result2 = new Coins(20_555_000_000, { isNano: true })
+
+            expect(result1.toString()).to.equal(value1.toString())
+            expect(result2.toString()).to.equal(value2.toString())
+        })
+
+        it('should create Coins with different decimals', () => {
+            const value1 = '10'
+            const value2 = '20.555'
+            const result1 = new Coins(value1, { decimals: 10 })
+            const result2 = new Coins(value2, { decimals: 10 })
+
+            expect(result1.toString()).to.equal(value1.toString())
+            expect(result2.toString()).to.equal(value2.toString())
+        })
+
+        it('should create Coins from nano with different decimals', () => {
+            const value1 = '10'
+            const value2 = '20.555'
+            const result1 = new Coins(10_000_000_000_0, { isNano: true, decimals: 10 })
+            const result2 = new Coins(20_555_000_000_0, { isNano: true, decimals: 10 })
+            const result3 = new Coins(10_000, { isNano: true, decimals: 3 })
+            const result4 = new Coins(20_555, { isNano: true, decimals: 3 })
+
+            expect(result1.toString()).to.equal(value1.toString())
+            expect(result2.toString()).to.equal(value2.toString())
+            expect(result3.toString()).to.equal(value1.toString())
+            expect(result4.toString()).to.equal(value2.toString())
+        })
+
         it('should throw error from bad input data', () => {
             const result1 = () => new Coins('bad_input')
             const result2 = () => new Coins('')
             const result3 = () => new Coins(null)
             const result4 = () => new Coins(undefined)
+            const result5 = () => new Coins('20.555', { decimals: 0 })
 
             expect(result1).to.throw('Invalid Coins value')
             expect(result2).to.throw('Invalid Coins value')
             expect(result3).to.throw('Invalid Coins value')
             expect(result4).to.throw('Invalid Coins value')
+            expect(result5).to.throw(`Invalid Coins value, decimals places "3" can't be greater than selected "0"`)
         })
     })
 
