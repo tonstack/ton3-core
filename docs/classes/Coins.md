@@ -2,18 +2,11 @@
 
 # Class: Coins
 
-## Hierarchy
-
-- [`Jettons`](Jettons.md)
-
-  ↳ **`Coins`**
-
 ## Table of contents
 
 ### Methods
 
 - [add](Coins.md#add)
-- [fromNano](Coins.md#fromnano)
 - [sub](Coins.md#sub)
 - [mul](Coins.md#mul)
 - [div](Coins.md#div)
@@ -27,6 +20,7 @@
 - [isZero](Coins.md#iszero)
 - [toString](Coins.md#tostring)
 - [toNano](Coins.md#tonano)
+- [fromNano](Coins.md#fromnano)
 
 ### Constructors
 
@@ -36,100 +30,62 @@
 
 ### add
 
-▸ **add**(`value`): [`Coins`](Coins.md)
+▸ **add**(`coins`): [`Coins`](Coins.md)
 
 Add value to instance value
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('10').add(9)
+const coinsA = new Coins('10')
+const coinsB = new Coins('9')
 
-console.log(jettons.toString()) // '19'
+coinsA.add(coinsB)
+
+console.log(coinsA.toString()) // '19'
 ```
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
 [`Coins`](Coins.md)
 
 - Current instance reference
-
-#### Inherited from
-
-[Jettons](Jettons.md).[add](Jettons.md#add)
-
-___
-
-### fromNano
-
-▸ `Static` **fromNano**(`value`): [`Coins`](Coins.md)
-
-Creates instance of Coins from value in nano
-
-**`static`**
-
-**`example`**
-```ts
-import { Coins } from 'ton3-core'
-
-const coins = Coins.fromNano('100000000000')
-
-console.log(coins.toString()) // 100 coins
-```
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` | Value in nanocoins |
-
-#### Returns
-
-[`Coins`](Coins.md)
-
-#### Overrides
-
-[Jettons](Jettons.md).[fromNano](Jettons.md#fromnano)
 
 ___
 
 ### sub
 
-▸ **sub**(`value`): [`Coins`](Coins.md)
+▸ **sub**(`coins`): [`Coins`](Coins.md)
 
 Subtract value from instance value
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('10').sub(9)
+const coins = new Coins('10').sub(9)
 
-console.log(jettons.toString()) // '1'
+console.log(coins.toString()) // '1'
 ```
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
 [`Coins`](Coins.md)
 
 - Current instance reference
-
-#### Inherited from
-
-[Jettons](Jettons.md).[sub](Jettons.md#sub)
 
 ___
 
@@ -141,28 +97,24 @@ Multiplies instance value by value
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('10').mul(2)
+const coins = new Coins('10').mul(2)
 
-console.log(jettons.toString()) // '20'
+console.log(coins.toString()) // '20'
 ```
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `value` | `string` \| `number` \| `bigint` |
 
 #### Returns
 
 [`Coins`](Coins.md)
 
 - Current instance reference
-
-#### Inherited from
-
-[Jettons](Jettons.md).[mul](Jettons.md#mul)
 
 ___
 
@@ -174,18 +126,18 @@ Divides instance value by value
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('10').div(2)
+const coins = new Coins('10').div(2)
 
-console.log(jettons.toString()) // '5'
+console.log(coins.toString()) // '5'
 ```
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `value` | `string` \| `number` \| `bigint` |
 
 #### Returns
 
@@ -193,174 +145,150 @@ console.log(jettons.toString()) // '5'
 
 - Current instance reference
 
-#### Inherited from
-
-[Jettons](Jettons.md).[div](Jettons.md#div)
-
 ___
 
 ### eq
 
-▸ **eq**(`value`): `boolean`
+▸ **eq**(`coins`): `boolean`
 
-Checks if instance value equal another [Jettons](Jettons.md) instance value
+Checks if instance value equal another [Coins](Coins.md) instance value
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('10')
-const equal = new Jettons('10')
-const notEqual = new Jettons('11')
+const coins = new Coins('10')
+const equal = new Coins('10')
+const notEqual = new Coins('11')
 
-console.log(equal.eq(jettons), notEqual.eq(jettons)) // true, false
+console.log(equal.eq(coins), notEqual.eq(coins)) // true, false
 ```
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[eq](Jettons.md#eq)
 
 ___
 
 ### gt
 
-▸ **gt**(`value`): `boolean`
+▸ **gt**(`coins`): `boolean`
 
-Checks if instance value greater than another [Jettons](Jettons.md) instance value
+Checks if instance value greater than another [Coins](Coins.md) instance value
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('10')
-const equal = new Jettons('10')
-const greater = new Jettons('11')
+const coins = new Coins('10')
+const equal = new Coins('10')
+const greater = new Coins('11')
 
-console.log(equal.gt(jettons), greater.gt(jettons)) // false, true
+console.log(equal.gt(coins), greater.gt(coins)) // false, true
 ```
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[gt](Jettons.md#gt)
 
 ___
 
 ### gte
 
-▸ **gte**(`value`): `boolean`
+▸ **gte**(`coins`): `boolean`
 
-Checks if instance value greater than or equal another [Jettons](Jettons.md) instance value
+Checks if instance value greater than or equal another [Coins](Coins.md) instance value
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('10')
-const equal = new Jettons('10')
-const greater = new Jettons('11')
+const coins = new Coins('10')
+const equal = new Coins('10')
+const greater = new Coins('11')
 
-console.log(equal.gte(jettons), greater.gte(jettons)) // true, true
+console.log(equal.gte(coins), greater.gte(coins)) // true, true
 ```
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[gte](Jettons.md#gte)
 
 ___
 
 ### lt
 
-▸ **lt**(`value`): `boolean`
+▸ **lt**(`coins`): `boolean`
 
-Checks if instance value lesser than another [Jettons](Jettons.md) instance value
+Checks if instance value lesser than another [Coins](Coins.md) instance value
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('10')
-const equal = new Jettons('10')
-const lesser = new Jettons('9')
+const coins = new Coins('10')
+const equal = new Coins('10')
+const lesser = new Coins('9')
 
-console.log(equal.lt(jettons), lesser.lt(jettons)) // false, true
+console.log(equal.lt(coins), lesser.lt(coins)) // false, true
 ```
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[lt](Jettons.md#lt)
 
 ___
 
 ### lte
 
-▸ **lte**(`value`): `boolean`
+▸ **lte**(`coins`): `boolean`
 
-Checks if instance value lesser than or equal another [Jettons](Jettons.md) instance value
+Checks if instance value lesser than or equal another [Coins](Coins.md) instance value
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('10')
-const equal = new Jettons('10')
-const lesser = new Jettons('9')
+const coins = new Coins('10')
+const equal = new Coins('10')
+const lesser = new Coins('9')
 
-console.log(equal.lte(jettons), lesser.lte(jettons)) // true, true
+console.log(equal.lte(coins), lesser.lte(coins)) // true, true
 ```
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[lte](Jettons.md#lte)
 
 ___
 
@@ -372,10 +300,10 @@ Checks if instance value is negative
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const zero = new Jettons('0')
-const negative = new Jettons('-1')
+const zero = new Coins('0')
+const negative = new Coins('-1')
 
 console.log(zero.isNegative(), negative.isNegative()) // false, true
 ```
@@ -383,10 +311,6 @@ console.log(zero.isNegative(), negative.isNegative()) // false, true
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[isNegative](Jettons.md#isnegative)
 
 ___
 
@@ -398,10 +322,10 @@ Checks if instance value is positive
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const zero = new Jettons('0')
-const positive = new Jettons('1')
+const zero = new Coins('0')
+const positive = new Coins('1')
 
 console.log(zero.isPositive(), positive.isPositive()) // true, true
 ```
@@ -409,10 +333,6 @@ console.log(zero.isPositive(), positive.isPositive()) // true, true
 #### Returns
 
 `boolean`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[isPositive](Jettons.md#ispositive)
 
 ___
 
@@ -424,9 +344,9 @@ Checks if instance value equals zero
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const zero = new Jettons('0')
+const zero = new Coins('0')
 
 console.log(zero.isZero()) // true
 ```
@@ -435,34 +355,26 @@ console.log(zero.isZero()) // true
 
 `boolean`
 
-#### Inherited from
-
-[Jettons](Jettons.md).[isZero](Jettons.md#iszero)
-
 ___
 
 ### toString
 
 ▸ **toString**(): `string`
 
-Returns string representation of instance in jettons
+Returns string representation of instance in coins
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('100')
+const coins = new Coins('100')
 
-console.log(jettons.toString()) // '100'
+console.log(coins.toString()) // '100'
 ```
 
 #### Returns
 
 `string`
-
-#### Inherited from
-
-[Jettons](Jettons.md).[toString](Jettons.md#tostring)
 
 ___
 
@@ -470,30 +382,56 @@ ___
 
 ▸ **toNano**(): `string`
 
-Returns string representation of instance in nanojettons
+Returns string representation of instance in nanocoins
 
 **`example`**
 ```ts
-import { Jettons } from 'ton3-core'
+import { Coins } from 'ton3-core'
 
-const jettons = new Jettons('100')
+const coins = new Coins('100')
 
-console.log(jettons.toNano()) // '100000000000'
+console.log(coins.toNano()) // '100000000000'
 ```
 
 #### Returns
 
 `string`
 
-#### Inherited from
+___
 
-[Jettons](Jettons.md).[toNano](Jettons.md#tonano)
+### fromNano
+
+▸ `Static` **fromNano**(`value`, `decimals?`): [`Coins`](Coins.md)
+
+Creates instance of Coins from value in nano
+
+**`static`**
+
+**`example`**
+```ts
+import { Coins } from 'ton3-core'
+
+const coins = Coins.fromNano('100000000000', 9)
+
+console.log(coins.toString()) // 100 coins
+```
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `value` | `string` \| `number` \| `bigint` | `undefined` | Value in nanocoins |
+| `decimals` | `number` | `9` | - |
+
+#### Returns
+
+[`Coins`](Coins.md)
 
 ## Constructors
 
 ### constructor
 
-• **new Coins**(`value`, `isNano?`)
+• **new Coins**(`value`, `options?`)
 
 Creates an instance of [Coins](Coins.md)
 
@@ -507,15 +445,12 @@ new Coins(coins)
 new Coins(BigInt('100'))
 new Coins(100)
 new Coins('100')
+new Coins('100000', { isNano: true, decimals: 3 })
 ```
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) | `undefined` |
-| `isNano` | `boolean` | `false` |
-
-#### Overrides
-
-[Jettons](Jettons.md).[constructor](Jettons.md#constructor)
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `options?` | [`CoinsOptions`](../interfaces/CoinsOptions.md) |

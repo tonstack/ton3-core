@@ -23,15 +23,14 @@ ton3-core
 - [MessageInternal](classes/MessageInternal.md)
 - [MessageExternalIn](classes/MessageExternalIn.md)
 - [Mnemonic](classes/Mnemonic.md)
-- [Jettons](classes/Jettons.md)
 
 ### Interfaces
 
 - [HashmapOptions](interfaces/HashmapOptions.md)
 - [BOCOptions](interfaces/BOCOptions.md)
+- [CoinsOptions](interfaces/CoinsOptions.md)
 - [StateInitOptions](interfaces/StateInitOptions.md)
 - [KeyPair](interfaces/KeyPair.md)
-- [JettonsOptions](interfaces/JettonsOptions.md)
 
 ### Functions
 
@@ -40,7 +39,9 @@ ton3-core
 - [serialize](README.md#serialize)
 - [augment](README.md#augment)
 - [rollback](README.md#rollback)
+- [crc16](README.md#crc16)
 - [crc16BytesBe](README.md#crc16bytesbe)
+- [crc32c](README.md#crc32c)
 - [crc32cBytesLe](README.md#crc32cbytesle)
 - [sha256](README.md#sha256)
 - [sha512](README.md#sha512)
@@ -164,6 +165,22 @@ Mostly used for BOC serialization or Cell hash calculations.
 
 ___
 
+### crc16
+
+▸ **crc16**(`data`): `number`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `data` | `Uint8Array` \| `number`[] |
+
+#### Returns
+
+`number`
+
+___
+
 ### crc16BytesBe
 
 ▸ **crc16BytesBe**(`data`): `Uint8Array`
@@ -177,6 +194,22 @@ ___
 #### Returns
 
 `Uint8Array`
+
+___
+
+### crc32c
+
+▸ **crc32c**(`data`): `number`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `data` | `Uint8Array` \| `number`[] |
+
+#### Returns
+
+`number`
 
 ___
 

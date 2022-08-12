@@ -30,7 +30,6 @@
 - [storeString](Builder.md#storestring)
 - [storeAddress](Builder.md#storeaddress)
 - [storeCoins](Builder.md#storecoins)
-- [storeJettons](Builder.md#storejettons)
 - [storeDict](Builder.md#storedict)
 - [clone](Builder.md#clone)
 - [cell](Builder.md#cell)
@@ -328,24 +327,6 @@ Store a [Coins](Coins.md) in instance.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `coins` | [`Coins`](Coins.md) | Toncoin as [Coins](Coins.md). |
-
-#### Returns
-
-[`Builder`](Builder.md)
-
-___
-
-### storeJettons
-
-▸ **storeJettons**(`jettons`): [`Builder`](Builder.md)
-
-Store a [Jettons](Jettons.md) in instance.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `jettons` | [`Jettons`](Jettons.md) | Toncoin as [Jettons](Jettons.md). |
 
 #### Returns
 

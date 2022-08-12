@@ -1,13 +1,13 @@
-[ton3-core](../README.md) / JettonsOptions
+[ton3-core](../README.md) / CoinsOptions
 
-# Interface: JettonsOptions
+# Interface: CoinsOptions
 
 ## Table of contents
 
 ### Properties
 
-- [isNano](JettonsOptions.md#isnano)
-- [decimals](JettonsOptions.md#decimals)
+- [isNano](CoinsOptions.md#isnano)
+- [decimals](CoinsOptions.md#decimals)
 
 ## Properties
 
