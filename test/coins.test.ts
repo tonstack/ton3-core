@@ -49,10 +49,10 @@ describe('Coins', () => {
             const result3 = () => new Coins(null)
             const result4 = () => new Coins(undefined)
 
-            expect(result1).to.throw('Invalid coins/jettons value')
-            expect(result2).to.throw('Invalid coins/jettons value')
-            expect(result3).to.throw('Invalid coins/jettons value')
-            expect(result4).to.throw('Invalid coins/jettons value')
+            expect(result1).to.throw('Invalid Coins value')
+            expect(result2).to.throw('Invalid Coins value')
+            expect(result3).to.throw('Invalid Coins value')
+            expect(result4).to.throw('Invalid Coins value')
         })
     })
 
@@ -65,28 +65,22 @@ describe('Coins', () => {
             expect(result2.toString()).to.equal('20.5')
         })
 
-        it('should add BigInt', () => {
-            const result1 = number.add(BigInt(10))
-            const result2 = decimal.add(BigInt(10))
+        it('should throw error from bad input data', () => {
+            const result1 = () => number.add('bad_input')
+            const result2 = () => number.add('')
+            const result3 = () => number.add(null)
+            const result4 = () => number.add(undefined)
+            const result5 = () => number.add(BigInt(10))
+            const result6 = () => number.add(10)
+            const result7 = () => number.add('10')
 
-            expect(result1.toString()).to.equal('20')
-            expect(result2.toString()).to.equal('20.5')
-        })
-
-        it('should add Number', () => {
-            const result1 = number.add(10)
-            const result2 = decimal.add(10)
-
-            expect(result1.toString()).to.equal('20')
-            expect(result2.toString()).to.equal('20.5')
-        })
-
-        it('should add String', () => {
-            const result1 = number.add('10')
-            const result2 = decimal.add('10')
-
-            expect(result1.toString()).to.equal('20')
-            expect(result2.toString()).to.equal('20.5')
+            expect(result1).to.throw('Invalid value')
+            expect(result2).to.throw('Invalid value')
+            expect(result3).to.throw('Invalid value')
+            expect(result4).to.throw('Invalid value')
+            expect(result5).to.throw('Invalid value')
+            expect(result6).to.throw('Invalid value')
+            expect(result7).to.throw('Invalid value')
         })
     })
 
@@ -99,40 +93,26 @@ describe('Coins', () => {
             expect(result2.toString()).to.equal('0.5')
         })
 
-        it('should sub BigInt', () => {
-            const result1 = number.sub(BigInt(10))
-            const result2 = decimal.sub(BigInt(10))
+        it('should throw error from bad input data', () => {
+            const result1 = () => number.sub('bad_input')
+            const result2 = () => number.sub('')
+            const result3 = () => number.sub(null)
+            const result4 = () => number.sub(undefined)
+            const result5 = () => number.sub(BigInt(10))
+            const result6 = () => number.sub(10)
+            const result7 = () => number.sub('10')
 
-            expect(result1.toString()).to.equal('0')
-            expect(result2.toString()).to.equal('0.5')
-        })
-
-        it('should sub Number', () => {
-            const result1 = number.sub(10)
-            const result2 = decimal.sub(10)
-
-            expect(result1.toString()).to.equal('0')
-            expect(result2.toString()).to.equal('0.5')
-        })
-
-        it('should sub String', () => {
-            const result1 = number.sub('10')
-            const result2 = decimal.sub('10')
-
-            expect(result1.toString()).to.equal('0')
-            expect(result2.toString()).to.equal('0.5')
+            expect(result1).to.throw('Invalid value')
+            expect(result2).to.throw('Invalid value')
+            expect(result3).to.throw('Invalid value')
+            expect(result4).to.throw('Invalid value')
+            expect(result5).to.throw('Invalid value')
+            expect(result6).to.throw('Invalid value')
+            expect(result7).to.throw('Invalid value')
         })
     })
 
     describe('#mul()', () => {
-        it('should mul Coins', () => {
-            const result1 = number.mul(new Coins('10'))
-            const result2 = decimal.mul(new Coins('10'))
-
-            expect(result1.toString()).to.equal('100')
-            expect(result2.toString()).to.equal('105')
-        })
-
         it('should mul BigInt', () => {
             const result1 = number.mul(BigInt(10))
             const result2 = decimal.mul(BigInt(10))
@@ -156,17 +136,23 @@ describe('Coins', () => {
             expect(result1.toString()).to.equal('100')
             expect(result2.toString()).to.equal('105')
         })
+
+        it('should throw error from bad input data', () => {
+            const result1 = () => number.mul('bad_input')
+            const result2 = () => number.mul('')
+            const result3 = () => number.mul(null)
+            const result4 = () => number.mul(undefined)
+            const result5 = () => number.mul(new Coins('10'))
+
+            expect(result1).to.throw('Invalid value')
+            expect(result2).to.throw('Invalid value')
+            expect(result3).to.throw('Invalid value')
+            expect(result4).to.throw('Invalid value')
+            expect(result5).to.throw('Invalid value')
+        })
     })
 
     describe('#div()', () => {
-        it('should div Coins', () => {
-            const result1 = number.div(new Coins('10'))
-            const result2 = decimal.div(new Coins('10'))
-
-            expect(result1.toString()).to.equal('1')
-            expect(result2.toString()).to.equal('1.05')
-        })
-
         it('should div BigInt', () => {
             const result1 = number.div(BigInt(10))
             const result2 = decimal.div(BigInt(10))
@@ -190,6 +176,20 @@ describe('Coins', () => {
             expect(result1.toString()).to.equal('1')
             expect(result2.toString()).to.equal('1.05')
         })
+
+        it('should throw error from bad input data', () => {
+            const result1 = () => number.div('bad_input')
+            const result2 = () => number.div('')
+            const result3 = () => number.div(null)
+            const result4 = () => number.div(undefined)
+            const result5 = () => number.div(new Coins('10'))
+
+            expect(result1).to.throw('Invalid value')
+            expect(result2).to.throw('Invalid value')
+            expect(result3).to.throw('Invalid value')
+            expect(result4).to.throw('Invalid value')
+            expect(result5).to.throw('Invalid value')
+        })
     })
 
     describe('#eq()', () => {
@@ -199,6 +199,26 @@ describe('Coins', () => {
 
             expect(result1.eq(number)).to.equal(true)
             expect(result2.eq(number)).to.equal(false)
+        })
+
+        it('should throw error from bad input data', () => {
+            const result1 = () => number.eq('bad_input')
+            const result2 = () => number.eq('')
+            const result3 = () => number.eq(null)
+            const result4 = () => number.eq(undefined)
+            const result5 = () => number.eq(BigInt(10))
+            const result6 = () => number.eq(10)
+            const result7 = () => number.eq('10')
+            const result8 = () => number.eq(new Coins('10', { decimals: 10 }))
+
+            expect(result1).to.throw('Invalid value')
+            expect(result2).to.throw('Invalid value')
+            expect(result3).to.throw('Invalid value')
+            expect(result4).to.throw('Invalid value')
+            expect(result5).to.throw('Invalid value')
+            expect(result6).to.throw('Invalid value')
+            expect(result7).to.throw('Invalid value')
+            expect(result8).to.throw("Can't perform mathematical operation of Coins with different decimals")
         })
     })
 
@@ -210,6 +230,26 @@ describe('Coins', () => {
             expect(result1.gt(number)).to.equal(false)
             expect(result2.gt(number)).to.equal(true)
         })
+
+        it('should throw error from bad input data', () => {
+            const result1 = () => number.gt('bad_input')
+            const result2 = () => number.gt('')
+            const result3 = () => number.gt(null)
+            const result4 = () => number.gt(undefined)
+            const result5 = () => number.gt(BigInt(10))
+            const result6 = () => number.gt(10)
+            const result7 = () => number.gt('10')
+            const result8 = () => number.gt(new Coins('10', { decimals: 10 }))
+
+            expect(result1).to.throw('Invalid value')
+            expect(result2).to.throw('Invalid value')
+            expect(result3).to.throw('Invalid value')
+            expect(result4).to.throw('Invalid value')
+            expect(result5).to.throw('Invalid value')
+            expect(result6).to.throw('Invalid value')
+            expect(result7).to.throw('Invalid value')
+            expect(result8).to.throw("Can't perform mathematical operation of Coins with different decimals")
+        })
     })
 
     describe('#gte()', () => {
@@ -219,6 +259,26 @@ describe('Coins', () => {
 
             expect(result1.gte(number)).to.equal(true)
             expect(result2.gte(number)).to.equal(true)
+        })
+
+        it('should throw error from bad input data', () => {
+            const result1 = () => number.gte('bad_input')
+            const result2 = () => number.gte('')
+            const result3 = () => number.gte(null)
+            const result4 = () => number.gte(undefined)
+            const result5 = () => number.gte(BigInt(10))
+            const result6 = () => number.gte(10)
+            const result7 = () => number.gte('10')
+            const result8 = () => number.gte(new Coins('10', { decimals: 10 }))
+
+            expect(result1).to.throw('Invalid value')
+            expect(result2).to.throw('Invalid value')
+            expect(result3).to.throw('Invalid value')
+            expect(result4).to.throw('Invalid value')
+            expect(result5).to.throw('Invalid value')
+            expect(result6).to.throw('Invalid value')
+            expect(result7).to.throw('Invalid value')
+            expect(result8).to.throw("Can't perform mathematical operation of Coins with different decimals")
         })
     })
 
@@ -230,6 +290,26 @@ describe('Coins', () => {
             expect(result1.lt(number)).to.equal(false)
             expect(result2.lt(number)).to.equal(true)
         })
+
+        it('should throw error from bad input data', () => {
+            const result1 = () => number.lt('bad_input')
+            const result2 = () => number.lt('')
+            const result3 = () => number.lt(null)
+            const result4 = () => number.lt(undefined)
+            const result5 = () => number.lt(BigInt(10))
+            const result6 = () => number.lt(10)
+            const result7 = () => number.lt('10')
+            const result8 = () => number.lt(new Coins('10', { decimals: 10 }))
+
+            expect(result1).to.throw('Invalid value')
+            expect(result2).to.throw('Invalid value')
+            expect(result3).to.throw('Invalid value')
+            expect(result4).to.throw('Invalid value')
+            expect(result5).to.throw('Invalid value')
+            expect(result6).to.throw('Invalid value')
+            expect(result7).to.throw('Invalid value')
+            expect(result8).to.throw("Can't perform mathematical operation of Coins with different decimals")
+        })
     })
 
     describe('#lte()', () => {
@@ -239,6 +319,26 @@ describe('Coins', () => {
 
             expect(result1.lte(number)).to.equal(true)
             expect(result2.lte(number)).to.equal(true)
+        })
+
+        it('should throw error from bad input data', () => {
+            const result1 = () => number.lte('bad_input')
+            const result2 = () => number.lte('')
+            const result3 = () => number.lte(null)
+            const result4 = () => number.lte(undefined)
+            const result5 = () => number.lte(BigInt(10))
+            const result6 = () => number.lte(10)
+            const result7 = () => number.lte('10')
+            const result8 = () => number.lte(new Coins('10', { decimals: 10 }))
+
+            expect(result1).to.throw('Invalid value')
+            expect(result2).to.throw('Invalid value')
+            expect(result3).to.throw('Invalid value')
+            expect(result4).to.throw('Invalid value')
+            expect(result5).to.throw('Invalid value')
+            expect(result6).to.throw('Invalid value')
+            expect(result7).to.throw('Invalid value')
+            expect(result8).to.throw("Can't perform mathematical operation of Coins with different decimals")
         })
     })
 

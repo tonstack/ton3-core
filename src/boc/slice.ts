@@ -1,7 +1,6 @@
 import { Bit } from '../types/bit'
 import { Cell } from './cell'
 import { Coins } from '../coins'
-import { Jettons } from '../jettons'
 import { Address } from '../address'
 import {
     bitsToHex,
@@ -660,6 +659,8 @@ class Slice {
 
     /**
      * Read {@link Coins} from {@link Slice}
+     * 
+     * @param {number} [decimals=9] - Number of decimals after comma 
      *
      * @example
      * ```ts
@@ -677,10 +678,10 @@ class Slice {
      *
      * @return {Coins}
      */
-    public loadCoins (): Coins {
+    public loadCoins (decimals: number = 9): Coins {
         const coins = this.loadVarUint(16)
 
-        return new Coins(coins, true)
+        return new Coins(coins, { isNano: true, decimals })
     }
 
     /**
@@ -688,50 +689,10 @@ class Slice {
      *
      * @return {Coins}
      */
-    public preloadCoins (): Coins {
+    public preloadCoins (decimals: number = 9): Coins {
         const coins = this.preloadVarUint(16)
 
-        return new Coins(coins, true)
-    }
-
-    /**
-     * Read {@link Jettons} from {@link Slice}
-     * 
-     * @param {number} decimals - Number of decimals after comma
-     *
-     * @example
-     * ```ts
-     * import { Builder, Jettons, Slice } from 'ton3-core'
-     *
-     * const builder = new Builder()
-     * const jettons = new Jettons('100', { decimals: 9 })
-     *
-     * builder.storeJettons(jettons)
-     *
-     * const slice = Slice.parse(builder.cell())
-     *
-     * console.log(slice.loadJettons(9).toString()) // '100'
-     * ```
-     *
-     * @return {Jettons}
-     */
-    public loadJettons (decimals: number): Jettons {
-        const jettons = this.loadVarUint(16)
-
-        return new Jettons(jettons, { isNano: true, decimals })
-    }
-
-    /**
-     * Same as .loadJettons() but will not mutate {@link Slice}
-     * 
-     * @param {number} decimals - Number of decimals after comma
-     *
-     * @return {Jettons}
-     */
-    public preloadJettons (decimals: number): Jettons {
-        const jettons = this.preloadVarUint(16)
-
-        return new Jettons(jettons, { isNano: true, decimals })
+        return new Coins(coins, { isNano: true, decimals })
     }
 
     /**

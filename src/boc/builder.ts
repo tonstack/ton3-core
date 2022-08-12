@@ -3,7 +3,6 @@ import { Cell } from './cell'
 import { Slice } from './slice'
 import type { Address } from '../address'
 import type { Coins } from '../coins'
-import type { Jettons } from '../jettons'
 import type { HashmapE } from './hashmap'
 import {
     bitsToBytes,
@@ -297,26 +296,6 @@ class Builder {
         }
 
         const nano = BigInt(coins.toNano())
-
-        // https://github.com/ton-blockchain/ton/blob/master/crypto/block/block.tlb#L116
-        this.storeVarUint(nano, 16)
-
-        return this
-    }
-
-    /**
-     * Store a {@link Jettons} in instance.
-     *
-     * @param {Jettons} jettons - Toncoin as {@link Jettons}.
-     *
-     * @returns {this}
-     */
-    public storeJettons (jettons: Jettons): this {
-        if (jettons.isNegative()) {
-            throw new Error('Builder: jettons value can\'t be negative.')
-        }
-
-        const nano = BigInt(jettons.toNano())
 
         // https://github.com/ton-blockchain/ton/blob/master/crypto/block/block.tlb#L116
         this.storeVarUint(nano, 16)
