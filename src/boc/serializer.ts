@@ -446,15 +446,14 @@ const breadthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, num
 const serializeCell = (cell: Cell, hashmap: Map<string, number>, refIndexSize: number): Bit[] => {
     const refsDescriptor = cell.refsDescriptor()
     const bitsDescriptor = cell.bitsDescriptor()
-    const descriptors = refsDescriptor.concat(bitsDescriptor)
-    const representation = descriptors.concat(cell.augmentedBits)
+    const representation = refsDescriptor.concat(bitsDescriptor, cell.augmentedBits)
     const bits = cell.refs.reduce((acc, ref) => {
-        const builder = new Builder()
         const refIndex = hashmap.get(ref.hash())
+        const bits = [ ...Array(refIndexSize) ]
+            .map((_el, i) => Number(((refIndex >> i) & 1) === 1) as Bit)
+            .reverse()
 
-        builder.storeUint(refIndex, refIndexSize)
-
-        return acc.concat(builder.bits)
+        return acc.concat(bits)
     }, representation)
 
     return bits

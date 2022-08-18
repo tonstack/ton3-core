@@ -147,7 +147,6 @@ class BOC {
      *
      * @static
      * @param {Cell[]} cells - Root cells.
-     * @param {BOCOptions} [options]
      * @return {string}
      */
     public static toFiftHex (cells: Cell[]): string {
@@ -161,7 +160,6 @@ class BOC {
      *
      * @static
      * @param {Cell} cell - Root cell.
-     * @param {BOCOptions} [options]
      * @return {string}
      */
     public static toFiftHexStandard (cell: Cell): string {

@@ -10,6 +10,9 @@ import { bitsToIntUint } from '../utils/numbers'
 import { augment } from '../utils/bits'
 import { sha256 } from '../utils/hash'
 
+const HASH_BITS = 256
+const DEPTH_BITS = 16
+
 enum CellType {
     Ordinary = -1,
     PrunedBranch = 1,
@@ -31,7 +34,7 @@ class Cell {
 
     private _type: CellType
 
-    private _mask: Mask
+    private mask: Mask
 
     private hashes: string[]
 
@@ -63,127 +66,84 @@ class Cell {
         return this._type
     }
 
-    public get mask (): Mask {
-        return this._mask
-    }
-
-    public get level (): number {
-        return this._mask.level
-    }
-
     public get exotic (): boolean {
         return this._type !== CellType.Ordinary
     }
 
-    public refsDescriptor (mask: Mask = null): Bit[] {
+    public refsDescriptor (mask?: Mask): Bit[] {
         const value = this._refs.length + (Number(this.exotic) * 8) + (mask ? mask.value : this.mask.value * 32)
-        const bits = value.toString(2).padStart(8, '0').split('').map(el => parseInt(el, 10)) as Bit[]
+        const descriptor = Uint8Array.from([ value ])
 
-        return bits
+        return bytesToBits(descriptor)
     }
 
     public bitsDescriptor (): Bit[] {
         const value = Math.ceil(this._bits.length / 8) + Math.floor(this._bits.length / 8)
-        const bits = value.toString(2).padStart(8, '0').split('').map(el => parseInt(el, 10)) as Bit[]
+        const descriptor = Uint8Array.from([ value ])
 
-        return bits
+        return bytesToBits(descriptor)
     }
 
     public depthDescriptor (depth: number): Bit[] {
-        // const value = Math.floor(depth / 256) + (depth % 256)
-        // const bits = value.toString(2).padStart(16, '0').split('').map(el => parseInt(el, 10)) as Bit[]
+        const descriptor = Uint8Array.from([ Math.floor(depth / 256), depth % 256 ])
 
-        const d = Uint8Array.from({length: 2}, () => 0)
-        d[1] = depth % 256
-        d[0] = Math.floor(depth / 256)
-
-
-        return bytesToBits(d)
+        return bytesToBits(descriptor)
     }
-
-    // private get representation (): Bit[] {
-    //     let representation = this.descriptors.concat(this.augmentedBits)
-
-    //     this._refs.forEach((ref) => {
-    //         const depth = ref.maxDepth
-
-    //         representation = representation.concat(depth)
-    //     })
-
-    //     this._refs.forEach((ref) => {
-    //         const hex = ref.hash()
-    //         const bits = hexToBits(hex)
-
-    //         representation = representation.concat(bits)
-    //     })
-
-    //     return representation
-    // }
-
-    // public get descriptors (): Bit[] {
-    //     return this.refsDescriptor.concat(this.bitsDescriptor)
-    // }
 
     public get augmentedBits (): Bit[] {
         return augment(this._bits)
     }
 
-    // public hash (): string {
-    //     const bytes = bitsToBytes(this.representation)
-
-    //     return sha256(bytes)
-    // }
-
-    public print (indent: string = ''): string {
+    public print (indent: number = 0): string {
         const bits = Array.from(this._bits)
         const areDivisible = bits.length % 4 === 0
         const augmented = !areDivisible ? augment(bits, 4) : bits
         const fiftHex = `${bitsToHex(augmented).toUpperCase()}${!areDivisible ? '_' : ''}`
-        const output = [ `${indent}x{${fiftHex}}\n` ]
+        const output = [ `${' '.repeat(indent)}x{${fiftHex}}\n` ]
 
-        this._refs.forEach(ref => output.push(ref.print(`${indent} `)))
+        this._refs.forEach(ref => output.push(ref.print(indent + 1)))
 
         return output.join('')
     }
 
-    public hash (level: number = 3): string {
+    public hash (level: number = 0): string {
         if (this.type !== CellType.PrunedBranch) {
             return this.hashes[this.mask.apply(level).hashIndex]
         }
 
         const { hashIndex } = this.mask.apply(level)
         const { hashIndex: thisHashIndex } = this.mask
-        const skip = 16 + (hashIndex * 256)
+        const skip = 16 + (hashIndex * HASH_BITS)
 
         return hashIndex !== thisHashIndex
-            ? bitsToHex(this._bits.slice(skip, skip + 256))
+            ? bitsToHex(this._bits.slice(skip, skip + HASH_BITS))
             : this.hashes[0]
     }
 
-    public depth (level: number = 3): number {
+    public depth (level: number = 0): number {
         if (this.type !== CellType.PrunedBranch) {
             return this.depths[this.mask.apply(level).hashIndex]
         }
 
         const { hashIndex } = this.mask.apply(level)
         const { hashIndex: thisHashIndex } = this.mask
-        const skip = 16 + (thisHashIndex * 256) + (hashIndex * 16)
+        const skip = 16 + (thisHashIndex * HASH_BITS) + (hashIndex * DEPTH_BITS)
 
         return hashIndex !== thisHashIndex
-            ? bitsToIntUint(this._bits.slice(skip, skip + 16), { type: 'uint' })
+            ? bitsToIntUint(this._bits.slice(skip, skip + DEPTH_BITS), { type: 'uint' })
             : this.depths[0]
     }
 
     private validatePrunedBranch (): void {
         if (this._refs.length !== 0) throw new Error("Pruned Branch cell can't has refs")
         if (this._bits.length < 16) throw new Error("Pruned Branch cell can't has less than 16 bits")
-        if (this.level < 1 || this.level > 3) {
+        if (this.mask.level < 1 || this.mask.level > 3) {
             throw new Error('Pruned Branch has an invalid level')
         }
 
-        const { hashCount } = this.mask.apply(this.level - 1)
+        const { hashCount } = this.mask.apply(this.mask.level - 1)
         // level + ??? + hashCount * (hash + depth)
-        const size = 8 + 8 + hashCount * (256 + 16)
+        const size = 8 + 8 + hashCount * (HASH_BITS + DEPTH_BITS)
 
         if (this._bits.length !== size) {
             throw new Error('Pruned Branch has an invalid data')
@@ -192,7 +152,7 @@ class Cell {
 
     private validateLibraryReference (): void {
         // level + hash
-        const size = 8 + 256
+        const size = 8 + HASH_BITS
 
         if (this._bits.length !== size || this._refs.length !== 0) {
             throw new Error('Library reference has an invalid data')
@@ -201,7 +161,7 @@ class Cell {
 
     private validateMerkleProof (): void {
         // level + hash + depth
-        const size = 8 + 256 + 16
+        const size = 8 + HASH_BITS + DEPTH_BITS
 
         if (this._bits.length !== size) {
             throw new Error('Merkle Proof has an invalid data')
@@ -213,9 +173,9 @@ class Cell {
 
         const data = Array.from(this._bits.slice(8))
 
-        const proof = bitsToHex(data.splice(0, 256))
+        const proof = bitsToHex(data.splice(0, HASH_BITS))
         const hash = this._refs[0].hash(0)
-        const depth = bitsToIntUint(data.splice(0, 16).reverse(), { type: 'int' })
+        const depth = bitsToIntUint(data.splice(0, DEPTH_BITS).reverse(), { type: 'int' })
 
         if (proof !== hash) {
             throw new Error('Merkle Proof hash mismatch')
@@ -228,7 +188,7 @@ class Cell {
 
     private validateMerkleUpdate (): void {
         // level + hash + hash + depth + depth
-        const size = 8 + (256 * 2) + (16 * 2)
+        const size = 8 + (HASH_BITS * 2) + (DEPTH_BITS * 2)
 
         if (this._bits.length !== size) {
             throw new Error('Merkle Update has an invalid data')
@@ -241,7 +201,7 @@ class Cell {
         const data = Array.from(this._bits.slice(8))
 
         for (let i = 0; i < 2; i++) {
-            const proof = bitsToHex(data.splice(0, 256))
+            const proof = bitsToHex(data.splice(0, HASH_BITS))
             const hash = this._refs[i].hash(0)
 
             if (proof !== hash) {
@@ -250,7 +210,7 @@ class Cell {
         }
 
         for (let i = 0; i < 2; i++) {
-            const depth = bitsToIntUint(data.splice(0, 16), { type: 'uint' })
+            const depth = bitsToIntUint(data.splice(0, DEPTH_BITS), { type: 'uint' })
 
             if (depth !== this._refs[i].depth(0)) {
                 throw Error(`Merkle Update ref #${i} depth mismatch`)
@@ -261,22 +221,22 @@ class Cell {
     private initialize (): void {
         switch (this.type) {
             case CellType.Ordinary:
-                this._mask = new Mask(this._refs.reduce((acc, el) => acc | el.mask.value, 0))
+                this.mask = new Mask(this._refs.reduce((acc, el) => acc | el.mask.value, 0))
                 break
             case CellType.PrunedBranch:
-                this._mask = new Mask(bitsToIntUint(this._bits.slice(0, 8), { type: 'uint' }))
+                this.mask = new Mask(bitsToIntUint(this._bits.slice(0, 8), { type: 'uint' }))
                 this.validatePrunedBranch()
                 break
             case CellType.LibraryReference:
-                this._mask = new Mask(0)
+                this.mask = new Mask(0)
                 this.validateLibraryReference()
                 break
             case CellType.MerkleProof:
-                this._mask = new Mask(this._refs[0].mask.value << 1)
+                this.mask = new Mask(this._refs[0].mask.value << 1)
                 this.validateMerkleProof()
                 break
             case CellType.MerkleUpdate:
-                this._mask = new Mask((this._refs[0].mask.value | this._refs[1].mask.value) << 1)
+                this.mask = new Mask((this._refs[0].mask.value | this._refs[1].mask.value) << 1)
                 this.validateMerkleUpdate()
                 break
             default:
@@ -291,7 +251,7 @@ class Cell {
         this.hashes = []
         this.depths = []
 
-        for (let levelIndex = 0, hashIndex = 0; levelIndex <= this.level; levelIndex++) {
+        for (let levelIndex = 0, hashIndex = 0; levelIndex <= this.mask.level; levelIndex++) {
             if (!this.mask.isSignificant(levelIndex)) {
                 continue
             }
@@ -305,11 +265,11 @@ class Cell {
             const refsDescriptor = this.refsDescriptor(this.mask.apply(levelIndex))
             const bitsDescriptor = this.bitsDescriptor()
             const descriptors = refsDescriptor.concat(bitsDescriptor)
-            const data = hashIndex === hashIndexOffset
-                ? this.augmentedBits
-                : hexToBits(this.hashes[hashIndex - hashIndexOffset - 1])
+            const bits = hashIndex !== hashIndexOffset
+                ? hexToBits(this.hashes[hashIndex - hashIndexOffset - 1])
+                : this.augmentedBits
 
-            let representation = descriptors.concat(data)
+            let representation = descriptors.concat(bits)
 
             const destIndex = hashIndex - hashIndexOffset
             let depth = 0
