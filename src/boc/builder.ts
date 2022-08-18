@@ -1,5 +1,8 @@
 import { Bit } from '../types/bit'
-import { Cell } from './cell'
+import {
+    Cell,
+    CellType
+} from './cell'
 import { Slice } from './slice'
 import type { Address } from '../address'
 import type { Coins } from '../coins'
@@ -350,9 +353,13 @@ class Builder {
      *
      * @returns {Cell}
      */
-    public cell (isExotic: boolean = false): Cell {
+    public cell (type: CellType = CellType.Ordinary): Cell {
         // Use getters to get copies of an arrays
-        const cell = new Cell(this.bits, this.refs, isExotic)
+        const cell = new Cell({
+            bits: this.bits,
+            refs: this.refs,
+            type
+        })
 
         return cell
     }

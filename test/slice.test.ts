@@ -247,8 +247,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadInt(64)
             const result2 = () => slice.loadInt(64)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
 
         it('should throw error on loading negative BigInt', () => {
@@ -259,8 +259,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadInt(64)
             const result2 = () => slice.loadInt(64)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
     })
 
@@ -397,8 +397,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadVarInt(16)
             const result2 = () => slice.loadVarInt(16)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
 
         it('should throw error on loading negative variable BigInt', () => {
@@ -409,8 +409,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadVarInt(16)
             const result2 = () => slice.loadVarInt(16)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
     })
 
@@ -521,8 +521,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadUint(64)
             const result2 = () => slice.loadUint(64)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
     })
 
@@ -607,8 +607,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadVarUint(16)
             const result2 = () => slice.loadVarUint(16)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
     })
 

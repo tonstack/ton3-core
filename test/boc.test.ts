@@ -74,16 +74,16 @@ describe('BOC', () => {
             expect(cell4.hash()).to.eq(BOC_FIFT_WITH_DUPS_HASH)
         })
 
-        // it('should deserialize-serialize-deserialize boc from fift hex', () => {
-        //     const cells1 = BOC.from(BOC_FIFTHEX)
-        //     const fift = BOC.toFiftHex(cells1)
-        //     const cells2 = BOC.from(fift)
+        it('should deserialize-serialize-deserialize boc from fift hex', () => {
+            const cells1 = BOC.from(BOC_FIFTHEX)
+            const fift = BOC.toFiftHex(cells1)
+            const cells2 = BOC.from(fift)
 
-        //     expect(cells1.length).to.eq(1)
-        //     expect(cells1[0].hash()).to.eq(BOC_FIFTHEX_HASH)
-        //     expect(cells2.length).to.eq(1)
-        //     expect(cells2[0].hash()).to.eq(BOC_FIFTHEX_HASH)
-        // })
+            expect(cells1.length).to.eq(1)
+            expect(cells1[0].hash()).to.eq(BOC_FIFTHEX_HASH)
+            expect(cells2.length).to.eq(1)
+            expect(cells2[0].hash()).to.eq(BOC_FIFTHEX_HASH)
+        })
 
         it('should deserialize-serialize-deserialize standard boc fift from hex', () => {
             const cell1 = BOC.fromStandard(BOC_FIFTHEX)

@@ -88,6 +88,8 @@ const bitsToBytes = (bits: Bit[]): Uint8Array => {
 
 const bitsToInt8 = (bits: Bit[]): number => uint8toInt8(bytesToUint(bitsToBytes(bits)))
 
+const bitsToUint8 = (bits: Bit[]): number => bytesToUint(bitsToBytes(bits))
+
 const bytesToHex = (bytes: Uint8Array): string => bytes.reduce((acc, uint) => `${acc}${uintToHex(uint)}`, '')
 
 const bytesToString = (bytes: Uint8Array): string => {
@@ -138,6 +140,7 @@ export {
     hexToBytes,
     bitsToHex,
     bitsToInt8,
+    bitsToUint8,
     bitsToBytes,
     bytesToUint,
     bytesCompare,

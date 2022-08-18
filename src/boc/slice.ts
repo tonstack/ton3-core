@@ -8,6 +8,11 @@ import {
     bitsToBytes,
     bytesToString
 } from '../utils/helpers'
+import {
+    bitsToIntUint,
+    bitsToBigUint,
+    bitsToBigInt
+} from '../utils/numbers'
 
 class Slice {
     private _bits: Bit[]
@@ -25,54 +30,6 @@ class Slice {
 
     public get refs (): Cell[] {
         return Array.from(this._refs)
-    }
-
-    private static bitsToBigUint (bits: Bit[]): { value: bigint, isSafe: boolean } {
-        if (!bits.length) return { value: 0n, isSafe: true }
-
-        const value = bits
-            .reverse()
-            .reduce((acc, bit, i) => (BigInt(bit) * (2n ** BigInt(i)) + acc), 0n)
-
-        const isSafe = value <= Number.MAX_SAFE_INTEGER
-
-        return {
-            value,
-            isSafe
-        }
-    }
-
-    private static bitsToBigInt (bits: Bit[]): { value: bigint, isSafe: boolean } {
-        if (!bits.length) return { value: 0n, isSafe: true }
-
-        const { value: uint } = Slice.bitsToBigUint(bits)
-        const size = BigInt(bits.length)
-        const int = 1n << (size - 1n)
-        const value = uint >= int ? (uint - (int * 2n)) : uint
-        const isSafe = value >= Number.MIN_SAFE_INTEGER && value <= Number.MAX_SAFE_INTEGER
-
-        return {
-            value,
-            isSafe
-        }
-    }
-
-    private static bitsToIntUint (
-        bits: Bit[],
-        options: {
-            type: 'int' | 'uint'
-        }
-    ): number {
-        const { type = 'uint' } = options
-        const { value, isSafe } = type === 'uint'
-            ? Slice.bitsToBigUint(bits)
-            : Slice.bitsToBigInt(bits)
-
-        if (!isSafe) {
-            throw new Error('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-        }
-
-        return Number(value)
     }
 
     /**
@@ -247,11 +204,11 @@ class Slice {
      *
      * const builder = new Builder()
      *
-     * builder.storeUint(-14, 15)
+     * builder.storeInt(-14, 15)
      *
      * const slice = Slice.parse(builder.cell())
      *
-     * console.log(slice.loadUint(15)) // -14
+     * console.log(slice.loadInt(15)) // -14
      * ```
      *
      * @return {number}
@@ -259,7 +216,7 @@ class Slice {
     public loadInt (size: number): number {
         const bits = this.loadBits(size)
 
-        return Slice.bitsToIntUint(bits, { type: 'int' })
+        return bitsToIntUint(bits, { type: 'int' })
     }
 
     /**
@@ -270,7 +227,7 @@ class Slice {
     public preloadInt (size: number): number {
         const bits = this.preloadBits(size)
 
-        return Slice.bitsToIntUint(bits, { type: 'int' })
+        return bitsToIntUint(bits, { type: 'int' })
     }
 
     /**
@@ -280,7 +237,7 @@ class Slice {
      */
      public loadBigInt (size: number): bigint {
         const bits = this.loadBits(size)
-        const { value } = Slice.bitsToBigInt(bits)
+        const { value } = bitsToBigInt(bits)
 
         return value
     }
@@ -292,7 +249,7 @@ class Slice {
      */
     public preloadBigInt (size: number): bigint {
         const bits = this.preloadBits(size)
-        const { value } = Slice.bitsToBigInt(bits)
+        const { value } = bitsToBigInt(bits)
 
         return value
     }
@@ -320,7 +277,7 @@ class Slice {
     public loadUint (size: number): number {
         const bits = this.loadBits(size)
 
-        return Slice.bitsToIntUint(bits, { type: 'uint' })
+        return bitsToIntUint(bits, { type: 'uint' })
     }
 
     /**
@@ -331,7 +288,7 @@ class Slice {
     public preloadUint (size: number): number {
         const bits = this.preloadBits(size)
 
-        return Slice.bitsToIntUint(bits, { type: 'uint' })
+        return bitsToIntUint(bits, { type: 'uint' })
     }
 
     /**
@@ -341,7 +298,7 @@ class Slice {
      */
     public loadBigUint (size: number): bigint {
         const bits = this.loadBits(size)
-        const { value } = Slice.bitsToBigUint(bits)
+        const { value } = bitsToBigUint(bits)
 
         return value
     }
@@ -353,7 +310,7 @@ class Slice {
      */
     public preloadBigUint (size: number): bigint {
         const bits = this.preloadBits(size)
-        const { value } = Slice.bitsToBigUint(bits)
+        const { value } = bitsToBigUint(bits)
 
         return value
     }
@@ -397,7 +354,7 @@ class Slice {
         const sizeBits = sizeBytes * 8
         const bits = this.preloadBits(size + sizeBits).slice(size)
 
-        return Slice.bitsToIntUint(bits, { type: 'int' })
+        return bitsToIntUint(bits, { type: 'int' })
     }
 
     /**
@@ -410,7 +367,7 @@ class Slice {
         const sizeBytes = this.loadUint(size)
         const sizeBits = sizeBytes * 8
         const bits = this.loadBits(sizeBits)
-        const { value } = Slice.bitsToBigInt(bits)
+        const { value } = bitsToBigInt(bits)
 
         return value
     }
@@ -425,7 +382,7 @@ class Slice {
         const sizeBytes = this.preloadUint(size)
         const sizeBits = sizeBytes * 8
         const bits = this.preloadBits(size + sizeBits).slice(size)
-        const { value } = Slice.bitsToBigInt(bits)
+        const { value } = bitsToBigInt(bits)
 
         return value
     }
@@ -469,7 +426,7 @@ class Slice {
         const sizeBits = sizeBytes * 8
         const bits = this.preloadBits(size + sizeBits).slice(size)
 
-        return Slice.bitsToIntUint(bits, { type: 'uint' })
+        return bitsToIntUint(bits, { type: 'uint' })
     }
 
     /**
@@ -482,7 +439,7 @@ class Slice {
         const sizeBytes = this.loadUint(size)
         const sizeBits = sizeBytes * 8
         const bits = this.loadBits(sizeBits)
-        const { value } = Slice.bitsToBigUint(bits)
+        const { value } = bitsToBigUint(bits)
 
         return value
     }
@@ -497,7 +454,7 @@ class Slice {
         const sizeBytes = this.preloadUint(size)
         const sizeBits = sizeBytes * 8
         const bits = this.preloadBits(size + sizeBits).slice(size)
-        const { value } = Slice.bitsToBigUint(bits)
+        const { value } = bitsToBigUint(bits)
 
         return value
     }
@@ -722,7 +679,10 @@ class Slice {
             return null
         }
 
-        return new Cell([ this.loadBit() ], [ this.loadRef() ], false)
+        return new Cell({
+            bits: [ this.loadBit() ],
+            refs: [ this.loadRef() ]
+        })
     }
 
     /**
@@ -737,7 +697,10 @@ class Slice {
             return null
         }
 
-        return new Cell([ this.preloadBit() ], [ this.preloadRef() ], false)
+        return new Cell({
+            bits: [ this.preloadBit() ],
+            refs: [ this.preloadRef() ]
+        })
     }
 
     /**

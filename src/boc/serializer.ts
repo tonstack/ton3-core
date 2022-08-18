@@ -1,15 +1,19 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Bit } from '../types/bit'
-import { Cell } from './cell'
 import { Builder } from './builder'
 import { Slice } from './slice'
+import {
+    Cell,
+    CellType
+} from './cell'
 import {
     hexToBits,
     hexToBytes,
     bytesToUint,
     bytesCompare,
     bitsToBytes,
+    bitsToInt8,
     bytesToBits
 } from '../utils/helpers'
 import {
@@ -57,7 +61,9 @@ interface BuilderNode {
 }
 
 interface CellPointer {
-    cell: Cell
+    cell?: Cell
+    cellType: CellType
+    cellBuilder: Builder
     refIndexes: number[]
 }
 
@@ -216,43 +222,71 @@ const deserializeHeader = (bytes: number[]): BocHeader => {
     return header
 }
 
-const deserializeCell = (bytes: number[], refIndexSize: number): CellData => {
-    const remainder = Array.from(bytes)
-
+const deserializeCell = (remainder: number[], refIndexSize: number): CellData => {
     if (remainder.length < 2) {
         throw new Error('BoC not enough bytes to encode cell descriptors')
     }
 
-    const [ refsDescriptor, bitsDescriptor ] = remainder.splice(0, 2)
+    const [ refsDescriptor ] = remainder.splice(0, 1)
 
-    // Exotic cell are currently unsupported
-    const isExotic = !!(refsDescriptor & 8)
-    const isAugmented = bitsDescriptor % 2 !== 0
-    const refNum = refsDescriptor % 8
-    const size = Math.ceil(bitsDescriptor / 2)
+    const level = refsDescriptor >> 5
+    const totalRefs = refsDescriptor & 7
+    const hasHashes = (refsDescriptor & 16) !== 0
+    const isExotic = (refsDescriptor & 8) !== 0
+    const isAbsent = totalRefs === 7 && hasHashes
 
-    if (remainder.length < size + refIndexSize * refNum) {
+    // For absent cells (i.e., external references), only refs descriptor is present
+    // Currently not implemented
+    if (isAbsent) {
+        throw new Error(`BoC can't deserialize absent cell`)
+    }
+
+    if (totalRefs > 4) {
+        throw new Error(`BoC cell can't has more than 4 refs ${totalRefs}`)
+    }
+
+    const [ bitsDescriptor ] = remainder.splice(0, 1)
+
+    const isAugmented = (bitsDescriptor & 1) !== 0
+    const dataSize = (bitsDescriptor >> 1) + Number(isAugmented)
+    const hashesSize = hasHashes ? (level + 1) * 32 : 0
+    const depthSize = hasHashes ? (level + 1) * 2 : 0
+
+    if (remainder.length < hashesSize + depthSize + dataSize + refIndexSize * totalRefs) {
         throw new Error('BoC not enough bytes to encode cell data')
     }
 
+    if (hasHashes) {
+        remainder.splice(0, hashesSize + depthSize)
+    }
+
     const bits = isAugmented
-        ? rollback(bytesToBits(remainder.splice(0, size)))
-        : bytesToBits(remainder.splice(0, size))
+        ? rollback(bytesToBits(remainder.splice(0, dataSize)))
+        : bytesToBits(remainder.splice(0, dataSize))
 
-    const cell = new Builder(bits.length)
-        .storeBits(bits)
-        .cell(isExotic)
+    if (isExotic && bits.length < 8) {
+        throw new Error('BoC not enough bytes for an exotic cell type')
+    }
 
-    const refIndexes: number[] = []
+    const cellType: CellType = isExotic
+        ? bitsToInt8(bits.slice(0, 8))
+        : CellType.Ordinary
 
-    for (let i = 0; i < refNum; i += 1) {
+    if (isExotic && cellType === CellType.Ordinary) {
+        throw new Error(`BoC an exotic cell can't be of ordinary type ${bitsToInt8(bits.slice(0, 8))}`)
+    }
+
+    const cellBuilder = new Builder(bits.length).storeBits(bits)
+    const pointer: CellPointer = { cellBuilder, cellType, refIndexes: [] }
+
+    for (let i = 0; i < totalRefs; i += 1) {
         const refIndex = bytesToUint(remainder.splice(0, refIndexSize))
 
-        refIndexes.push(refIndex)
+        pointer.refIndexes.push(refIndex)
     }
 
     return {
-        pointer: { cell, refIndexes },
+        pointer,
         remainder
     }
 }
@@ -279,19 +313,19 @@ const deserialize = (data: Uint8Array): Cell[] => {
         .forEach((i) => {
             const pointerIndex = parseInt(i, 10)
             const pointer = pointers[pointerIndex]
-            const builder = new Builder().storeSlice(Slice.parse(pointer.cell))
+            const { cellBuilder, cellType } = pointer
 
             pointer.refIndexes.forEach((refIndex) => {
-                const ref = pointers[refIndex].cell
+                const { cellBuilder: refBuilder, cellType: refType } = pointers[refIndex]
 
                 if (refIndex < pointerIndex) {
                     throw new Error('Topological order is broken')
                 }
 
-                builder.storeRef(ref)
+                cellBuilder.storeRef(refBuilder.cell(refType))
             })
 
-            pointer.cell = builder.cell()
+            pointer.cell = cellBuilder.cell(cellType)
         })
 
     return root_list.reduce((acc, refIndex) => acc.concat([ pointers[refIndex].cell ]), [])
@@ -410,7 +444,10 @@ const breadthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, num
 }
 
 const serializeCell = (cell: Cell, hashmap: Map<string, number>, refIndexSize: number): Bit[] => {
-    const representation = cell.descriptors.concat(cell.augmentedBits)
+    const refsDescriptor = cell.refsDescriptor()
+    const bitsDescriptor = cell.bitsDescriptor()
+    const descriptors = refsDescriptor.concat(bitsDescriptor)
+    const representation = descriptors.concat(cell.augmentedBits)
     const bits = cell.refs.reduce((acc, ref) => {
         const builder = new Builder()
         const refIndex = hashmap.get(ref.hash())
