@@ -47,25 +47,30 @@ class BOC {
      *
      * @static
      * @param {(Uint8Array | string)} data - Bytes, HEX or Base64 of serialized BOC.
+     * @param {boolean} [checkMerkleProofs=false] - Check if BOC must contain Merkle Proofs
      * @return {Cell[]}
      */
-    public static from (data: Uint8Array | string): Cell[] {
+    public static from (data: Uint8Array | string, checkMerkleProofs: boolean = false): Cell[] {
         if (BOC.isBytes(data)) {
-            return deserialize(data as Uint8Array)
+            return deserialize(data as Uint8Array, checkMerkleProofs)
         }
 
         const value = (data as string).trim()
 
         if (BOC.isFift(value)) {
+            if (checkMerkleProofs) {
+                throw new Error('BOC: cheking Merkle Proofs is not currently implemented for fift hex')
+            }
+
             return deserializeFift(value)
         }
 
         if (BOC.isHex(value)) {
-            return deserialize(hexToBytes(value))
+            return deserialize(hexToBytes(value), checkMerkleProofs)
         }
 
         if (BOC.isBase64(value)) {
-            return deserialize(base64ToBytes(value))
+            return deserialize(base64ToBytes(value), checkMerkleProofs)
         }
 
         throw new Error('BOC: can\'t deserialize. Bad data.')
@@ -76,10 +81,11 @@ class BOC {
      *
      * @static
      * @param {(Uint8Array | string)} data - Bytes, HEX or Base64 of serialized BOC.
+     * @param {boolean} [checkMerkleProofs=false] - Check if BOC must contain Merkle Proofs
      * @return {Cell}
      */
-    public static fromStandard (data: Uint8Array | string): Cell {
-        const cells = BOC.from(data)
+    public static fromStandard (data: Uint8Array | string, checkMerkleProofs: boolean = false): Cell {
+        const cells = BOC.from(data, checkMerkleProofs)
 
         if (cells.length !== 1) {
             throw new Error(`BOC: standard BOC consists of only 1 root cell. Got ${cells.length}.`)

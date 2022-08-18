@@ -36,9 +36,9 @@ class Cell {
 
     private mask: Mask
 
-    private hashes: string[]
+    private hashes: string[] = []
 
-    private depths: number[]
+    private depths: number[] = []
 
     constructor (options?: CellOptions) {
         const {
@@ -70,27 +70,27 @@ class Cell {
         return this._type !== CellType.Ordinary
     }
 
-    public refsDescriptor (mask?: Mask): Bit[] {
-        const value = this._refs.length + (Number(this.exotic) * 8) + (mask ? mask.value : this.mask.value * 32)
+    public getRefsDescriptor (mask?: Mask): Bit[] {
+        const value = this._refs.length + (Number(this.exotic) * 8) + ((mask ? mask.value : this.mask.value) * 32)
         const descriptor = Uint8Array.from([ value ])
 
         return bytesToBits(descriptor)
     }
 
-    public bitsDescriptor (): Bit[] {
+    public getBitsDescriptor (): Bit[] {
         const value = Math.ceil(this._bits.length / 8) + Math.floor(this._bits.length / 8)
         const descriptor = Uint8Array.from([ value ])
 
         return bytesToBits(descriptor)
     }
 
-    public depthDescriptor (depth: number): Bit[] {
+    public getDepthDescriptor (depth: number): Bit[] {
         const descriptor = Uint8Array.from([ Math.floor(depth / 256), depth % 256 ])
 
         return bytesToBits(descriptor)
     }
 
-    public get augmentedBits (): Bit[] {
+    public getAugmentedBits (): Bit[] {
         return augment(this._bits)
     }
 
@@ -106,7 +106,8 @@ class Cell {
         return output.join('')
     }
 
-    public hash (level: number = 0): string {
+    // Top-level hash by default
+    public hash (level: number = 3): string {
         if (this.type !== CellType.PrunedBranch) {
             return this.hashes[this.mask.apply(level).hashIndex]
         }
@@ -120,7 +121,8 @@ class Cell {
             : this.hashes[0]
     }
 
-    public depth (level: number = 0): number {
+    // Top-level depth by default
+    public depth (level: number = 3): number {
         if (this.type !== CellType.PrunedBranch) {
             return this.depths[this.mask.apply(level).hashIndex]
         }
@@ -135,8 +137,8 @@ class Cell {
     }
 
     private validatePrunedBranch (): void {
-        if (this._refs.length !== 0) throw new Error("Pruned Branch cell can't has refs")
-        if (this._bits.length < 16) throw new Error("Pruned Branch cell can't has less than 16 bits")
+        if (this._refs.length !== 0) throw new Error('Pruned Branch cell can\'t has refs')
+        if (this._bits.length < 16) throw new Error('Pruned Branch cell can\'t has less than 16 bits')
         if (this.mask.level < 1 || this.mask.level > 3) {
             throw new Error('Pruned Branch has an invalid level')
         }
@@ -232,11 +234,11 @@ class Cell {
                 this.validateLibraryReference()
                 break
             case CellType.MerkleProof:
-                this.mask = new Mask(this._refs[0].mask.value << 1)
+                this.mask = new Mask(this._refs[0].mask.value >> 1)
                 this.validateMerkleProof()
                 break
             case CellType.MerkleUpdate:
-                this.mask = new Mask((this._refs[0].mask.value | this._refs[1].mask.value) << 1)
+                this.mask = new Mask((this._refs[0].mask.value | this._refs[1].mask.value) >> 1)
                 this.validateMerkleUpdate()
                 break
             default:
@@ -244,62 +246,58 @@ class Cell {
         }
 
         const isMerkle = [ CellType.MerkleProof, CellType.MerkleUpdate ].includes(this.type)
-        const totalHashes = this.mask.hashCount
-        const hashCount = this.type === CellType.PrunedBranch ? 1 : totalHashes
-        const hashIndexOffset = totalHashes - hashCount
-
-        this.hashes = []
-        this.depths = []
+        const isPrunedBranch = this.type === CellType.PrunedBranch
+        const hashCount = isPrunedBranch ? 1 : this.mask.hashCount
+        const hashIndexOffset = this.mask.hashCount - hashCount
 
         for (let levelIndex = 0, hashIndex = 0; levelIndex <= this.mask.level; levelIndex++) {
-            if (!this.mask.isSignificant(levelIndex)) {
-                continue
-            }
-
+            if (!this.mask.isSignificant(levelIndex)) continue
             if (hashIndex < hashIndexOffset) {
                 hashIndex++
 
                 continue
             }
 
-            const refsDescriptor = this.refsDescriptor(this.mask.apply(levelIndex))
-            const bitsDescriptor = this.bitsDescriptor()
-            const descriptors = refsDescriptor.concat(bitsDescriptor)
+            if (
+                (hashIndex === hashIndexOffset && levelIndex !== 0 && !isPrunedBranch)
+                || (hashIndex !== hashIndexOffset && levelIndex === 0 && isPrunedBranch)
+            ) {
+                throw new Error('Can\'t deserialize cell')
+            }
+
+            const level = levelIndex + Number(isMerkle)
             const bits = hashIndex !== hashIndexOffset
                 ? hexToBits(this.hashes[hashIndex - hashIndexOffset - 1])
-                : this.augmentedBits
+                : this.getAugmentedBits()
 
-            let representation = descriptors.concat(bits)
+            let representation = [].concat(
+                this.getRefsDescriptor(this.mask.apply(levelIndex)),
+                this.getBitsDescriptor(),
+                bits
+            )
 
             const destIndex = hashIndex - hashIndexOffset
             let depth = 0
 
             this.refs.forEach((ref) => {
-                const level = levelIndex + Number(isMerkle)
-                const childDepth = ref.depth(level)
+                const refDepth = ref.depth(level)
 
-                representation = representation.concat(this.depthDescriptor(childDepth))
+                representation = representation.concat(this.getDepthDescriptor(refDepth))
 
-                depth = Math.max(depth, childDepth)
+                depth = Math.max(depth, refDepth)
             })
 
-            if (this.refs.length) {
-                if (depth > 1024) {
-                    throw new Error('Depth is too big')
-                }
-
-                depth++
+            if (this.refs.length && depth >= 1024) {
+                throw new Error('Depth is too big')
             }
 
-            this.depths[destIndex] = depth
-
             this.refs.forEach((ref) => {
-                const level = levelIndex + Number(isMerkle)
-                const childHash = ref.hash(level)
+                const refHash = ref.hash(level)
 
-                representation = representation.concat(hexToBits(childHash))
+                representation = representation.concat(hexToBits(refHash))
             })
 
+            this.depths[destIndex] = this.refs.length ? depth + 1 : depth
             this.hashes[destIndex] = sha256(bitsToBytes(representation))
 
             hashIndex++

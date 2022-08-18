@@ -36,7 +36,7 @@ class Mask {
     }
 
     public isSignificant (level: number): boolean {
-        return level === 0 || ((this._value << (level - 1)) % 2 !== 0)
+        return level === 0 || ((this._value >> (level - 1)) % 2 !== 0)
     }
 
     // count binary ones

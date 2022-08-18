@@ -291,7 +291,8 @@ const deserializeCell = (remainder: number[], refIndexSize: number): CellData =>
     }
 }
 
-const deserialize = (data: Uint8Array): Cell[] => {
+const deserialize = (data: Uint8Array, checkMerkleProofs: boolean): Cell[] => {
+    let hasMerkleProofs = false
     const bytes = Array.from(data)
     const pointers: CellPointer[] = []
     const {
@@ -322,11 +323,24 @@ const deserialize = (data: Uint8Array): Cell[] => {
                     throw new Error('Topological order is broken')
                 }
 
+                if (refType === CellType.MerkleProof || refType === CellType.MerkleUpdate) {
+                    hasMerkleProofs = true
+                }
+
                 cellBuilder.storeRef(refBuilder.cell(refType))
             })
 
+            // TODO: check if Merkle Proofs can be only on significant level
+            if (cellType === CellType.MerkleProof || cellType === CellType.MerkleUpdate) {
+                hasMerkleProofs = true
+            }
+
             pointer.cell = cellBuilder.cell(cellType)
         })
+
+    if (checkMerkleProofs && !hasMerkleProofs) {
+        throw new Error('BOC does not contain Merkle Proofs')
+    }
 
     return root_list.reduce((acc, refIndex) => acc.concat([ pointers[refIndex].cell ]), [])
 }
@@ -444,10 +458,8 @@ const breadthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, num
 }
 
 const serializeCell = (cell: Cell, hashmap: Map<string, number>, refIndexSize: number): Bit[] => {
-    const refsDescriptor = cell.refsDescriptor()
-    const bitsDescriptor = cell.bitsDescriptor()
-    const representation = refsDescriptor.concat(bitsDescriptor, cell.augmentedBits)
-    const bits = cell.refs.reduce((acc, ref) => {
+    const representation = [].concat(cell.getRefsDescriptor(), cell.getBitsDescriptor(), cell.getAugmentedBits())
+    const serialized = cell.refs.reduce((acc, ref) => {
         const refIndex = hashmap.get(ref.hash())
         const bits = [ ...Array(refIndexSize) ]
             .map((_el, i) => Number(((refIndex >> i) & 1) === 1) as Bit)
@@ -456,7 +468,7 @@ const serializeCell = (cell: Cell, hashmap: Map<string, number>, refIndexSize: n
         return acc.concat(bits)
     }, representation)
 
-    return bits
+    return serialized
 }
 
 const serialize = (root: Cell[], options: BOCOptions = {}): Uint8Array => {
