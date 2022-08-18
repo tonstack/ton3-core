@@ -1,5 +1,5 @@
 export { Bit } from './types/bit'
-export { BOC, Cell, Slice, Builder, Hashmap, HashmapE } from './boc'
+export { BOC, Cell, CellType, Slice, Builder, Hashmap, HashmapE } from './boc'
 export { Mnemonic } from './crypto/mnemonic'
 export { Address } from './address'
 export { Coins } from './coins'

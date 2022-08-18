@@ -1,6 +1,9 @@
 import { Builder } from './builder'
 import { Slice } from './slice'
-import { Cell } from './cell'
+import {
+    Cell,
+    CellType
+} from './cell'
 import {
     Hashmap,
     HashmapE
@@ -202,6 +205,7 @@ class BOC {
 export {
     BOC,
     Cell,
+    CellType,
     Hashmap,
     HashmapE,
     Slice,

@@ -85,6 +85,8 @@ const deserializeFift = (data: string): Cell[] => {
     }
 
     const parseFiftHex = (fift: string): Bit[] => {
+        if (fift === '_') return []
+
         const bits = fift
             .split('')
             .map(el => (el === '_' ? el : hexToBits(el).join('')))
@@ -94,6 +96,10 @@ const deserializeFift = (data: string): Cell[] => {
             .map(b => parseInt(b, 10) as Bit)
 
         return bits
+    }
+
+    if (matches.length === 1) {
+        return [ new Cell({ bits: parseFiftHex(matches[0][3]) }) ]
     }
 
     const isLastNested = (stack: BuilderNode[], indent: number): boolean => {

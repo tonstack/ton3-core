@@ -130,6 +130,20 @@ class Builder {
     }
 
     /**
+     * Add multiple cells to instance refs.
+     *
+     * @param {Cell[]} refs - Array of {@link Cell} to reference.
+     *
+     * @returns {this}
+     */
+    public storeRefs (refs: Cell[]): this {
+        this.checkRefsOverflow(refs.length)
+        this._refs.push(...refs)
+
+        return this
+    }
+
+    /**
      * Store one bit in instance.
      *
      * @param {(Bit | number)} bit - 1 or 0.
