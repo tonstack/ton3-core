@@ -12,6 +12,11 @@ import {
     stringToBytes
 } from '../utils/helpers'
 
+/**
+ * Cell Builder
+ *
+ * @class Builder
+ */
 class Builder {
     private _size: number
 

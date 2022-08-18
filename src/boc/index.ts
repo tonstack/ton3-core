@@ -21,6 +21,11 @@ import {
     BOCOptions
 } from './serializer'
 
+/**
+ * Bag Of Cells
+ *
+ * @class BOC
+ */
 class BOC {
     private static isHex (data: any): boolean {
         const re = /^[a-fA-F0-9]+$/

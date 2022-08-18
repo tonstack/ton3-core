@@ -136,6 +136,10 @@ class Cell {
             : this.depths[0]
     }
 
+    public eq (cell: Cell): boolean {
+        return this.hash() === cell.hash()
+    }
+
     private validatePrunedBranch (): void {
         if (this._refs.length !== 0) throw new Error('Pruned Branch cell can\'t has refs')
         if (this._bits.length < 16) throw new Error('Pruned Branch cell can\'t has less than 16 bits')

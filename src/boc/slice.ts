@@ -14,6 +14,11 @@ import {
     bitsToBigInt
 } from '../utils/numbers'
 
+/**
+ * Cell Slice
+ *
+ * @class Slice
+ */
 class Slice {
     private _bits: Bit[]
 

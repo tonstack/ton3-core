@@ -9,7 +9,20 @@ describe('Cell', () => {
 
             expect(cell.bits).to.eql([])
             expect(cell.refs).to.eql([])
-            expect(cell.type).to.eql(CellType.Ordinary)
+            expect(cell.type).to.eq(CellType.Ordinary)
+        })
+    })
+
+    describe('#eq()', () => {
+        it('should check hash equality', () => {
+            const cell1 = new Cell({ bits: [ 1, 0, 1 ] })
+            const cell2 = new Cell({ bits: [ 1, 0, 1 ] })
+            const cell3 = new Cell({ refs: [ cell1 ] })
+            const cell4 = new Cell({ refs: [ cell2 ] })
+
+            expect(cell1.eq(cell2)).to.eq(true)
+            expect(cell1.eq(cell3)).to.eq(false)
+            expect(cell3.eq(cell4)).to.eq(true)
         })
     })
 
