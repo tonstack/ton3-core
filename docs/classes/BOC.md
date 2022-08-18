@@ -2,6 +2,8 @@
 
 # Class: BOC
 
+Bag Of Cells
+
 ## Table of contents
 
 ### Constructors
@@ -31,7 +33,7 @@
 
 ### from
 
-▸ `Static` **from**(`data`): [`Cell`](Cell.md)[]
+▸ `Static` **from**(`data`, `checkMerkleProofs?`): [`Cell`](Cell.md)[]
 
 Returns deserialized BOC root cells.
 
@@ -39,9 +41,10 @@ Returns deserialized BOC root cells.
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `data` | `string` \| `Uint8Array` | Bytes, HEX or Base64 of serialized BOC. |
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `data` | `string` \| `Uint8Array` | `undefined` | Bytes, HEX or Base64 of serialized BOC. |
+| `checkMerkleProofs` | `boolean` | `false` | - |
 
 #### Returns
 
@@ -51,7 +54,7 @@ ___
 
 ### fromStandard
 
-▸ `Static` **fromStandard**(`data`): [`Cell`](Cell.md)
+▸ `Static` **fromStandard**(`data`, `checkMerkleProofs?`): [`Cell`](Cell.md)
 
 Returns deserialized standard BOC root cell.
 
@@ -59,9 +62,10 @@ Returns deserialized standard BOC root cell.
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `data` | `string` \| `Uint8Array` | Bytes, HEX or Base64 of serialized BOC. |
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `data` | `string` \| `Uint8Array` | `undefined` | Bytes, HEX or Base64 of serialized BOC. |
+| `checkMerkleProofs` | `boolean` | `false` | - |
 
 #### Returns
 

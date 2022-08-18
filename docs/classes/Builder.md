@@ -2,6 +2,8 @@
 
 # Class: Builder
 
+Cell Builder
+
 ## Table of contents
 
 ### Constructors
@@ -20,6 +22,7 @@
 
 - [storeSlice](Builder.md#storeslice)
 - [storeRef](Builder.md#storeref)
+- [storeRefs](Builder.md#storerefs)
 - [storeBit](Builder.md#storebit)
 - [storeBits](Builder.md#storebits)
 - [storeInt](Builder.md#storeint)
@@ -147,6 +150,24 @@ Add cell to instance refs.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `ref` | [`Cell`](Cell.md) | [Cell](Cell.md) to reference. |
+
+#### Returns
+
+[`Builder`](Builder.md)
+
+___
+
+### storeRefs
+
+▸ **storeRefs**(`refs`): [`Builder`](Builder.md)
+
+Add multiple cells to instance refs.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `refs` | [`Cell`](Cell.md)[] | Array of [Cell](Cell.md) to reference. |
 
 #### Returns
 
@@ -366,7 +387,7 @@ ___
 
 ### cell
 
-▸ **cell**(`isExotic?`): [`Cell`](Cell.md)
+▸ **cell**(`type?`): [`Cell`](Cell.md)
 
 Returns builded [Cell](Cell.md).
 
@@ -384,7 +405,7 @@ const cell = new Builder(bits.length)
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
-| `isExotic` | `boolean` | `false` |
+| `type` | [`CellType`](../enums/CellType.md) | `CellType.Ordinary` |
 
 #### Returns
 

@@ -338,4 +338,8 @@ class Address {
     }
 }
 
-export { Address }
+export {
+    Address,
+    AddressRewriteOptions,
+    AddressStringifyOptions
+}

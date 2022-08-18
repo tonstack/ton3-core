@@ -8,9 +8,8 @@
 
 - [bits](Cell.md#bits)
 - [refs](Cell.md#refs)
+- [type](Cell.md#type)
 - [exotic](Cell.md#exotic)
-- [descriptors](Cell.md#descriptors)
-- [augmentedBits](Cell.md#augmentedbits)
 
 ### Constructors
 
@@ -18,8 +17,14 @@
 
 ### Methods
 
-- [hash](Cell.md#hash)
+- [getRefsDescriptor](Cell.md#getrefsdescriptor)
+- [getBitsDescriptor](Cell.md#getbitsdescriptor)
+- [getDepthDescriptor](Cell.md#getdepthdescriptor)
+- [getAugmentedBits](Cell.md#getaugmentedbits)
 - [print](Cell.md#print)
+- [hash](Cell.md#hash)
+- [depth](Cell.md#depth)
+- [eq](Cell.md#eq)
 
 ## Accessors
 
@@ -43,6 +48,16 @@ ___
 
 ___
 
+### type
+
+• `get` **type**(): [`CellType`](../enums/CellType.md)
+
+#### Returns
+
+[`CellType`](../enums/CellType.md)
+
+___
+
 ### exotic
 
 • `get` **exotic**(): `boolean`
@@ -51,49 +66,69 @@ ___
 
 `boolean`
 
-___
-
-### descriptors
-
-• `get` **descriptors**(): [`Bit`](../README.md#bit)[]
-
-#### Returns
-
-[`Bit`](../README.md#bit)[]
-
-___
-
-### augmentedBits
-
-• `get` **augmentedBits**(): [`Bit`](../README.md#bit)[]
-
-#### Returns
-
-[`Bit`](../README.md#bit)[]
-
 ## Constructors
 
 ### constructor
 
-• **new Cell**(`bits?`, `refs?`, `exotic?`)
+• **new Cell**(`options?`)
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `bits` | [`Bit`](../README.md#bit)[] | `[]` |
-| `refs` | [`Cell`](Cell.md)[] | `[]` |
-| `exotic` | `boolean` | `false` |
+| Name | Type |
+| :------ | :------ |
+| `options?` | [`CellOptions`](../interfaces/CellOptions.md) |
 
 ## Methods
 
-### hash
+### getRefsDescriptor
 
-▸ **hash**(): `string`
+▸ **getRefsDescriptor**(`mask?`): [`Bit`](../README.md#bit)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `mask?` | [`Mask`](Mask.md) |
 
 #### Returns
 
-`string`
+[`Bit`](../README.md#bit)[]
+
+___
+
+### getBitsDescriptor
+
+▸ **getBitsDescriptor**(): [`Bit`](../README.md#bit)[]
+
+#### Returns
+
+[`Bit`](../README.md#bit)[]
+
+___
+
+### getDepthDescriptor
+
+▸ **getDepthDescriptor**(`depth`): [`Bit`](../README.md#bit)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `depth` | `number` |
+
+#### Returns
+
+[`Bit`](../README.md#bit)[]
+
+___
+
+### getAugmentedBits
+
+▸ **getAugmentedBits**(): [`Bit`](../README.md#bit)[]
+
+#### Returns
+
+[`Bit`](../README.md#bit)[]
 
 ___
 
@@ -105,8 +140,56 @@ ___
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
-| `indent` | `string` | `''` |
+| `indent` | `number` | `0` |
 
 #### Returns
 
 `string`
+
+___
+
+### hash
+
+▸ **hash**(`level?`): `string`
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `level` | `number` | `3` |
+
+#### Returns
+
+`string`
+
+___
+
+### depth
+
+▸ **depth**(`level?`): `number`
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `level` | `number` | `3` |
+
+#### Returns
+
+`number`
+
+___
+
+### eq
+
+▸ **eq**(`cell`): `boolean`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `cell` | [`Cell`](Cell.md) |
+
+#### Returns
+
+`boolean`

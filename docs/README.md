@@ -9,6 +9,17 @@ ton3-core
 - [AddressType](README.md#addresstype)
 - [Bit](README.md#bit)
 
+### Interfaces
+
+- [AddressRewriteOptions](interfaces/AddressRewriteOptions.md)
+- [AddressStringifyOptions](interfaces/AddressStringifyOptions.md)
+- [CellOptions](interfaces/CellOptions.md)
+- [HashmapOptions](interfaces/HashmapOptions.md)
+- [BOCOptions](interfaces/BOCOptions.md)
+- [CoinsOptions](interfaces/CoinsOptions.md)
+- [StateInitOptions](interfaces/StateInitOptions.md)
+- [KeyPair](interfaces/KeyPair.md)
+
 ### Classes
 
 - [Address](classes/Address.md)
@@ -17,6 +28,7 @@ ton3-core
 - [Hashmap](classes/Hashmap.md)
 - [HashmapE](classes/HashmapE.md)
 - [BOC](classes/BOC.md)
+- [Mask](classes/Mask.md)
 - [Slice](classes/Slice.md)
 - [Coins](classes/Coins.md)
 - [ContractBase](classes/ContractBase.md)
@@ -24,13 +36,9 @@ ton3-core
 - [MessageExternalIn](classes/MessageExternalIn.md)
 - [Mnemonic](classes/Mnemonic.md)
 
-### Interfaces
+### Enumerations
 
-- [HashmapOptions](interfaces/HashmapOptions.md)
-- [BOCOptions](interfaces/BOCOptions.md)
-- [CoinsOptions](interfaces/CoinsOptions.md)
-- [StateInitOptions](interfaces/StateInitOptions.md)
-- [KeyPair](interfaces/KeyPair.md)
+- [CellType](enums/CellType.md)
 
 ### Functions
 
@@ -56,12 +64,16 @@ ton3-core
 - [bitsToHex](README.md#bitstohex)
 - [bitsToBytes](README.md#bitstobytes)
 - [bitsToInt8](README.md#bitstoint8)
+- [bitsToUint8](README.md#bitstouint8)
 - [bytesToHex](README.md#bytestohex)
 - [bytesToString](README.md#bytestostring)
 - [stringToBytes](README.md#stringtobytes)
 - [bytesToBase64](README.md#bytestobase64)
 - [base64ToBytes](README.md#base64tobytes)
 - [sliceIntoChunks](README.md#sliceintochunks)
+- [bitsToBigUint](README.md#bitstobiguint)
+- [bitsToBigInt](README.md#bitstobigint)
+- [bitsToIntUint](README.md#bitstointuint)
 
 ## Type aliases
 
@@ -95,13 +107,14 @@ ___
 
 ### deserialize
 
-▸ **deserialize**(`data`): [`Cell`](classes/Cell.md)[]
+▸ **deserialize**(`data`, `checkMerkleProofs`): [`Cell`](classes/Cell.md)[]
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `data` | `Uint8Array` |
+| `checkMerkleProofs` | `boolean` |
 
 #### Returns
 
@@ -438,6 +451,22 @@ ___
 
 ___
 
+### bitsToUint8
+
+▸ **bitsToUint8**(`bits`): `number`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `bits` | [`Bit`](README.md#bit)[] |
+
+#### Returns
+
+`number`
+
+___
+
 ### bytesToHex
 
 ▸ **bytesToHex**(`bytes`): `string`
@@ -532,3 +561,63 @@ ___
 #### Returns
 
 `any`[]
+
+___
+
+### bitsToBigUint
+
+▸ **bitsToBigUint**(`bits`): `Object`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `bits` | [`Bit`](README.md#bit)[] |
+
+#### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `bigint` |
+| `isSafe` | `boolean` |
+
+___
+
+### bitsToBigInt
+
+▸ **bitsToBigInt**(`bits`): `Object`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `bits` | [`Bit`](README.md#bit)[] |
+
+#### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `bigint` |
+| `isSafe` | `boolean` |
+
+___
+
+### bitsToIntUint
+
+▸ **bitsToIntUint**(`bits`, `options`): `number`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `bits` | [`Bit`](README.md#bit)[] |
+| `options` | `Object` |
+| `options.type` | ``"int"`` \| ``"uint"`` |
+
+#### Returns
+
+`number`

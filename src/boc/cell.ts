@@ -311,5 +311,6 @@ class Cell {
 
 export {
     Cell,
-    CellType
+    CellType,
+    CellOptions
 }

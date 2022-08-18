@@ -2,6 +2,8 @@
 
 # Class: Slice
 
+Cell Slice
+
 ## Table of contents
 
 ### Accessors
@@ -248,11 +250,11 @@ import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 
-builder.storeUint(-14, 15)
+builder.storeInt(-14, 15)
 
 const slice = Slice.parse(builder.cell())
 
-console.log(slice.loadUint(15)) // -14
+console.log(slice.loadInt(15)) // -14
 ```
 
 #### Parameters
