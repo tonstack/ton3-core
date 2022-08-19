@@ -4,7 +4,7 @@
     "excludeProtected": true,
     "excludeInternal": true,
     "disableSources": true,
-    "sort": ["source-order", "alphabetical"],
+    "sort": ["source-order", "instance-first"],
     "readme": "none",
     "theme": "markdown",
     "plugin": ["typedoc-plugin-merge-modules", "typedoc-plugin-markdown"],

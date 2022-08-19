@@ -17,6 +17,10 @@
 
 ## Table of contents
 
+### Constructors
+
+- [constructor](Hashmap.md#constructor)
+
 ### Methods
 
 - [[iterator]](Hashmap.md#[iterator])
@@ -34,9 +38,25 @@
 - [cell](Hashmap.md#cell)
 - [parse](Hashmap.md#parse)
 
-### Constructors
+## Constructors
 
-- [constructor](Hashmap.md#constructor)
+### constructor
+
+• **new Hashmap**<`K`, `V`\>(`keySize`, `options?`)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `K` | [`Bit`](../README.md#bit)[] |
+| `V` | [`Cell`](Cell.md) |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `keySize` | `number` |
+| `options?` | [`HashmapOptions`](../interfaces/HashmapOptions.md)<`K`, `V`\> |
 
 ## Methods
 
@@ -258,23 +278,3 @@ ___
 #### Returns
 
 [`Hashmap`](Hashmap.md)<`K`, `V`\>
-
-## Constructors
-
-### constructor
-
-• **new Hashmap**<`K`, `V`\>(`keySize`, `options?`)
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `K` | [`Bit`](../README.md#bit)[] |
-| `V` | [`Cell`](Cell.md) |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `keySize` | `number` |
-| `options?` | [`HashmapOptions`](../interfaces/HashmapOptions.md)<`K`, `V`\> |
