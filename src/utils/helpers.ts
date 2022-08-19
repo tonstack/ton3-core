@@ -133,6 +133,7 @@ const sliceIntoChunks = (arr: any[], chunkSize: number): any[] => {
 }
 
 export {
+    isNodeEnv,
     uint8toInt8,
     int8ToUint8,
     uintToHex,

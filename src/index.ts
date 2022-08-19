@@ -1,6 +1,6 @@
 export { Bit } from './types/bit'
 export { BOC, BOCOptions, Cell, CellType, CellOptions, Slice, Builder, Hashmap, HashmapE } from './boc'
-export { Mnemonic } from './crypto/mnemonic'
+export { Mnemonic, MnemonicOptions, MnemonicBIP39, KeyPair } from './crypto'
 export { Address, AddressRewriteOptions, AddressStringifyOptions } from './address'
 export { Coins } from './coins'
 export * as Utils from './utils'
