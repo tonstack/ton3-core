@@ -25,11 +25,19 @@ interface AddressData extends AddressTag {
     hash: Uint8Array
 }
 
-interface AddressOptions {
-    urlSafe?: boolean
+interface AddressRewriteOptions {
     workchain?: number
     bounceable?: boolean
     testOnly?: boolean
+}
+
+interface AddressStringifyOptions extends AddressRewriteOptions {
+    urlSafe?: boolean
+}
+
+interface AddressParseOptions extends AddressRewriteOptions {
+    hash: Uint8Array
+    workchain: number
 }
 
 /**
@@ -55,6 +63,7 @@ class Address {
      * - Address
      *
      * @param {(string | Address | Uint8Array)} address
+     * @param {AddressRewriteOptions} [options] - Rewrite original address workchain and flags 
      *
      * @example
      * ```ts
@@ -68,7 +77,7 @@ class Address {
      * new Address(address)
      * ```
      */
-    constructor (address: string | Address) {
+    constructor (address: string | Address, options?: AddressRewriteOptions) {
         const isAddress = Address.isAddress(address)
         const isEncoded = Address.isEncoded(address)
         const isRaw = Address.isRaw(address)
@@ -97,10 +106,16 @@ class Address {
             throw new Error('Address: can\'t parse address. Unknown type.')
         }
 
+        const {
+            workchain = result.workchain,
+            bounceable = result.bounceable,
+            testOnly = result.testOnly
+        } = options || {}
+
         this._hash = result.hash
-        this._workchain = result.workchain
-        this._bounceable = result.bounceable
-        this._testOnly = result.testOnly
+        this._workchain = workchain
+        this._bounceable = bounceable
+        this._testOnly = testOnly
     }
 
     public get hash (): Uint8Array {
@@ -212,10 +227,32 @@ class Address {
     }
 
     /**
+     * Compare instances of {@link Address} for hash and workchain equality
+     *
+     * @param {Address} address - Instance of another {@link Address}
+     *
+     * @example
+     * ```ts
+     * import { Address } from 'ton3-core'
+     *
+     * const address1 = new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+     * const address2 = new Address('kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny')
+     *
+     * console.log(address1.eq(address2))
+     * // true
+     * ```
+     *
+     * @returns {boolean}
+     */
+    public eq (address: Address): boolean {
+        return address === this || (bytesCompare(this._hash, address.hash) && this._workchain === address.workchain)
+    }
+
+    /**
      * Get raw or base64 representation of {@link Address}
      *
      * @param {AddressType} [type="base64"] - Can be "base64" or "raw"
-     * @param {AddressOptions} [options] - Url-safe representation (only works for base64), flags, workchain setup.
+     * @param {AddressStringifyOptions} [options] - Url-safe representation (only works for base64), flags, workchain setup.
      *
      * @example
      * ```ts
@@ -238,7 +275,7 @@ class Address {
      *
      * @returns {string}
      */
-    public toString (type: AddressType = 'base64', options?: AddressOptions): string {
+    public toString (type: AddressType = 'base64', options?: AddressStringifyOptions): string {
         const {
             workchain = this.workchain,
             bounceable = this.bounceable,
@@ -301,4 +338,8 @@ class Address {
     }
 }
 
-export { Address }
+export {
+    Address,
+    AddressRewriteOptions,
+    AddressStringifyOptions
+}

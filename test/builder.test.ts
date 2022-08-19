@@ -169,6 +169,32 @@ describe('Builder', () => {
         })
     })
 
+    describe('#storeRefs()', () => {
+        it('should store refs', () => {
+            const ref1 = new Builder().storeBit(1).cell()
+            const ref2 = new Builder().storeBit(0).cell()
+            const result = builder.storeRefs([ ref1, ref2 ])
+
+            expect(result.refs.length).to.eq(2)
+            expect(result.refs[0].bits.length).to.eq(1)
+            expect(result.refs[1].bits.length).to.eq(1)
+            expect(result.refs[0].bits[0]).to.eq(1)
+            expect(result.refs[1].bits[0]).to.eq(0)
+        })
+
+        it('should throw error on overflow', () => {
+            const ref1 = new Builder().storeBit(1).cell()
+            const ref2 = new Builder().storeBit(0).cell()
+            const ref3 = new Builder().storeBit(1).cell()
+            const ref4 = new Builder().storeBit(0).cell()
+            const ref5 = new Builder().storeBit(1).cell()
+
+            const result = () => builder.storeRefs([ ref1, ref2, ref3, ref4, ref5 ])
+
+            expect(result).to.throw('Builder: refs overflow. Can\'t add 5 refs. Only 4 refs left.')
+        })
+    })
+
     describe('#storeBit()', () => {
         it('should store bit', () => {
             const result = builder.storeBit(1)

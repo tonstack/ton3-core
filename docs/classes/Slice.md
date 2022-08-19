@@ -2,6 +2,8 @@
 
 # Class: Slice
 
+Cell Slice
+
 ## Table of contents
 
 ### Accessors
@@ -248,11 +250,11 @@ import { Builder, Slice } from 'ton3-core'
 
 const builder = new Builder()
 
-builder.storeUint(-14, 15)
+builder.storeInt(-14, 15)
 
 const slice = Slice.parse(builder.cell())
 
-console.log(slice.loadUint(15)) // -14
+console.log(slice.loadInt(15)) // -14
 ```
 
 #### Parameters
@@ -715,7 +717,7 @@ ___
 
 ### loadCoins
 
-▸ **loadCoins**(): [`Coins`](Coins.md)
+▸ **loadCoins**(`decimals?`): [`Coins`](Coins.md)
 
 Read [Coins](Coins.md) from [Slice](Slice.md)
 
@@ -733,6 +735,12 @@ const slice = Slice.parse(builder.cell())
 console.log(slice.loadCoins().toString()) // '100'
 ```
 
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `decimals` | `number` | `9` |
+
 #### Returns
 
 [`Coins`](Coins.md)
@@ -741,9 +749,15 @@ ___
 
 ### preloadCoins
 
-▸ **preloadCoins**(): [`Coins`](Coins.md)
+▸ **preloadCoins**(`decimals?`): [`Coins`](Coins.md)
 
 Same as .loadCoins() but will not mutate [Slice](Slice.md)
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `decimals` | `number` | `9` |
 
 #### Returns
 

@@ -1,22 +1,21 @@
-import {
-    SHA256,
-    SHA512,
-    enc
-} from 'crypto-js'
+import { sha256 as _sha256 } from '@noble/hashes/sha256'
+import { sha512 as _sha512 } from '@noble/hashes/sha512'
 import { bytesToHex } from './helpers'
 
 const sha256 = (bytes: Uint8Array): string => {
-    const hex = bytesToHex(bytes)
-    const words = enc.Hex.parse(hex)
+    const digest = _sha256.create()
+        .update(bytes)
+        .digest()
 
-    return SHA256(words).toString()
+    return bytesToHex(digest)
 }
 
 const sha512 = (bytes: Uint8Array): string => {
-    const hex = bytesToHex(bytes)
-    const words = enc.Hex.parse(hex)
+    const digest = _sha512.create()
+        .update(bytes)
+        .digest()
 
-    return SHA512(words).toString()
+    return bytesToHex(digest)
 }
 
 export {

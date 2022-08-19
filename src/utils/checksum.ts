@@ -1,19 +1,20 @@
+// CRC16-CCITT
 const crc16 = (data: Uint8Array | number[]): number => {
     const POLY = 0x1021
     const bytes = new Uint8Array(data)
     const result = bytes.reduce((acc, el) => {
         let crc = acc ^ (el << 8)
 
-        new Array(8).fill(0).forEach(() => {
+        for (let i = 0; i < 8; i++) {
             crc = (crc & 0x8000) === 0x8000
                 ? (crc << 1) ^ POLY
                 : crc << 1
-        })
+        }
 
         return crc
-    }, 0)
+    }, 0) & 0xffff
 
-    return (result & 0xffff)
+    return result
 }
 
 // crc16 bytes in big-endian order
@@ -30,17 +31,19 @@ const crc16BytesBe = (data: Uint8Array | number[]): Uint8Array => {
 const crc32c = (data: Uint8Array | number[]): number => {
     const POLY = 0x82f63b78
     const bytes = new Uint8Array(data)
-    const result = [ ...Array(bytes.length) ].reduce((acc, _el, i) => {
-        let crc = i === 0 ? 0xffffffff ^ bytes[i] : acc ^ bytes[i]
+    const int32 = bytes.reduce((acc, el, i) => {
+        let crc = acc ^ el
 
-        new Array(8).fill(0).forEach(() => {
+        for (let i = 0; i < 8; i++) {
             crc = crc & 1 ? (crc >>> 1) ^ POLY : crc >>> 1
-        })
+        }
 
         return crc
-    }, 0)
+    }, 0 ^ 0xffffffff) ^ 0xffffffff
 
-    return result ^ 0xffffffff
+    const [ uint32 ] = new Uint32Array([ int32 ])
+
+    return uint32
 }
 
 // crc32c bytes in little-endian order
@@ -55,6 +58,8 @@ const crc32cBytesLe = (data: Uint8Array | number[]): Uint8Array => {
 }
 
 export {
+    crc16,
+    crc32c,
     crc16BytesBe,
     crc32cBytesLe
 }

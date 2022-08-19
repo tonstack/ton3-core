@@ -247,8 +247,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadInt(64)
             const result2 = () => slice.loadInt(64)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
 
         it('should throw error on loading negative BigInt', () => {
@@ -259,8 +259,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadInt(64)
             const result2 = () => slice.loadInt(64)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
     })
 
@@ -397,8 +397,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadVarInt(16)
             const result2 = () => slice.loadVarInt(16)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
 
         it('should throw error on loading negative variable BigInt', () => {
@@ -409,8 +409,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadVarInt(16)
             const result2 = () => slice.loadVarInt(16)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
     })
 
@@ -521,8 +521,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadUint(64)
             const result2 = () => slice.loadUint(64)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
     })
 
@@ -607,8 +607,8 @@ describe('Slice', () => {
             const result1 = () => slice.preloadVarUint(16)
             const result2 = () => slice.loadVarUint(16)
 
-            expect(result1).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
-            expect(result2).to.throw('Slice: loaded value does not fit max/min safe integer value, use alternative BigInt methods.')
+            expect(result1).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
+            expect(result2).to.throw('loaded value does not fit max/min safe integer value, use alternative BigInt methods')
         })
     })
 
@@ -851,6 +851,20 @@ describe('Slice', () => {
             expect(result2).to.eq(0)
         })
 
+        it('should load Jettons with different decimals', () => {
+            const decimals = 10
+            const jettons = new Coins('100.5', { decimals })
+
+            builder.storeCoins(jettons)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.loadCoins(decimals)
+            const result2 = slice.bits.length
+
+            expect(result1.toString()).to.eql(jettons.toString())
+            expect(result2).to.eq(0)
+        })
+
         it('should preload Coins without splicing bits', () => {
             const coins = new Coins('100.5')
             const size = BigInt(coins.toNano()).toString(16).length
@@ -878,10 +892,25 @@ describe('Slice', () => {
             expect(result2).to.eq(4)
         })
 
+        it('should preload Jettons with different decimals without splicing bits', () => {
+            const decimals = 10
+            const jettons = new Coins('100.5', { decimals })
+            const size = BigInt(jettons.toNano()).toString(16).length
+
+            builder.storeCoins(jettons)
+
+            const slice = Slice.parse(builder.cell())
+            const result1 = slice.preloadCoins(decimals)
+            const result2 = slice.bits.length
+
+            expect(result1.toString()).to.eql(jettons.toString())
+            expect(result2).to.eq(4 + (size * 4))
+        })
+
         it('should throw error on overflow', () => {
             const slice = Slice.parse(builder.cell())
             const result1 = () => slice.loadCoins()
-            const result2 = () => slice.loadCoins()
+            const result2 = () => slice.preloadCoins()
 
             expect(result1).to.throw('Slice: bits overflow.')
             expect(result2).to.throw('Slice: bits overflow.')

@@ -1,13 +1,22 @@
 import Decimal from 'decimal.js'
 
+interface CoinsOptions {
+    isNano?: boolean
+    decimals?: number
+}
+
 class Coins {
-    private value: Decimal
+    protected value: Decimal
+
+    protected decimals: number
+
+    private multiplier: number
 
     /**
      * Creates an instance of {@link Coins}
      *
      * @param {(Coins | bigint | number | string)} value
-     * @param {boolean} [isNano=false] - Is argument value represented in nanocoins
+     * @param {CoinsOptions} [options] - Coins options to configure decimals after comma (0-18) and if value preserved as nanocoins
      *
      * @example
      * ```ts
@@ -19,40 +28,52 @@ class Coins {
      * new Coins(BigInt('100'))
      * new Coins(100)
      * new Coins('100')
+     * new Coins('100000', { isNano: true, decimals: 3 })
      * ```
      */
-    constructor (value: Coins | bigint | number | string, isNano: boolean = false) {
+    constructor (value: Coins | bigint | number | string, options?: CoinsOptions) {
+        const { isNano = false, decimals = 9 } = options || {}
+
         Coins.checkCoinsType(value)
+        Coins.checkCoinsDecimals(decimals)
 
-        const nano = !isNano
-            ? new Decimal(value.toString()).mul(1e9)
-            : new Decimal(value.toString())
+        const decimal = new Decimal(value.toString())
 
-        this.value = nano
+        if (decimal.dp() > decimals) {
+            throw new Error(`Invalid Coins value, decimals places "${decimal.dp()}" can't be greater than selected "${decimals}"`)
+        }
+
+        this.decimals = decimals
+        this.multiplier = (1 * 10) ** this.decimals
+        this.value = !isNano
+            ? decimal.mul(this.multiplier)
+            : decimal
     }
 
     /**
      * Add value to instance value
      *
-     * @param {(Coins | bigint | number | string)} value
+     * @param {Coins} coins
      *
      * @example
      * ```ts
      * import { Coins } from 'ton3-core'
      *
-     * const coins = new Coins('10').add(9)
+     * const coinsA = new Coins('10')
+     * const coinsB = new Coins('9')
+     * 
+     * coinsA.add(coinsB)
      *
-     * console.log(coins.toString()) // '19'
+     * console.log(coinsA.toString()) // '19'
      * ```
      *
-     * @return {Coins} - Current instance reference
+     * @return {this} - Current instance reference
      */
-    public add (value: Coins | bigint | number | string): Coins {
-        Coins.checkCoinsType(value)
+    public add (coins: Coins): this {
+        Coins.checkCoins(coins)
+        Coins.compareCoinsDecimals(this, coins)
 
-        const nano = new Decimal(value.toString()).mul(1e9)
-
-        this.value = this.value.add(nano)
+        this.value = this.value.add(coins.value)
 
         return this
     }
@@ -60,7 +81,7 @@ class Coins {
     /**
      * Subtract value from instance value
      *
-     * @param {(Coins | bigint | number | string)} value
+     * @param {Coins} coins
      *
      * @example
      * ```ts
@@ -71,14 +92,13 @@ class Coins {
      * console.log(coins.toString()) // '1'
      * ```
      *
-     * @return {Coins} - Current instance reference
+     * @return {this} - Current instance reference
      */
-    public sub (value: Coins | bigint | number | string): Coins {
-        Coins.checkCoinsType(value)
+    public sub (coins: Coins): this {
+        Coins.checkCoins(coins)
+        Coins.compareCoinsDecimals(this, coins)
 
-        const nano = new Decimal(value.toString()).mul(1e9)
-
-        this.value = this.value.sub(nano)
+        this.value = this.value.sub(coins.value)
 
         return this
     }
@@ -86,7 +106,7 @@ class Coins {
     /**
      * Multiplies instance value by value
      *
-     * @param {(Coins | bigint | number | string)} value
+     * @param {(bigint | number | string)} value
      *
      * @example
      * ```ts
@@ -97,10 +117,11 @@ class Coins {
      * console.log(coins.toString()) // '20'
      * ```
      *
-     * @return {Coins} - Current instance reference
+     * @return {this} - Current instance reference
      */
-    public mul (value: Coins | bigint | number | string): Coins {
-        Coins.checkCoinsType(value)
+    public mul (value: bigint | number | string): this {
+        Coins.checkValue(value)
+        Coins.checkConvertability(value)
 
         const multiplier = value.toString()
 
@@ -112,7 +133,7 @@ class Coins {
     /**
      * Divides instance value by value
      *
-     * @param {(Coins | bigint | number | string)} value
+     * @param {(bigint | number | string)} value
      *
      * @example
      * ```ts
@@ -123,12 +144,13 @@ class Coins {
      * console.log(coins.toString()) // '5'
      * ```
      *
-     * @return {Coins} - Current instance reference
+     * @return {this} - Current instance reference
      */
-    public div (value: Coins | bigint | number | string): Coins {
-        Coins.checkCoinsType(value)
+    public div (value: bigint | number | string): this {
+        Coins.checkValue(value)
+        Coins.checkConvertability(value)
 
-        const divider = new Decimal(value.toString())
+        const divider = value.toString()
 
         this.value = this.value.div(divider)
 
@@ -137,6 +159,8 @@ class Coins {
 
     /**
      * Checks if instance value equal another {@link Coins} instance value
+     * 
+     * @param {Coins} coins
      *
      * @example
      * ```ts
@@ -151,16 +175,17 @@ class Coins {
      *
      * @return {boolean}
      */
-    public eq (value: Coins): boolean {
-        Coins.checkCoinsType(value)
+    public eq (coins: Coins): boolean {
+        Coins.checkCoins(coins)
+        Coins.compareCoinsDecimals(this, coins)
 
-        const nano = new Decimal(value.toNano())
-
-        return this.value.eq(nano)
+        return this.value.eq(coins.value)
     }
 
     /**
      * Checks if instance value greater than another {@link Coins} instance value
+     * 
+     * @param {Coins} coins
      *
      * @example
      * ```ts
@@ -175,16 +200,17 @@ class Coins {
      *
      * @return {boolean}
      */
-    public gt (value: Coins): boolean {
-        Coins.checkCoinsType(value)
+    public gt (coins: Coins): boolean {
+        Coins.checkCoins(coins)
+        Coins.compareCoinsDecimals(this, coins)
 
-        const nano = new Decimal(value.toNano())
-
-        return this.value.gt(nano)
+        return this.value.gt(coins.value)
     }
 
     /**
      * Checks if instance value greater than or equal another {@link Coins} instance value
+     * 
+     * @param {Coins} coins
      *
      * @example
      * ```ts
@@ -199,16 +225,17 @@ class Coins {
      *
      * @return {boolean}
      */
-    public gte (value: Coins): boolean {
-        Coins.checkCoinsType(value)
+    public gte (coins: Coins): boolean {
+        Coins.checkCoins(coins)
+        Coins.compareCoinsDecimals(this, coins)
 
-        const nano = new Decimal(value.toNano())
-
-        return this.value.gte(nano)
+        return this.value.gte(coins.value)
     }
 
     /**
      * Checks if instance value lesser than another {@link Coins} instance value
+     * 
+     * @param {Coins} coins
      *
      * @example
      * ```ts
@@ -223,16 +250,17 @@ class Coins {
      *
      * @return {boolean}
      */
-    public lt (value: Coins): boolean {
-        Coins.checkCoinsType(value)
+    public lt (coins: Coins): boolean {
+        Coins.checkCoins(coins)
+        Coins.compareCoinsDecimals(this, coins)
 
-        const nano = new Decimal(value.toNano())
-
-        return this.value.lt(nano)
+        return this.value.lt(coins.value)
     }
 
     /**
      * Checks if instance value lesser than or equal another {@link Coins} instance value
+     * 
+     * @param {Coins} coins
      *
      * @example
      * ```ts
@@ -247,12 +275,11 @@ class Coins {
      *
      * @return {boolean}
      */
-    public lte (value: Coins): boolean {
-        Coins.checkCoinsType(value)
+    public lte (coins: Coins): boolean {
+        Coins.checkCoins(coins)
+        Coins.compareCoinsDecimals(this, coins)
 
-        const nano = new Decimal(value.toNano())
-
-        return this.value.lte(nano)
+        return this.value.lte(coins.value)
     }
 
     /**
@@ -326,10 +353,11 @@ class Coins {
      * @return {string}
      */
     public toString (): string {
-        const value = this.value.div(1e9).toFixed(9)
+        const value = this.value.div(this.multiplier).toFixed(this.decimals)
         // Remove all trailing zeroes
-        const coins = value.replace(/\.0{9}$/, '')
-            .replace(/(\.\d*?[1-9])0+$/, '$1')
+        const re1 = new RegExp(`\\.0{${this.decimals}}$`)
+        const re2 = new RegExp('(\\.[0-9]*?[0-9])0+$')
+        const coins = value.replace(re1, '').replace(re2, '$1')
 
         return coins
     }
@@ -352,17 +380,61 @@ class Coins {
         return this.value.toFixed(0)
     }
 
-    private static checkCoinsType (coins: any): void {
-        if (!Coins.isValid(coins)) {
-            throw new Error('Invalid coins value')
+    private static checkCoinsType (value: any): void {
+        if (Coins.isValid(value) && Coins.isConvertable(value)) return undefined
+        if (Coins.isCoins(value)) return undefined
+
+        throw new Error('Invalid Coins value')
+    }
+
+    private static checkCoinsDecimals (decimals: number): void {
+        if (decimals < 0 || decimals > 18) {
+            throw new Error('Invalid decimals value, must be 0-18')
         }
     }
 
-    private static isValid (coins: any): boolean {
-        return coins instanceof Coins
-            || typeof coins === 'string'
-            || typeof coins === 'number'
-            || typeof coins === 'bigint'
+    private static compareCoinsDecimals (a: Coins, b: Coins): void {
+        if (a.decimals !== b.decimals) {
+            throw new Error("Can't perform mathematical operation of Coins with different decimals")
+        }
+    }
+
+    private static checkValue (value: any): void {
+        if (Coins.isValid(value)) return undefined
+
+        throw new Error('Invalid value')
+    }
+
+    private static checkCoins (value: any): void {
+        if (Coins.isCoins(value)) return undefined
+
+        throw new Error('Invalid value')
+    }
+
+    private static checkConvertability (value: any): void {
+        if (Coins.isConvertable(value)) return undefined
+
+        throw new Error('Invalid value')
+    }
+
+    private static isValid (value: any): boolean {
+        return typeof value === 'string'
+            || typeof value === 'number'
+            || typeof value === 'bigint'
+    }
+
+    private static isCoins (value: any): boolean {
+        return value instanceof Coins
+    }
+
+    private static isConvertable (value: any): boolean {
+        try {
+            new Decimal(value.toString())
+
+            return true
+        } catch (_err) {
+            return false
+        }
     }
 
     /**
@@ -370,23 +442,28 @@ class Coins {
      *
      * @static
      * @param {(bigint | number | string)} value - Value in nanocoins
+     * @param {number} [decimals=9] - Decimals after comma
      *
      * @example
      * ```ts
      * import { Coins } from 'ton3-core'
      *
-     * const coins = Coins.fromNano('100000000000')
+     * const coins = Coins.fromNano('100000000000', 9)
      *
      * console.log(coins.toString()) // 100 coins
      * ```
      *
      * @return {Coins}
      */
-    public static fromNano (value: bigint | number | string): Coins {
+    public static fromNano (value: bigint | number | string, decimals: number = 9): Coins {
         Coins.checkCoinsType(value)
+        Coins.checkCoinsDecimals(decimals)
 
-        return new Coins(value, true)
+        return new Coins(value, { isNano: true, decimals })
     }
 }
 
-export { Coins }
+export {
+    Coins,
+    CoinsOptions
+}

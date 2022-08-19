@@ -30,7 +30,7 @@
 
 ### add
 
-▸ **add**(`value`): [`Coins`](Coins.md)
+▸ **add**(`coins`): [`Coins`](Coins.md)
 
 Add value to instance value
 
@@ -38,16 +38,19 @@ Add value to instance value
 ```ts
 import { Coins } from 'ton3-core'
 
-const coins = new Coins('10').add(9)
+const coinsA = new Coins('10')
+const coinsB = new Coins('9')
 
-console.log(coins.toString()) // '19'
+coinsA.add(coinsB)
+
+console.log(coinsA.toString()) // '19'
 ```
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
@@ -59,7 +62,7 @@ ___
 
 ### sub
 
-▸ **sub**(`value`): [`Coins`](Coins.md)
+▸ **sub**(`coins`): [`Coins`](Coins.md)
 
 Subtract value from instance value
 
@@ -76,7 +79,7 @@ console.log(coins.toString()) // '1'
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
@@ -105,7 +108,7 @@ console.log(coins.toString()) // '20'
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `value` | `string` \| `number` \| `bigint` |
 
 #### Returns
 
@@ -134,7 +137,7 @@ console.log(coins.toString()) // '5'
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `value` | `string` \| `number` \| `bigint` |
 
 #### Returns
 
@@ -146,7 +149,7 @@ ___
 
 ### eq
 
-▸ **eq**(`value`): `boolean`
+▸ **eq**(`coins`): `boolean`
 
 Checks if instance value equal another [Coins](Coins.md) instance value
 
@@ -165,7 +168,7 @@ console.log(equal.eq(coins), notEqual.eq(coins)) // true, false
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
@@ -175,7 +178,7 @@ ___
 
 ### gt
 
-▸ **gt**(`value`): `boolean`
+▸ **gt**(`coins`): `boolean`
 
 Checks if instance value greater than another [Coins](Coins.md) instance value
 
@@ -194,7 +197,7 @@ console.log(equal.gt(coins), greater.gt(coins)) // false, true
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
@@ -204,7 +207,7 @@ ___
 
 ### gte
 
-▸ **gte**(`value`): `boolean`
+▸ **gte**(`coins`): `boolean`
 
 Checks if instance value greater than or equal another [Coins](Coins.md) instance value
 
@@ -223,7 +226,7 @@ console.log(equal.gte(coins), greater.gte(coins)) // true, true
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
@@ -233,7 +236,7 @@ ___
 
 ### lt
 
-▸ **lt**(`value`): `boolean`
+▸ **lt**(`coins`): `boolean`
 
 Checks if instance value lesser than another [Coins](Coins.md) instance value
 
@@ -252,7 +255,7 @@ console.log(equal.lt(coins), lesser.lt(coins)) // false, true
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
@@ -262,7 +265,7 @@ ___
 
 ### lte
 
-▸ **lte**(`value`): `boolean`
+▸ **lte**(`coins`): `boolean`
 
 Checks if instance value lesser than or equal another [Coins](Coins.md) instance value
 
@@ -281,7 +284,7 @@ console.log(equal.lte(coins), lesser.lte(coins)) // true, true
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`Coins`](Coins.md) |
+| `coins` | [`Coins`](Coins.md) |
 
 #### Returns
 
@@ -398,7 +401,7 @@ ___
 
 ### fromNano
 
-▸ `Static` **fromNano**(`value`): [`Coins`](Coins.md)
+▸ `Static` **fromNano**(`value`, `decimals?`): [`Coins`](Coins.md)
 
 Creates instance of Coins from value in nano
 
@@ -408,16 +411,17 @@ Creates instance of Coins from value in nano
 ```ts
 import { Coins } from 'ton3-core'
 
-const coins = Coins.fromNano('100000000000')
+const coins = Coins.fromNano('100000000000', 9)
 
 console.log(coins.toString()) // 100 coins
 ```
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` | Value in nanocoins |
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `value` | `string` \| `number` \| `bigint` | `undefined` | Value in nanocoins |
+| `decimals` | `number` | `9` | - |
 
 #### Returns
 
@@ -427,7 +431,7 @@ console.log(coins.toString()) // 100 coins
 
 ### constructor
 
-• **new Coins**(`value`, `isNano?`)
+• **new Coins**(`value`, `options?`)
 
 Creates an instance of [Coins](Coins.md)
 
@@ -441,11 +445,12 @@ new Coins(coins)
 new Coins(BigInt('100'))
 new Coins(100)
 new Coins('100')
+new Coins('100000', { isNano: true, decimals: 3 })
 ```
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) | `undefined` |
-| `isNano` | `boolean` | `false` |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `options?` | [`CoinsOptions`](../interfaces/CoinsOptions.md) |

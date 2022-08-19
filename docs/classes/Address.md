@@ -23,6 +23,7 @@ Smart contract address
 
 ### Methods
 
+- [eq](Address.md#eq)
 - [toString](Address.md#tostring)
 - [isValid](Address.md#isvalid)
 
@@ -40,7 +41,7 @@ Helper method for writing null addresses to {@link BitArray}
 
 ### constructor
 
-• **new Address**(`address`)
+• **new Address**(`address`, `options?`)
 
 Creates an instance of [Address](Address.md)
 
@@ -66,6 +67,7 @@ new Address(address)
 | Name | Type |
 | :------ | :------ |
 | `address` | `string` \| [`Address`](Address.md) |
+| `options?` | [`AddressRewriteOptions`](../interfaces/AddressRewriteOptions.md) |
 
 ## Accessors
 
@@ -109,6 +111,35 @@ ___
 
 ## Methods
 
+### eq
+
+▸ **eq**(`address`): `boolean`
+
+Compare instances of [Address](Address.md) for hash and workchain equality
+
+**`example`**
+```ts
+import { Address } from 'ton3-core'
+
+const address1 = new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+const address2 = new Address('kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny')
+
+console.log(address1.eq(address2))
+// true
+```
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `address` | [`Address`](Address.md) | Instance of another [Address](Address.md) |
+
+#### Returns
+
+`boolean`
+
+___
+
 ### toString
 
 ▸ **toString**(`type?`, `options?`): `string`
@@ -139,7 +170,7 @@ console.log(address.toString('raw'))
 | Name | Type | Default value |
 | :------ | :------ | :------ |
 | `type` | [`AddressType`](../README.md#addresstype) | `'base64'` |
-| `options?` | `AddressOptions` | `undefined` |
+| `options?` | [`AddressStringifyOptions`](../interfaces/AddressStringifyOptions.md) | `undefined` |
 
 #### Returns
 

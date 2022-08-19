@@ -9,6 +9,18 @@ ton3-core
 - [AddressType](README.md#addresstype)
 - [Bit](README.md#bit)
 
+### Interfaces
+
+- [AddressRewriteOptions](interfaces/AddressRewriteOptions.md)
+- [AddressStringifyOptions](interfaces/AddressStringifyOptions.md)
+- [CellOptions](interfaces/CellOptions.md)
+- [HashmapOptions](interfaces/HashmapOptions.md)
+- [BOCOptions](interfaces/BOCOptions.md)
+- [CoinsOptions](interfaces/CoinsOptions.md)
+- [StateInitOptions](interfaces/StateInitOptions.md)
+- [KeyPair](interfaces/KeyPair.md)
+- [MnemonicOptions](interfaces/MnemonicOptions.md)
+
 ### Classes
 
 - [Address](classes/Address.md)
@@ -17,28 +29,35 @@ ton3-core
 - [Hashmap](classes/Hashmap.md)
 - [HashmapE](classes/HashmapE.md)
 - [BOC](classes/BOC.md)
+- [Mask](classes/Mask.md)
 - [Slice](classes/Slice.md)
 - [Coins](classes/Coins.md)
 - [ContractBase](classes/ContractBase.md)
 - [MessageInternal](classes/MessageInternal.md)
 - [MessageExternalIn](classes/MessageExternalIn.md)
+- [MnemonicBIP39](classes/MnemonicBIP39.md)
 - [Mnemonic](classes/Mnemonic.md)
 
-### Interfaces
+### Enumerations
 
-- [HashmapOptions](interfaces/HashmapOptions.md)
-- [BOCOptions](interfaces/BOCOptions.md)
-- [StateInitOptions](interfaces/StateInitOptions.md)
-- [KeyPair](interfaces/KeyPair.md)
+- [CellType](enums/CellType.md)
 
 ### Functions
 
 - [deserializeFift](README.md#deserializefift)
 - [deserialize](README.md#deserialize)
 - [serialize](README.md#serialize)
+- [deriveChecksumBits](README.md#derivechecksumbits)
+- [generateKeyPair](README.md#generatekeypair)
+- [genereteWords](README.md#generetewords)
+- [genereteSeed](README.md#genereteseed)
+- [genereteSeedAsync](README.md#genereteseedasync)
+- [normalize](README.md#normalize)
 - [augment](README.md#augment)
 - [rollback](README.md#rollback)
+- [crc16](README.md#crc16)
 - [crc16BytesBe](README.md#crc16bytesbe)
+- [crc32c](README.md#crc32c)
 - [crc32cBytesLe](README.md#crc32cbytesle)
 - [sha256](README.md#sha256)
 - [sha512](README.md#sha512)
@@ -53,12 +72,20 @@ ton3-core
 - [bitsToHex](README.md#bitstohex)
 - [bitsToBytes](README.md#bitstobytes)
 - [bitsToInt8](README.md#bitstoint8)
+- [bitsToUint8](README.md#bitstouint8)
 - [bytesToHex](README.md#bytestohex)
 - [bytesToString](README.md#bytestostring)
 - [stringToBytes](README.md#stringtobytes)
 - [bytesToBase64](README.md#bytestobase64)
 - [base64ToBytes](README.md#base64tobytes)
 - [sliceIntoChunks](README.md#sliceintochunks)
+- [bitsToBigUint](README.md#bitstobiguint)
+- [bitsToBigInt](README.md#bitstobigint)
+- [bitsToIntUint](README.md#bitstointuint)
+
+### Variables
+
+- [isNodeEnv](README.md#isnodeenv)
 
 ## Type aliases
 
@@ -92,13 +119,14 @@ ___
 
 ### deserialize
 
-▸ **deserialize**(`data`): [`Cell`](classes/Cell.md)[]
+▸ **deserialize**(`data`, `checkMerkleProofs`): [`Cell`](classes/Cell.md)[]
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `data` | `Uint8Array` |
+| `checkMerkleProofs` | `boolean` |
 
 #### Returns
 
@@ -120,6 +148,102 @@ ___
 #### Returns
 
 `Uint8Array`
+
+___
+
+### deriveChecksumBits
+
+▸ **deriveChecksumBits**(`entropy`): [`Bit`](README.md#bit)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `entropy` | `Uint8Array` |
+
+#### Returns
+
+[`Bit`](README.md#bit)[]
+
+___
+
+### generateKeyPair
+
+▸ **generateKeyPair**(`seed`): [`KeyPair`](interfaces/KeyPair.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `seed` | `Uint8Array` |
+
+#### Returns
+
+[`KeyPair`](interfaces/KeyPair.md)
+
+___
+
+### genereteWords
+
+▸ **genereteWords**(): `string`[]
+
+#### Returns
+
+`string`[]
+
+___
+
+### genereteSeed
+
+▸ **genereteSeed**(`mnemonic`, `salt`, `rounds`, `keyLength`): `Uint8Array`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `mnemonic` | `string`[] |
+| `salt` | `string` |
+| `rounds` | `number` |
+| `keyLength` | `number` |
+
+#### Returns
+
+`Uint8Array`
+
+___
+
+### genereteSeedAsync
+
+▸ **genereteSeedAsync**(`mnemonic`, `salt`, `rounds`, `keyLength`): `Promise`<`Uint8Array`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `mnemonic` | `string`[] |
+| `salt` | `string` |
+| `rounds` | `number` |
+| `keyLength` | `number` |
+
+#### Returns
+
+`Promise`<`Uint8Array`\>
+
+___
+
+### normalize
+
+▸ **normalize**(`value`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
+
+#### Returns
+
+`string`
 
 ___
 
@@ -162,6 +286,22 @@ Mostly used for BOC serialization or Cell hash calculations.
 
 ___
 
+### crc16
+
+▸ **crc16**(`data`): `number`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `data` | `Uint8Array` \| `number`[] |
+
+#### Returns
+
+`number`
+
+___
+
 ### crc16BytesBe
 
 ▸ **crc16BytesBe**(`data`): `Uint8Array`
@@ -175,6 +315,22 @@ ___
 #### Returns
 
 `Uint8Array`
+
+___
+
+### crc32c
+
+▸ **crc32c**(`data`): `number`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `data` | `Uint8Array` \| `number`[] |
+
+#### Returns
+
+`number`
 
 ___
 
@@ -403,6 +559,22 @@ ___
 
 ___
 
+### bitsToUint8
+
+▸ **bitsToUint8**(`bits`): `number`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `bits` | [`Bit`](README.md#bit)[] |
+
+#### Returns
+
+`number`
+
+___
+
 ### bytesToHex
 
 ▸ **bytesToHex**(`bytes`): `string`
@@ -497,3 +669,69 @@ ___
 #### Returns
 
 `any`[]
+
+___
+
+### bitsToBigUint
+
+▸ **bitsToBigUint**(`bits`): `Object`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `bits` | [`Bit`](README.md#bit)[] |
+
+#### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `bigint` |
+| `isSafe` | `boolean` |
+
+___
+
+### bitsToBigInt
+
+▸ **bitsToBigInt**(`bits`): `Object`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `bits` | [`Bit`](README.md#bit)[] |
+
+#### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `bigint` |
+| `isSafe` | `boolean` |
+
+___
+
+### bitsToIntUint
+
+▸ **bitsToIntUint**(`bits`, `options`): `number`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `bits` | [`Bit`](README.md#bit)[] |
+| `options` | `Object` |
+| `options.type` | ``"int"`` \| ``"uint"`` |
+
+#### Returns
+
+`number`
+
+## Variables
+
+### isNodeEnv
+
+• `Const` **isNodeEnv**: `boolean`
