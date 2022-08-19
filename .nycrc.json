@@ -15,5 +15,6 @@
         "text-summary",
         "html"
     ],
-    "report-dir": "./coverage"
+    "report-dir": "./coverage",
+    "lines": 75
 }
