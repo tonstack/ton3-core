@@ -41,3 +41,6 @@ lerna-debug.log*
 
 # IDE - VSCode
 .vscode
+
+# CI
+/.github
