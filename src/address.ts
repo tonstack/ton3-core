@@ -68,11 +68,12 @@ class Address {
      * @example
      * ```ts
      * import { Address } from 'ton3-core'
-     *
-     * const bytes = new Uint8Array() // containing workchain and address hash bytes
+     * 
      * const address = new Address('kf/8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15+KsQHFLbKSMiYIny')
+     * const rewrite = { workchain: 0, bounceable: true, testOnly: true }
      *
      * new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+     * new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260', rewrite)
      * new Address('kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny')
      * new Address(address)
      * ```
@@ -118,18 +119,79 @@ class Address {
         this._testOnly = testOnly
     }
 
+    /**
+     * Get parsed {@link Address} hash part
+     *
+     * @example
+     * ```ts
+     * import { Address, Utils } from 'ton3-core'
+     *
+     * const address = new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+     * const hash = address.hash // Uint8Array
+     *
+     * console.log(Utils.Helpers.bytesToHex(hash))
+     * // fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260
+     * ```
+     *
+     * @returns {Uint8Array}
+     */
     public get hash (): Uint8Array {
         return new Uint8Array(this._hash)
     }
 
+    /**
+     * Get parsed {@link Address} workchain
+     *
+     * @example
+     * ```ts
+     * import { Address } from 'ton3-core'
+     *
+     * const address = new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+     *
+     * console.log(address.workchain)
+     * // -1
+     * ```
+     *
+     * @returns {number}
+     */
     public get workchain (): number {
         return this._workchain
     }
 
+    /**
+     * Get parsed {@link Address} bounceable flag
+     *
+     * @example
+     * ```ts
+     * import { Address } from 'ton3-core'
+     *
+     * const address = new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+     *
+     * console.log(address.bounceable)
+     * // false
+     * ```
+     *
+     * @returns {boolean}
+     */
     public get bounceable (): boolean {
         return this._bounceable
     }
 
+    /**
+     * Get parsed {@link Address} testOnly flag
+     *
+     * @example
+     * ```ts
+     * import { Address } from 'ton3-core'
+     *
+     * const address = new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+     *
+     * console.log(address.testOnly)
+     * // false
+     * ```
+     *
+     * @returns {boolean}
+     */
     public get testOnly (): boolean {
         return this._testOnly
     }
@@ -259,18 +321,16 @@ class Address {
      * import { Address } from 'ton3-core'
      *
      * const raw = '-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260'
-     * const address = new Address(raw)
-     *     .setBounceableFlag(true)
-     *     .setTestOnlyFlag(true)
+     * const address = new Address(raw, { bounceable: true, testOnly: true })
      *
      * console.log(address.toString('base64'))
      * // kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny
      *
-     * console.log(address.toString('base64', false))
+     * console.log(address.toString('base64', { urlSafe: false }))
      * // kf/8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15+KsQHFLbKSMiYIny
      *
-     * console.log(address.toString('raw'))
-     * // -1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260
+     * console.log(address.toString('raw', { workchain: 0 }))
+     * // 0:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260
      * ```
      *
      * @returns {string}
@@ -315,7 +375,7 @@ class Address {
     }
 
     /**
-     * Helper method for writing null addresses to {@link BitArray}
+     * Helper method for writing null addresses to {@link Builder}
      *
      * @static
      */
