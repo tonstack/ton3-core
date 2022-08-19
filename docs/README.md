@@ -19,6 +19,7 @@ ton3-core
 - [CoinsOptions](interfaces/CoinsOptions.md)
 - [StateInitOptions](interfaces/StateInitOptions.md)
 - [KeyPair](interfaces/KeyPair.md)
+- [MnemonicOptions](interfaces/MnemonicOptions.md)
 
 ### Classes
 
@@ -34,6 +35,7 @@ ton3-core
 - [ContractBase](classes/ContractBase.md)
 - [MessageInternal](classes/MessageInternal.md)
 - [MessageExternalIn](classes/MessageExternalIn.md)
+- [MnemonicBIP39](classes/MnemonicBIP39.md)
 - [Mnemonic](classes/Mnemonic.md)
 
 ### Enumerations
@@ -45,6 +47,12 @@ ton3-core
 - [deserializeFift](README.md#deserializefift)
 - [deserialize](README.md#deserialize)
 - [serialize](README.md#serialize)
+- [deriveChecksumBits](README.md#derivechecksumbits)
+- [generateKeyPair](README.md#generatekeypair)
+- [genereteWords](README.md#generetewords)
+- [genereteSeed](README.md#genereteseed)
+- [genereteSeedAsync](README.md#genereteseedasync)
+- [normalize](README.md#normalize)
 - [augment](README.md#augment)
 - [rollback](README.md#rollback)
 - [crc16](README.md#crc16)
@@ -74,6 +82,10 @@ ton3-core
 - [bitsToBigUint](README.md#bitstobiguint)
 - [bitsToBigInt](README.md#bitstobigint)
 - [bitsToIntUint](README.md#bitstointuint)
+
+### Variables
+
+- [isNodeEnv](README.md#isnodeenv)
 
 ## Type aliases
 
@@ -136,6 +148,102 @@ ___
 #### Returns
 
 `Uint8Array`
+
+___
+
+### deriveChecksumBits
+
+▸ **deriveChecksumBits**(`entropy`): [`Bit`](README.md#bit)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `entropy` | `Uint8Array` |
+
+#### Returns
+
+[`Bit`](README.md#bit)[]
+
+___
+
+### generateKeyPair
+
+▸ **generateKeyPair**(`seed`): [`KeyPair`](interfaces/KeyPair.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `seed` | `Uint8Array` |
+
+#### Returns
+
+[`KeyPair`](interfaces/KeyPair.md)
+
+___
+
+### genereteWords
+
+▸ **genereteWords**(): `string`[]
+
+#### Returns
+
+`string`[]
+
+___
+
+### genereteSeed
+
+▸ **genereteSeed**(`mnemonic`, `salt`, `rounds`, `keyLength`): `Uint8Array`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `mnemonic` | `string`[] |
+| `salt` | `string` |
+| `rounds` | `number` |
+| `keyLength` | `number` |
+
+#### Returns
+
+`Uint8Array`
+
+___
+
+### genereteSeedAsync
+
+▸ **genereteSeedAsync**(`mnemonic`, `salt`, `rounds`, `keyLength`): `Promise`<`Uint8Array`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `mnemonic` | `string`[] |
+| `salt` | `string` |
+| `rounds` | `number` |
+| `keyLength` | `number` |
+
+#### Returns
+
+`Promise`<`Uint8Array`\>
+
+___
+
+### normalize
+
+▸ **normalize**(`value`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
+
+#### Returns
+
+`string`
 
 ___
 
@@ -621,3 +729,9 @@ ___
 #### Returns
 
 `number`
+
+## Variables
+
+### isNodeEnv
+
+• `Const` **isNodeEnv**: `boolean`

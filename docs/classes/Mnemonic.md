@@ -2,6 +2,12 @@
 
 # Class: Mnemonic
 
+## Hierarchy
+
+- [`MnemonicBIP39`](MnemonicBIP39.md)
+
+  ↳ **`Mnemonic`**
+
 ## Table of contents
 
 ### Constructors
@@ -14,18 +20,28 @@
 - [seed](Mnemonic.md#seed)
 - [keys](Mnemonic.md#keys)
 
+### Methods
+
+- [genereteWords](Mnemonic.md#generetewords)
+- [generateKeyPair](Mnemonic.md#generatekeypair)
+- [genereteSeed](Mnemonic.md#genereteseed)
+- [genereteSeedAsync](Mnemonic.md#genereteseedasync)
+
 ## Constructors
 
 ### constructor
 
-• **new Mnemonic**(`mnemonic?`, `salt?`)
+• **new Mnemonic**(`mnemonic?`)
 
 #### Parameters
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
 | `mnemonic` | `string`[] | `[]` |
-| `salt` | `string` | `null` |
+
+#### Overrides
+
+[MnemonicBIP39](MnemonicBIP39.md).[constructor](MnemonicBIP39.md#constructor)
 
 ## Accessors
 
@@ -37,6 +53,10 @@
 
 `string`[]
 
+#### Inherited from
+
+MnemonicBIP39.words
+
 ___
 
 ### seed
@@ -47,6 +67,10 @@ ___
 
 `Uint8Array`
 
+#### Inherited from
+
+MnemonicBIP39.seed
+
 ___
 
 ### keys
@@ -56,3 +80,81 @@ ___
 #### Returns
 
 [`KeyPair`](../interfaces/KeyPair.md)
+
+#### Inherited from
+
+MnemonicBIP39.keys
+
+## Methods
+
+### genereteWords
+
+▸ `Static` **genereteWords**(): `string`[]
+
+#### Returns
+
+`string`[]
+
+#### Inherited from
+
+[MnemonicBIP39](MnemonicBIP39.md).[genereteWords](MnemonicBIP39.md#generetewords)
+
+___
+
+### generateKeyPair
+
+▸ `Static` **generateKeyPair**(`seed`): [`KeyPair`](../interfaces/KeyPair.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `seed` | `Uint8Array` |
+
+#### Returns
+
+[`KeyPair`](../interfaces/KeyPair.md)
+
+#### Inherited from
+
+[MnemonicBIP39](MnemonicBIP39.md).[generateKeyPair](MnemonicBIP39.md#generatekeypair)
+
+___
+
+### genereteSeed
+
+▸ `Static` **genereteSeed**(`mnemonic`): `Uint8Array`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `mnemonic` | `string`[] |
+
+#### Returns
+
+`Uint8Array`
+
+#### Overrides
+
+[MnemonicBIP39](MnemonicBIP39.md).[genereteSeed](MnemonicBIP39.md#genereteseed)
+
+___
+
+### genereteSeedAsync
+
+▸ `Static` **genereteSeedAsync**(`mnemonic`): `Promise`<`Uint8Array`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `mnemonic` | `string`[] |
+
+#### Returns
+
+`Promise`<`Uint8Array`\>
+
+#### Overrides
+
+[MnemonicBIP39](MnemonicBIP39.md).[genereteSeedAsync](MnemonicBIP39.md#genereteseedasync)
