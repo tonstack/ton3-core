@@ -17,6 +17,10 @@
 
 ## Table of contents
 
+### Constructors
+
+- [constructor](HashmapE.md#constructor)
+
 ### Methods
 
 - [[iterator]](HashmapE.md#[iterator])
@@ -34,9 +38,29 @@
 - [cell](HashmapE.md#cell)
 - [parse](HashmapE.md#parse)
 
-### Constructors
+## Constructors
 
-- [constructor](HashmapE.md#constructor)
+### constructor
+
+• **new HashmapE**<`K`, `V`\>(`keySize`, `options?`)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `K` | [`Bit`](../README.md#bit)[] |
+| `V` | [`Cell`](Cell.md) |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `keySize` | `number` |
+| `options?` | [`HashmapOptions`](../interfaces/HashmapOptions.md)<`K`, `V`\> |
+
+#### Overrides
+
+[Hashmap](Hashmap.md).[constructor](Hashmap.md#constructor)
 
 ## Methods
 
@@ -314,27 +338,3 @@ ___
 #### Overrides
 
 [Hashmap](Hashmap.md).[parse](Hashmap.md#parse)
-
-## Constructors
-
-### constructor
-
-• **new HashmapE**<`K`, `V`\>(`keySize`, `options?`)
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `K` | [`Bit`](../README.md#bit)[] |
-| `V` | [`Cell`](Cell.md) |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `keySize` | `number` |
-| `options?` | [`HashmapOptions`](../interfaces/HashmapOptions.md)<`K`, `V`\> |
-
-#### Overrides
-
-[Hashmap](Hashmap.md).[constructor](Hashmap.md#constructor)

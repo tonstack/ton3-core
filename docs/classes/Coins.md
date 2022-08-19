@@ -2,7 +2,13 @@
 
 # Class: Coins
 
+Coins/Jettons
+
 ## Table of contents
+
+### Constructors
+
+- [constructor](Coins.md#constructor)
 
 ### Methods
 
@@ -22,9 +28,33 @@
 - [toNano](Coins.md#tonano)
 - [fromNano](Coins.md#fromnano)
 
-### Constructors
+## Constructors
 
-- [constructor](Coins.md#constructor)
+### constructor
+
+• **new Coins**(`value`, `options?`)
+
+Creates an instance of [Coins](Coins.md)
+
+**`example`**
+```ts
+import { Coins } from 'ton3-core'
+
+const coins = new Coins('100')
+
+new Coins(coins)
+new Coins(BigInt('100'))
+new Coins(100)
+new Coins('100')
+new Coins('100000', { isNano: true, decimals: 3 })
+```
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
+| `options?` | [`CoinsOptions`](../interfaces/CoinsOptions.md) |
 
 ## Methods
 
@@ -70,9 +100,12 @@ Subtract value from instance value
 ```ts
 import { Coins } from 'ton3-core'
 
-const coins = new Coins('10').sub(9)
+const coinsA = new Coins('10')
+const coinsB = new Coins('9')
 
-console.log(coins.toString()) // '1'
+coinsA.sub(coinsB)
+
+console.log(coinsA.toString()) // '1'
 ```
 
 #### Parameters
@@ -426,31 +459,3 @@ console.log(coins.toString()) // 100 coins
 #### Returns
 
 [`Coins`](Coins.md)
-
-## Constructors
-
-### constructor
-
-• **new Coins**(`value`, `options?`)
-
-Creates an instance of [Coins](Coins.md)
-
-**`example`**
-```ts
-import { Coins } from 'ton3-core'
-
-const coins = new Coins('100')
-
-new Coins(coins)
-new Coins(BigInt('100'))
-new Coins(100)
-new Coins('100')
-new Coins('100000', { isNano: true, decimals: 3 })
-```
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` \| `number` \| `bigint` \| [`Coins`](Coins.md) |
-| `options?` | [`CoinsOptions`](../interfaces/CoinsOptions.md) |

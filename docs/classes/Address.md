@@ -6,10 +6,6 @@ Smart contract address
 
 ## Table of contents
 
-### Properties
-
-- [NONE](Address.md#none)
-
 ### Constructors
 
 - [constructor](Address.md#constructor)
@@ -27,15 +23,9 @@ Smart contract address
 - [toString](Address.md#tostring)
 - [isValid](Address.md#isvalid)
 
-## Properties
+### Properties
 
-### NONE
-
-▪ `Static` `Readonly` **NONE**: `any` = `null`
-
-Helper method for writing null addresses to [Builder](Builder.md)
-
-**`static`**
+- [NONE](Address.md#none)
 
 ## Constructors
 
@@ -239,3 +229,13 @@ ___
 #### Returns
 
 `boolean`
+
+## Properties
+
+### NONE
+
+▪ `Static` `Readonly` **NONE**: `any` = `null`
+
+Helper method for writing null addresses to [Builder](Builder.md)
+
+**`static`**

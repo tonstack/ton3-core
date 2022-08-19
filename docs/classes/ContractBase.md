@@ -4,25 +4,19 @@
 
 ## Table of contents
 
-### Properties
-
-- [EMPTY\_CODE](ContractBase.md#empty_code)
-
 ### Constructors
 
 - [constructor](ContractBase.md#constructor)
+
+### Properties
+
+- [EMPTY\_CODE](ContractBase.md#empty_code)
 
 ### Accessors
 
 - [workchain](ContractBase.md#workchain)
 - [address](ContractBase.md#address)
 - [state](ContractBase.md#state)
-
-## Properties
-
-### EMPTY\_CODE
-
-▪ `Static` **EMPTY\_CODE**: [`Cell`](Cell.md)
 
 ## Constructors
 
@@ -37,6 +31,12 @@
 | `workchain` | `number` |
 | `code` | [`Cell`](Cell.md) |
 | `storage?` | [`Cell`](Cell.md) |
+
+## Properties
+
+### EMPTY\_CODE
+
+▪ `Static` **EMPTY\_CODE**: [`Cell`](Cell.md)
 
 ## Accessors
 

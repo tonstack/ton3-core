@@ -4,16 +4,16 @@
 
 ## Table of contents
 
+### Constructors
+
+- [constructor](Cell.md#constructor)
+
 ### Accessors
 
 - [bits](Cell.md#bits)
 - [refs](Cell.md#refs)
 - [type](Cell.md#type)
 - [exotic](Cell.md#exotic)
-
-### Constructors
-
-- [constructor](Cell.md#constructor)
 
 ### Methods
 
@@ -25,6 +25,18 @@
 - [hash](Cell.md#hash)
 - [depth](Cell.md#depth)
 - [eq](Cell.md#eq)
+
+## Constructors
+
+### constructor
+
+• **new Cell**(`options?`)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `options?` | [`CellOptions`](../interfaces/CellOptions.md) |
 
 ## Accessors
 
@@ -65,18 +77,6 @@ ___
 #### Returns
 
 `boolean`
-
-## Constructors
-
-### constructor
-
-• **new Cell**(`options?`)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `options?` | [`CellOptions`](../interfaces/CellOptions.md) |
 
 ## Methods
 

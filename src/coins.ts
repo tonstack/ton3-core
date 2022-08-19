@@ -5,10 +5,15 @@ interface CoinsOptions {
     decimals?: number
 }
 
+/**
+ * Coins/Jettons
+ *
+ * @class Address
+ */
 class Coins {
-    protected value: Decimal
+    private value: Decimal
 
-    protected decimals: number
+    private decimals: number
 
     private multiplier: number
 
@@ -18,6 +23,7 @@ class Coins {
      * @param {(Coins | bigint | number | string)} value
      * @param {CoinsOptions} [options] - Coins options to configure decimals after comma (0-18) and if value preserved as nanocoins
      *
+     * 
      * @example
      * ```ts
      * import { Coins } from 'ton3-core'
@@ -87,9 +93,12 @@ class Coins {
      * ```ts
      * import { Coins } from 'ton3-core'
      *
-     * const coins = new Coins('10').sub(9)
+     * const coinsA = new Coins('10')
+     * const coinsB = new Coins('9')
+     * 
+     * coinsA.sub(coinsB)
      *
-     * console.log(coins.toString()) // '1'
+     * console.log(coinsA.toString()) // '1'
      * ```
      *
      * @return {this} - Current instance reference
