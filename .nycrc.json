@@ -13,7 +13,8 @@
     ],
     "reporter": [
         "text-summary",
-        "html"
+        "html",
+        "lcov"
     ],
     "report-dir": "./coverage",
     "lines": 75
