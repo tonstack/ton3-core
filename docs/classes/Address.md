@@ -33,7 +33,7 @@ Smart contract address
 
 ▪ `Static` `Readonly` **NONE**: `any` = `null`
 
-Helper method for writing null addresses to {@link BitArray}
+Helper method for writing null addresses to [Builder](Builder.md)
 
 **`static`**
 
@@ -54,10 +54,11 @@ Next formats can be used as constructor argument:
 ```ts
 import { Address } from 'ton3-core'
 
-const bytes = new Uint8Array() // containing workchain and address hash bytes
 const address = new Address('kf/8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15+KsQHFLbKSMiYIny')
+const rewrite = { workchain: 0, bounceable: true, testOnly: true }
 
 new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260', rewrite)
 new Address('kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny')
 new Address(address)
 ```
@@ -75,6 +76,19 @@ new Address(address)
 
 • `get` **hash**(): `Uint8Array`
 
+Get parsed [Address](Address.md) hash part
+
+**`example`**
+```ts
+import { Address, Utils } from 'ton3-core'
+
+const address = new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+const hash = address.hash // Uint8Array
+
+console.log(Utils.Helpers.bytesToHex(hash))
+// fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260
+```
+
 #### Returns
 
 `Uint8Array`
@@ -84,6 +98,18 @@ ___
 ### workchain
 
 • `get` **workchain**(): `number`
+
+Get parsed [Address](Address.md) workchain
+
+**`example`**
+```ts
+import { Address } from 'ton3-core'
+
+const address = new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+
+console.log(address.workchain)
+// -1
+```
 
 #### Returns
 
@@ -95,6 +121,18 @@ ___
 
 • `get` **bounceable**(): `boolean`
 
+Get parsed [Address](Address.md) bounceable flag
+
+**`example`**
+```ts
+import { Address } from 'ton3-core'
+
+const address = new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+
+console.log(address.bounceable)
+// false
+```
+
 #### Returns
 
 `boolean`
@@ -104,6 +142,18 @@ ___
 ### testOnly
 
 • `get` **testOnly**(): `boolean`
+
+Get parsed [Address](Address.md) testOnly flag
+
+**`example`**
+```ts
+import { Address } from 'ton3-core'
+
+const address = new Address('-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260')
+
+console.log(address.testOnly)
+// false
+```
 
 #### Returns
 
@@ -151,18 +201,16 @@ Get raw or base64 representation of [Address](Address.md)
 import { Address } from 'ton3-core'
 
 const raw = '-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260'
-const address = new Address(raw)
-    .setBounceableFlag(true)
-    .setTestOnlyFlag(true)
+const address = new Address(raw, { bounceable: true, testOnly: true })
 
 console.log(address.toString('base64'))
 // kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny
 
-console.log(address.toString('base64', false))
+console.log(address.toString('base64', { urlSafe: false }))
 // kf/8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15+KsQHFLbKSMiYIny
 
-console.log(address.toString('raw'))
-// -1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260
+console.log(address.toString('raw', { workchain: 0 }))
+// 0:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260
 ```
 
 #### Parameters
