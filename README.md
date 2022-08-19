@@ -1,6 +1,9 @@
 ## 💎 ton3-core
 
-[![npm](https://img.shields.io/npm/v/ton3-core)](https://www.npmjs.com/package/ton3-core) ![GitHub top language](https://img.shields.io/github/languages/top/tonstack/ton3-core) [![TON](https://img.shields.io/badge/based%20on-The%20Open%20Network-blue)](https://ton.org/)
+[![npm](https://img.shields.io/npm/v/ton3-core)](https://www.npmjs.com/package/ton3-core) 
+![GitHub top language](https://img.shields.io/github/languages/top/tonstack/ton3-core) 
+[![Coverage Status](https://coveralls.io/repos/github/tonstack/ton3-core/badge.svg?branch=main)](https://coveralls.io/github/tonstack/ton3-core?branch=main) 
+[![TON](https://img.shields.io/badge/based%20on-The%20Open%20Network-blue)](https://ton.org/)
 
 ton3-core is a core package of ton3 inspired by [tonweb](https://github.com/toncenter/tonweb) to work with [TON blockchain](https://ton.org).\
 Visit [documentation](./docs/) to see API reference.
