@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { TextEncoder } from 'util'
 import { Bit } from '../src/types/bit'
-import { Cell, Builder, Slice } from '../src/boc'
+import { Cell, Builder, Slice, HashmapE } from '../src/boc'
 import { bytesToBits } from '../src/utils/helpers'
 import { Address } from '../src/address'
 import { Coins } from '../src/coins'
@@ -344,6 +344,32 @@ describe('Builder', () => {
             const result = () => builder.storeCoins(coins)
 
             expect(result).to.throw('Builder: coins value can\'t be negative.')
+        })
+    })
+
+    describe('#storeDict()', () => {
+        it('should store empty HashmapE', () => {
+            const hashmap = new HashmapE(1)
+
+            const slice = Slice.parse(builder.storeDict(hashmap).cell())
+            const result = HashmapE.parse(1, slice)
+
+            expect([ ...result ]).to.eql([])
+        })
+
+        it('should store non-empty HashmapE', () => {
+            const hashmap = new HashmapE(1)
+            const cell1 = new Cell({ bits: [ 0, 0 ] })
+            const cell2 = new Cell({ bits: [ 1, 1 ] })
+
+            hashmap.add([ 0 ], cell1)
+            hashmap.add([ 1 ], cell2)
+
+            const slice = Slice.parse(builder.storeDict(hashmap).cell())
+            const result = HashmapE.parse(1, slice)
+
+            expect(result.get([ 0 ]).eq(cell1)).to.eq(true)
+            expect(result.get([ 1 ]).eq(cell2)).to.eq(true)
         })
     })
 
