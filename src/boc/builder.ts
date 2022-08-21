@@ -1,9 +1,9 @@
-import { Bit } from '../types/bit'
+import type { Bit } from '../types/bit'
+import type { Slice } from './slice'
 import {
     Cell,
     CellType
 } from './cell'
-import { Slice } from './slice'
 import type { Address } from '../address'
 import type { Coins } from '../coins'
 import type { HashmapE } from './hashmap'
@@ -333,7 +333,7 @@ class Builder {
      * @returns {this}
      */
     public storeDict (hashmap: HashmapE<any, any>): this {
-        const slice = Slice.parse(hashmap.cell())
+        const slice = hashmap.cell().slice()
 
         this.storeSlice(slice)
 

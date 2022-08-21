@@ -1,4 +1,4 @@
-import { Bit } from '../types/bit'
+import type { Bit } from '../types/bit'
 import { hexToBits } from '../utils/helpers'
 import { Address } from '../address'
 import {

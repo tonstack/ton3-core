@@ -1,5 +1,7 @@
-import { Bit } from '../types/bit'
+import type { Bit } from '../types/bit'
+import type { Builder} from './builder'
 import { Mask } from './mask'
+import { Slice } from './slice'
 import {
     bitsToBytes,
     bitsToHex,
@@ -168,6 +170,25 @@ class Cell {
 
     private depths: number[] = []
 
+    /**
+     * Creates an instance of {@link Cell}
+     * - You should avoid creating {@link Cell} manually
+     * - Use {@link Builder} to construct your {@link Cell}
+     *
+     * @param {CellOptions} [options]
+     *
+     * @example
+     * ```ts
+     * import { Cell, CellType } from 'ton3-core'
+     * 
+     * const ref = new Cell()
+     * const cell = new Cell({
+     *     type: CellType.Ordinary,
+     *     bits: [ 1, 0, 1 ],
+     *     refs: [ ref ]
+     * })
+     * ```
+     */
     constructor (options?: CellOptions) {
         const {
             bits = [],
@@ -187,22 +208,97 @@ class Cell {
         this.initialize()
     }
 
+    /**
+     * Get current {@link Cell} instance bits
+     *
+     * @example
+     * ```ts
+     * import { Builder } from 'ton3-core'
+     *
+     * const cell = new Builder().storeBits([ 1, 0 ])
+     *
+     * console.log(cell.bits) // [ 1, 0 ]
+     * ```
+     *
+     * @returns {Bit[]}
+     */
     public get bits (): Bit[] {
         return Array.from(this._bits)
     }
 
+    /**
+     * Get current {@link Cell} instance refs
+     *
+     * @example
+     * ```ts
+     * import { Builder } from 'ton3-core'
+     *
+     * const ref = new Builder().cell()
+     * const cell = new Builder().storeRef(ref)
+     *
+     * console.log(cell.refs) // [ ref ]
+     * ```
+     *
+     * @returns {Cell[]}
+     */
     public get refs (): Cell[] {
         return Array.from(this._refs)
     }
 
+    /**
+     * Get current {@link Cell} instance {@link Mask} (that includes level, hashes count, etc...)
+     *
+     * @example
+     * ```ts
+     * import { Builder } from 'ton3-core'
+     *
+     * const cell = new Builder().cell()
+     *
+     * console.log(cell.mask.level) // 0
+     * console.log(cell.mask.hashCount) // 1
+     * ```
+     *
+     * @returns {Mask}
+     */
     public get mask (): Mask {
         return this._mask
     }
 
+    /**
+     * Get current {@link Cell} instance {@link CellType}
+     *
+     * @example
+     * ```ts
+     * import { CellType, Builder } from 'ton3-core'
+     *
+     * const cell = new Builder().cell()
+     *
+     * console.log(cell.type === CellType.Ordinary) // true
+     * ```
+     *
+     * @returns {CellType}
+     */
     public get type (): CellType {
         return this._type
     }
 
+    /**
+     * Check if current {@link Cell} instance is exotic type
+     *
+     * @example
+     * ```ts
+     * import { CellType, Builder, Bit } from 'ton3-core'
+     *
+     * const zeroes = Array.from({ length: 8 + 256}).fill(0) as Bit[]
+     * const cell1 = new Builder().cell(CellType.Ordinary)
+     * const cell2 = new Builder().storeBits(zeroes).cell(CellType.LibraryReference)
+     *
+     * console.log(cell1.exotic) // false
+     * console.log(cell2.exotic) // true
+     * ```
+     *
+     * @returns {boolean}
+     */
     public get exotic (): boolean {
         return this._type !== CellType.Ordinary
     }
@@ -266,12 +362,26 @@ class Cell {
         }
     }
 
+    /**
+     * Calculate depth descriptor
+     * 
+     * @param {number} depth
+     * 
+     * @private
+     */
     private getDepthDescriptor (depth: number): Bit[] {
         const descriptor = Uint8Array.from([ Math.floor(depth / 256), depth % 256 ])
 
         return bytesToBits(descriptor)
     }
 
+    /**
+     * Get current {@link Cell} instance refs descriptor
+     * 
+     * @param {Mask} [mask]
+     * 
+     * @private
+     */
     public getRefsDescriptor (mask?: Mask): Bit[] {
         const value = this._refs.length + (Number(this.exotic) * 8) + ((mask ? mask.value : this.mask.value) * 32)
         const descriptor = Uint8Array.from([ value ])
@@ -279,6 +389,11 @@ class Cell {
         return bytesToBits(descriptor)
     }
 
+    /**
+     * Get current {@link Cell} instance bits descriptor
+     * 
+     * @private
+     */
     public getBitsDescriptor (): Bit[] {
         const value = Math.ceil(this._bits.length / 8) + Math.floor(this._bits.length / 8)
         const descriptor = Uint8Array.from([ value ])
@@ -286,11 +401,31 @@ class Cell {
         return bytesToBits(descriptor)
     }
 
+    /**
+     * Get current {@link Cell} instance augmented bits
+     * 
+     * @private
+     */
     public getAugmentedBits (): Bit[] {
         return augment(this._bits)
     }
 
-    // Top-level hash by default
+    /**
+     * Get cell's hash in hex (max level by default)
+     * 
+     * @param {number} [level=3]
+     *
+     * @example
+     * ```ts
+     * import { Builder } from 'ton3-core'
+     *
+     * const cell = new Builder().cell()
+     *
+     * console.log(cell.hash()) // 96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7
+     * ```
+     *
+     * @return {string}
+     */
     public hash (level: number = 3): string {
         if (this.type !== CellType.PrunedBranch) {
             return this.hashes[this.mask.apply(level).hashIndex]
@@ -305,7 +440,23 @@ class Cell {
             : this.hashes[0]
     }
 
-    // Top-level depth by default
+    /**
+     * Get cell's depth (max level by default)
+     * 
+     * @param {number} [level=3]
+     *
+     * @example
+     * ```ts
+     * import { Builder } from 'ton3-core'
+     *
+     * const cell1 = new Builder().cell()
+     * const cell2 = new Builder().storeRef(cell1).cell()
+     *
+     * console.log(cell2.depth()) // 1
+     * ```
+     *
+     * @return {number}
+     */
     public depth (level: number = 3): number {
         if (this.type !== CellType.PrunedBranch) {
             return this.depths[this.mask.apply(level).hashIndex]
@@ -320,10 +471,46 @@ class Cell {
             : this.depths[0]
     }
 
-    public eq (cell: Cell): boolean {
-        return this.hash() === cell.hash()
+    /**
+     * Get {@link Slice} from current instance
+     * - Same as `Slice.parse(cell)`
+     *
+     * @example
+     * ```ts
+     * import { Builder } from 'ton3-core'
+     *
+     * const cell = new Builder()
+     *     .storeBits([ 1, 0 ])
+     *     .cell()
+     * 
+     * const slice = cell.slice()
+     *
+     * console.log(slice.loadBits(2)) // [ 1, 0 ]
+     * console.log(cell.bits) // [ 1, 0 ]
+     * ```
+     *
+     * @return {Slice}
+     */
+    public slice (): Slice {
+        return Slice.parse(this)
     }
 
+    /**
+     * Print cell as fift-hex
+     * 
+     * @param {number} [indent=0]
+     *
+     * @example
+     * ```ts
+     * import { Builder } from 'ton3-core'
+     *
+     * const cell = new Builder().cell()
+     *
+     * console.log(cell.print()) // x{_}
+     * ```
+     *
+     * @return {string}
+     */
     public print (indent: number = 0): string {
         const bits = Array.from(this._bits)
         const areDivisible = bits.length % 4 === 0
@@ -334,6 +521,28 @@ class Cell {
         this._refs.forEach(ref => output.push(ref.print(indent + 1)))
 
         return output.join('')
+    }
+
+    /**
+     * Checks {@link Cell} equality by comparing cell hashes
+     * 
+     * @param {Cell} cell
+     *
+     * @example
+     * ```ts
+     * import { Builder } from 'ton3-core'
+     *
+     * const cell = new Builder().storeBits([ 1, 0 ]).cell()
+     * const equal = new Builder().storeBits([ 1, 0 ]).cell()
+     * const notEqual = new Builder().storeBits([ 0, 1 ]).cell()
+     *
+     * console.log(equal.eq(cell), notEqual.eq(cell)) // true, false
+     * ```
+     *
+     * @return {boolean}
+     */
+    public eq (cell: Cell): boolean {
+        return this.hash() === cell.hash()
     }
 }
 

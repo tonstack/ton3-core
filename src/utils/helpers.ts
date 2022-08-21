@@ -2,7 +2,7 @@ import {
     TextEncoder,
     TextDecoder
 } from 'util'
-import { Bit } from '../types/bit'
+import type { Bit } from '../types/bit'
 
 const isNodeEnv = typeof process !== 'undefined'
     && process.versions !== undefined

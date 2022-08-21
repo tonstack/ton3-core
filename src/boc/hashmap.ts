@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
 
-import { Bit } from '../types/bit'
-import { Builder } from './builder'
-import { Slice } from './slice'
+import type { Bit } from '../types/bit'
+import type { Slice } from './slice'
 import type { Cell } from './cell'
+import { Builder } from './builder'
 
 export interface HashmapOptions<K, V> {
     keySize?: number | 'auto'
@@ -187,7 +187,7 @@ class Hashmap<K = Bit[], V = Cell> {
         if (nodes.length === 1) {
             const leaf = this.serializeLeaf(nodes[0])
 
-            edge.storeSlice(Slice.parse(leaf))
+            edge.storeSlice(leaf.slice())
         }
 
         // hmn_fork#_
@@ -354,7 +354,7 @@ class Hashmap<K = Bit[], V = Cell> {
         }
 
         return edge.refs.reduce((acc, _r, i) => {
-            const forkEdge = Slice.parse(edge.loadRef())
+            const forkEdge = edge.loadRef().slice()
             const forkKey = key.concat([ i as Bit ])
 
             return acc.concat(this.deserializeEdge(forkEdge, keySize, forkKey))
@@ -445,7 +445,7 @@ class HashmapE<K = Bit[], V = Cell> extends Hashmap<K, V> {
         }
 
         const hashmap = new HashmapE<K, V>(keySize, options)
-        const edge = Slice.parse(slice.loadRef())
+        const edge = slice.loadRef().slice()
         const nodes = Hashmap.deserializeEdge(edge, keySize)
 
         for (let i = 0; i < nodes.length; i += 1) {
