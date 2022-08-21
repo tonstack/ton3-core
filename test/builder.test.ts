@@ -1,7 +1,7 @@
+import type { Bit } from '../src/types/bit'
 import { expect } from 'chai'
 import { TextEncoder } from 'util'
-import { Bit } from '../src/types/bit'
-import { Cell, Builder, Slice, HashmapE } from '../src/boc'
+import { Cell, Builder, HashmapE } from '../src/boc'
 import { bytesToBits } from '../src/utils/helpers'
 import { Address } from '../src/address'
 import { Coins } from '../src/coins'
@@ -111,7 +111,7 @@ describe('Builder', () => {
                 .storeRef(ref)
                 .cell()
 
-            builder.storeSlice(Slice.parse(cell))
+            builder.storeSlice(cell.slice())
 
             expect(builder.bits).to.eql([ 0, 1 ])
             expect(builder.refs.length).to.eq(1)
@@ -123,7 +123,7 @@ describe('Builder', () => {
                 .storeBits([ 0, 1 ])
                 .cell()
 
-            const result = () => builder1.storeSlice(Slice.parse(cell))
+            const result = () => builder1.storeSlice(cell.slice())
 
             expect(result).to.throw('Builder: bits overflow. Can\'t add 2 bits. Only 1 bits left.')
         })
@@ -140,7 +140,7 @@ describe('Builder', () => {
                 .storeRef(ref)
                 .cell()
 
-            const result = () => builder.storeSlice(Slice.parse(cell))
+            const result = () => builder.storeSlice(cell.slice())
 
             expect(result).to.throw('Builder: refs overflow. Can\'t add 2 refs. Only 1 refs left.')
         })
@@ -325,7 +325,9 @@ describe('Builder', () => {
     describe('#storeCoins()', () => {
         it('should store Coins', () => {
             const coins = new Coins('100.5')
-            const result = Slice.parse(builder.storeCoins(coins).cell())
+            const result = builder.storeCoins(coins)
+                .cell()
+                .slice()
                 .loadCoins()
 
             expect(result.toString()).to.eql(coins.toString())
@@ -351,7 +353,7 @@ describe('Builder', () => {
         it('should store empty HashmapE', () => {
             const hashmap = new HashmapE(1)
 
-            const slice = Slice.parse(builder.storeDict(hashmap).cell())
+            const slice = builder.storeDict(hashmap).cell().slice()
             const result = HashmapE.parse(1, slice)
 
             expect([ ...result ]).to.eql([])
@@ -365,7 +367,7 @@ describe('Builder', () => {
             hashmap.add([ 0 ], cell1)
             hashmap.add([ 1 ], cell2)
 
-            const slice = Slice.parse(builder.storeDict(hashmap).cell())
+            const slice = builder.storeDict(hashmap).cell().slice()
             const result = HashmapE.parse(1, slice)
 
             expect(result.get([ 0 ]).eq(cell1)).to.eq(true)

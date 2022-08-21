@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { Builder, Slice } from '../src/boc'
+import { Builder, Cell, Slice, HashmapE } from '../src/boc'
 import { stringToBytes } from '../src/utils/helpers'
 import { Address } from '../src/address'
 import { Coins } from '../src/coins'
@@ -22,14 +22,14 @@ describe('Slice', () => {
 
     describe('#bits', () => {
         it('should get Slice bits', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result = slice.bits
 
             expect(result).to.eql([])
         })
 
         it('should throw error from changing attempt', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             // @ts-ignore
             const result = () => { slice.bits = [ 0, 1 ] }
 
@@ -39,14 +39,14 @@ describe('Slice', () => {
 
     describe('#refs', () => {
         it('should get Slice refs', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result = slice.refs
 
             expect(result).to.eql([])
         })
 
         it('should throw error from changing attempt', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             // @ts-ignore
             const result = () => { slice.refs = [] }
 
@@ -58,7 +58,7 @@ describe('Slice', () => {
         it('should skip bits', () => {
             builder.storeBits([ 0, 0, 1, 1 ])
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result = slice.skip(2).loadBits(2)
 
             expect(result).to.eql([ 1, 1 ])
@@ -67,10 +67,107 @@ describe('Slice', () => {
         it('should throw error on overflow', () => {
             builder.storeBits([ 0, 0, 1, 1 ])
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result = () => slice.skip(6)
 
-            expect(result).to.throw('Slice: skip bits overflow.')
+            expect(result).to.throw('Slice: bits overflow.')
+        })
+    })
+
+    describe('#skipBits()', () => {
+        it('should skip bits', () => {
+            builder.storeBits([ 0, 0, 1, 1 ])
+
+            const slice = builder.cell().slice()
+            const result = slice.skipBits(2).loadBits(2)
+
+            expect(result).to.eql([ 1, 1 ])
+        })
+
+        it('should throw error on overflow', () => {
+            builder.storeBits([ 0, 0, 1, 1 ])
+
+            const slice = builder.cell().slice()
+            const result = () => slice.skipBits(6)
+
+            expect(result).to.throw('Slice: bits overflow.')
+        })
+    })
+
+    describe('#skipRefs()', () => {
+        it('should skip refs', () => {
+            const ref1 = new Cell({ bits: [ 0, 1 ] })
+            const ref2 = new Cell({ bits: [ 1, 0 ] })
+
+            builder.storeRefs([ ref1, ref2 ])
+
+            const slice = builder.cell().slice()
+            const result = slice.skipRefs(1).loadRef()
+
+            expect(result.bits).to.eql([ 1, 0 ])
+            expect(slice.refs.length).to.eql(0)
+        })
+
+        it('should throw error on overflow', () => {
+            const ref = new Cell()
+
+            builder.storeRef(ref)
+
+            const slice = builder.cell().slice()
+            const result = () => slice.skipRefs(2)
+
+            expect(result).to.throw('Slice: refs overflow.')
+        })
+    })
+
+    describe('#skipDict()', () => {
+        it('should skip empty dict', () => {
+            const dict = new HashmapE(16)
+            const ref = new Cell()
+
+            builder.storeDict(dict)
+                .storeBits([ 1, 1 ])
+                .storeRef(ref)
+
+            const slice = builder.cell().slice()
+
+            expect(slice.bits).to.eql([ 0, 1, 1 ])
+            expect(slice.refs.length).to.eql(1)
+
+            const result = slice.skipDict()
+
+            expect(result.bits).to.eql([ 1, 1 ])
+            expect(result.refs.length).to.eql(1)
+        })
+
+        it('should skip non-empty dict', () => {
+            const dict = new HashmapE(16)
+            const ref = new Cell()
+
+            dict.set([ 0 ], new Cell())
+            dict.set([ 1 ], new Cell())
+
+            builder.storeDict(dict)
+                .storeBits([ 1, 1 ])
+                .storeRef(ref)
+
+            const slice = builder.cell().slice()
+
+            expect(slice.bits).to.eql([ 1, 1, 1 ])
+            expect(slice.refs.length).to.eql(2)
+
+            const result = slice.skipDict()
+
+            expect(result.bits).to.eql([ 1, 1 ])
+            expect(result.refs.length).to.eql(1)
+        })
+
+        it('should throw error on overflow', () => {
+            const result1 = () => new Cell().slice().skipDict()
+            const result2 = () => new Cell({ bits: [ 1 ] }).slice().skipDict()
+
+            expect(result1).to.throw('Slice: bits overflow.')
+            expect(result2).to.throw('Slice: refs overflow.')
         })
     })
 
@@ -80,7 +177,7 @@ describe('Slice', () => {
 
             builder.storeRef(ref)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadRef()
             const result2 = slice.refs.length
 
@@ -93,7 +190,7 @@ describe('Slice', () => {
 
             builder.storeRef(ref)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadRef()
             const result2 = slice.refs.length
 
@@ -102,7 +199,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadRef()
             const result2 = () => slice.preloadRef()
 
@@ -115,7 +212,7 @@ describe('Slice', () => {
         it('should load bit', () => {
             builder.storeBit(1)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadBit()
             const result2 = slice.bits.length
 
@@ -126,7 +223,7 @@ describe('Slice', () => {
         it('should preload bit without splicing bits', () => {
             builder.storeBit(1)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadBit()
             const result2 = slice.bits.length
 
@@ -135,7 +232,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadBit()
             const result2 = () => slice.preloadBit()
 
@@ -148,7 +245,7 @@ describe('Slice', () => {
         it('should load bits', () => {
             builder.storeBits([ 0, 1 ])
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadBits(2)
             const result2 = slice.bits.length
 
@@ -159,7 +256,7 @@ describe('Slice', () => {
         it('should preload bits without splicing bits', () => {
             builder.storeBits([ 0, 1 ])
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadBits(2)
             const result2 = slice.bits.length
 
@@ -168,7 +265,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadBits(2)
             const result2 = () => slice.loadBits(2)
 
@@ -183,7 +280,7 @@ describe('Slice', () => {
 
             builder.storeInt(int, 15)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadInt(15)
             const result2 = slice.bits.length
 
@@ -196,7 +293,7 @@ describe('Slice', () => {
 
             builder.storeInt(int, 15)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadInt(15)
             const result2 = slice.bits.length
 
@@ -209,7 +306,7 @@ describe('Slice', () => {
 
             builder.storeInt(int, 15)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadInt(15)
             const result2 = slice.bits.length
 
@@ -222,7 +319,7 @@ describe('Slice', () => {
 
             builder.storeInt(int, 15)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadInt(15)
             const result2 = slice.bits.length
 
@@ -231,7 +328,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadInt(15)
             const result2 = () => slice.preloadInt(15)
 
@@ -242,7 +339,7 @@ describe('Slice', () => {
         it('should throw error on loading positive BigInt', () => {
             builder.storeInt(BigInt(Number.MAX_SAFE_INTEGER) + 100n, 64)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
 
             const result1 = () => slice.preloadInt(64)
             const result2 = () => slice.loadInt(64)
@@ -254,7 +351,7 @@ describe('Slice', () => {
         it('should throw error on loading negative BigInt', () => {
             builder.storeInt(BigInt(Number.MIN_SAFE_INTEGER) - 100n, 64)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
 
             const result1 = () => slice.preloadInt(64)
             const result2 = () => slice.loadInt(64)
@@ -270,7 +367,7 @@ describe('Slice', () => {
 
             builder.storeInt(bigint, 64)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadBigInt(64)
             const result2 = slice.bits.length
 
@@ -283,7 +380,7 @@ describe('Slice', () => {
 
             builder.storeInt(bigint, 64)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadBigInt(64)
             const result2 = slice.bits.length
 
@@ -296,7 +393,7 @@ describe('Slice', () => {
 
             builder.storeInt(bigint, 64)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadBigInt(64)
             const result2 = slice.bits.length
 
@@ -309,7 +406,7 @@ describe('Slice', () => {
 
             builder.storeInt(bigint, 64)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadBigInt(64)
             const result2 = slice.bits.length
 
@@ -318,7 +415,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadBigInt(64)
             const result2 = () => slice.preloadBigInt(64)
 
@@ -333,7 +430,7 @@ describe('Slice', () => {
 
             builder.storeVarInt(int, 4)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadVarInt(4)
             const result2 = slice.bits.length
 
@@ -346,7 +443,7 @@ describe('Slice', () => {
 
             builder.storeVarInt(int, 4)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadVarInt(4)
             const result2 = slice.bits.length
 
@@ -359,7 +456,7 @@ describe('Slice', () => {
 
             builder.storeVarInt(int, 4)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadVarInt(4)
             const result2 = slice.bits.length
 
@@ -372,7 +469,7 @@ describe('Slice', () => {
 
             builder.storeVarInt(int, 4)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadVarInt(4)
             const result2 = slice.bits.length
 
@@ -381,7 +478,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadVarInt(4)
             const result2 = () => slice.preloadVarInt(4)
 
@@ -392,7 +489,7 @@ describe('Slice', () => {
         it('should throw error on loading positive variable BigInt', () => {
             builder.storeVarInt(BigInt(Number.MAX_SAFE_INTEGER) + 100n, 16)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
 
             const result1 = () => slice.preloadVarInt(16)
             const result2 = () => slice.loadVarInt(16)
@@ -404,7 +501,7 @@ describe('Slice', () => {
         it('should throw error on loading negative variable BigInt', () => {
             builder.storeVarInt(BigInt(Number.MIN_SAFE_INTEGER) - 100n, 16)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
 
             const result1 = () => slice.preloadVarInt(16)
             const result2 = () => slice.loadVarInt(16)
@@ -420,7 +517,7 @@ describe('Slice', () => {
 
             builder.storeVarInt(bigint, 16)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadVarBigInt(16)
             const result2 = slice.bits.length
 
@@ -433,7 +530,7 @@ describe('Slice', () => {
 
             builder.storeVarInt(bigint, 16)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadVarBigInt(16)
             const result2 = slice.bits.length
 
@@ -446,7 +543,7 @@ describe('Slice', () => {
 
             builder.storeVarInt(bigint, 16)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadVarBigInt(16)
             const result2 = slice.bits.length
 
@@ -459,7 +556,7 @@ describe('Slice', () => {
 
             builder.storeVarInt(bigint, 16)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadVarBigInt(16)
             const result2 = slice.bits.length
 
@@ -468,7 +565,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadVarBigInt(16)
             const result2 = () => slice.preloadVarBigInt(16)
 
@@ -483,7 +580,7 @@ describe('Slice', () => {
 
             builder.storeUint(uint, 9)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadUint(9)
             const result2 = slice.bits.length
 
@@ -496,7 +593,7 @@ describe('Slice', () => {
 
             builder.storeUint(uint, 9)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadUint(9)
             const result2 = slice.bits.length
 
@@ -505,7 +602,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadUint(9)
             const result2 = () => slice.preloadUint(9)
 
@@ -516,7 +613,7 @@ describe('Slice', () => {
         it('should throw error on loading BigInt', () => {
             builder.storeUint(BigInt(Number.MAX_SAFE_INTEGER) + 100n, 64)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
 
             const result1 = () => slice.preloadUint(64)
             const result2 = () => slice.loadUint(64)
@@ -532,7 +629,7 @@ describe('Slice', () => {
 
             builder.storeUint(biguint, 64)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadBigUint(64)
             const result2 = slice.bits.length
 
@@ -545,7 +642,7 @@ describe('Slice', () => {
 
             builder.storeUint(biguint, 64)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadBigUint(64)
             const result2 = slice.bits.length
 
@@ -554,7 +651,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadBigUint(64)
             const result2 = () => slice.preloadBigUint(64)
 
@@ -569,7 +666,7 @@ describe('Slice', () => {
 
             builder.storeVarUint(uint, 4)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadVarUint(4)
             const result2 = slice.bits.length
 
@@ -582,7 +679,7 @@ describe('Slice', () => {
 
             builder.storeVarUint(uint, 4)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadVarUint(4)
             const result2 = slice.bits.length
 
@@ -591,7 +688,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadVarUint(4)
             const result2 = () => slice.preloadVarUint(4)
 
@@ -602,7 +699,7 @@ describe('Slice', () => {
         it('should throw error on loading BigInt', () => {
             builder.storeVarUint(BigInt(Number.MAX_SAFE_INTEGER) + 100n, 16)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
 
             const result1 = () => slice.preloadVarUint(16)
             const result2 = () => slice.loadVarUint(16)
@@ -618,7 +715,7 @@ describe('Slice', () => {
 
             builder.storeVarUint(biguint, 16)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadVarBigUint(16)
             const result2 = slice.bits.length
 
@@ -631,7 +728,7 @@ describe('Slice', () => {
 
             builder.storeVarUint(biguint, 16)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadVarBigUint(16)
             const result2 = slice.bits.length
 
@@ -640,7 +737,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadVarBigUint(16)
             const result2 = () => slice.preloadVarBigUint(16)
 
@@ -655,7 +752,7 @@ describe('Slice', () => {
 
             builder.storeBytes(bytes)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadBytes(bytes.byteLength * 8)
             const result2 = slice.bits.length
 
@@ -668,7 +765,7 @@ describe('Slice', () => {
 
             builder.storeBytes(bytes)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadBytes(bytes.byteLength * 8)
             const result2 = slice.bits.length
 
@@ -677,7 +774,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadBytes(8)
             const result2 = () => slice.loadBytes(8)
 
@@ -692,7 +789,7 @@ describe('Slice', () => {
 
             builder.storeString(string)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadString()
             const result2 = slice.bits.length
 
@@ -706,7 +803,7 @@ describe('Slice', () => {
 
             builder.storeString(string)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadString(size)
             const result2 = slice.bits.length
 
@@ -720,7 +817,7 @@ describe('Slice', () => {
 
             builder.storeString(string)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadString()
             const result2 = slice.bits.length
 
@@ -734,7 +831,7 @@ describe('Slice', () => {
 
             builder.storeString(string)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadString(size)
             const result2 = slice.bits.length
 
@@ -743,7 +840,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadString(2)
             const result2 = () => slice.preloadString(2)
 
@@ -759,7 +856,7 @@ describe('Slice', () => {
 
             builder.storeAddress(address)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadAddress()
             const result2 = slice.bits.length
 
@@ -770,7 +867,7 @@ describe('Slice', () => {
         it('should load null Address with splicing bits', () => {
             builder.storeAddress(Address.NONE)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadAddress()
             const result2 = slice.bits.length
 
@@ -784,7 +881,7 @@ describe('Slice', () => {
 
             builder.storeAddress(address)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadAddress()
             const result2 = slice.bits.length
 
@@ -795,7 +892,7 @@ describe('Slice', () => {
         it('should preload null Address without splicing bits', () => {
             builder.storeAddress(Address.NONE)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadAddress()
             const result2 = slice.bits.length
 
@@ -806,7 +903,7 @@ describe('Slice', () => {
         it('should throw error on incorrect Address flags', () => {
             builder.storeBits([ 1, 1 ])
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadAddress()
             const result2 = () => slice.preloadAddress()
 
@@ -815,7 +912,7 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadAddress()
             const result2 = () => slice.preloadAddress()
 
@@ -830,7 +927,7 @@ describe('Slice', () => {
 
             builder.storeCoins(coins)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadCoins()
             const result2 = slice.bits.length
 
@@ -843,7 +940,7 @@ describe('Slice', () => {
 
             builder.storeCoins(coins)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadCoins()
             const result2 = slice.bits.length
 
@@ -857,7 +954,7 @@ describe('Slice', () => {
 
             builder.storeCoins(jettons)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.loadCoins(decimals)
             const result2 = slice.bits.length
 
@@ -871,7 +968,7 @@ describe('Slice', () => {
 
             builder.storeCoins(coins)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadCoins()
             const result2 = slice.bits.length
 
@@ -884,7 +981,7 @@ describe('Slice', () => {
 
             builder.storeCoins(coins)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadCoins()
             const result2 = slice.bits.length
 
@@ -899,7 +996,7 @@ describe('Slice', () => {
 
             builder.storeCoins(jettons)
 
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = slice.preloadCoins(decimals)
             const result2 = slice.bits.length
 
@@ -908,12 +1005,106 @@ describe('Slice', () => {
         })
 
         it('should throw error on overflow', () => {
-            const slice = Slice.parse(builder.cell())
+            const slice = builder.cell().slice()
             const result1 = () => slice.loadCoins()
             const result2 = () => slice.preloadCoins()
 
             expect(result1).to.throw('Slice: bits overflow.')
             expect(result2).to.throw('Slice: bits overflow.')
+        })
+    })
+
+    describe('#loadDict(), #preloadDict()', () => {
+        it('should load empty dict', () => {
+            const dict = new HashmapE(16)
+            const ref = new Cell()
+
+            builder.storeDict(dict)
+                .storeBit(1)
+                .storeRef(ref)
+
+            const slice = builder.cell().slice()
+            const result = [ ...slice.loadDict(16) ]
+
+            expect(slice.bits).to.eql([ 1 ])
+            expect(slice.refs.length).to.eql(1)
+            expect(slice.refs[0].eq(ref)).to.eql(true)
+            expect(result).to.eql([])
+        })
+
+        it('should load non-empty dict', () => {
+            const dict = new HashmapE(2)
+            const ref = new Cell()
+
+            dict.set([ 0, 0 ], ref)
+            dict.set([ 0, 1 ], ref)
+
+            builder.storeDict(dict)
+                .storeBit(1)
+                .storeRef(ref)
+
+            const slice = builder.cell().slice()
+            const result = [ ...slice.loadDict(2) ]
+
+            expect(slice.bits).to.eql([ 1 ])
+            expect(slice.refs.length).to.eql(1)
+            expect(slice.refs[0].eq(ref)).to.eql(true)
+            expect(result[0][0]).to.eql([ 0, 0 ])
+            expect(result[1][0]).to.eql([ 0, 1 ])
+            expect(result[0][1].eq(ref)).to.eql(true)
+            expect(result[1][1].eq(ref)).to.eql(true)
+        })
+
+        it('should preload empty dict without splicing bits and refs', () => {
+            const dict = new HashmapE(16)
+            const ref = new Cell()
+
+            builder.storeDict(dict)
+                .storeBit(1)
+                .storeRef(ref)
+
+            const slice = builder.cell().slice()
+            const result = [ ...slice.preloadDict(16) ]
+
+            expect(slice.bits).to.eql([ 0, 1 ])
+            expect(slice.refs.length).to.eql(1)
+            expect(slice.refs[0].eq(ref)).to.eql(true)
+            expect(result).to.eql([])
+        })
+
+        it('should preload non-empty dict without splicing bits and refs', () => {
+            const dict = new HashmapE(2)
+            const ref = new Cell()
+
+            dict.set([ 0, 0 ], ref)
+            dict.set([ 0, 1 ], ref)
+
+            builder.storeDict(dict)
+                .storeBit(1)
+                .storeRef(ref)
+
+            const slice = builder.cell().slice()
+            const result = [ ...slice.preloadDict(2) ]
+
+            expect(slice.bits).to.eql([ 1, 1 ])
+            expect(slice.refs.length).to.eql(2)
+            expect(slice.refs[1].eq(ref)).to.eql(true)
+            expect(result[0][0]).to.eql([ 0, 0 ])
+            expect(result[1][0]).to.eql([ 0, 1 ])
+            expect(result[0][1].eq(ref)).to.eql(true)
+            expect(result[1][1].eq(ref)).to.eql(true)
+        })
+
+        it('should throw error on overflow', () => {
+            const result1 = () => new Cell().slice().loadDict(16)
+            const result2 = () => new Cell().slice().preloadDict(16)
+            const result3 = () => new Cell({ bits: [ 1 ] }).slice().loadDict(16)
+            const result4 = () => new Cell({ bits: [ 1 ] }).slice().preloadDict(16)
+
+            expect(result1).to.throw('Slice: bits overflow.')
+            expect(result2).to.throw('Slice: bits overflow.')
+            expect(result3).to.throw('Slice: refs overflow.')
+            expect(result4).to.throw('Slice: refs overflow.')
         })
     })
 })

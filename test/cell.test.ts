@@ -1,6 +1,6 @@
+import type { Bit } from '../src/types/bit'
 import { expect } from 'chai'
-import { Bit } from '../src/types/bit'
-import { Cell, CellType, Builder, BOC } from '../src/boc'
+import { Cell, CellType, Builder, Slice, BOC } from '../src/boc'
 import { bytesToBits, hexToBits } from '../src/utils/helpers'
 
 describe('Cell', () => {
@@ -183,6 +183,17 @@ describe('Cell', () => {
             expect(cell2.getBitsDescriptor()).to.eql(bytesToBits(bitsDescriptorCell2))
             expect(cell3.getBitsDescriptor()).to.eql(bytesToBits(bitsDescriptorCell3))
             expect(cell4.getBitsDescriptor()).to.eql(bytesToBits(bitsDescriptorCell4))
+        })
+    })
+
+    describe('#slice()', () => {
+        it('should create slice', () => {
+            const cell = new Cell({ bits: [ 1, 1 ], refs: [] })
+            const slice = cell.slice()
+
+            expect(slice instanceof Slice).to.eql(true)
+            expect(slice.bits).to.eql([ 1, 1 ])
+            expect(slice.refs).to.eql([])
         })
     })
 

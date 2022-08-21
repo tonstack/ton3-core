@@ -1,7 +1,7 @@
+import type { Bit } from '../src/types/bit'
 import { expect } from 'chai'
 import { Builder, Cell, BOC, Slice } from '../src/boc'
 import { Hashmap, HashmapE } from '../src/boc/hashmap'
-import { Bit } from '../src/types/bit'
 
 describe('Hashmap', () => {
     describe('#constructor()', () => {
