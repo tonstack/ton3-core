@@ -8,14 +8,6 @@ const isNodeEnv = typeof process !== 'undefined'
     && process.versions !== undefined
     && process.versions.node !== undefined
 
-const uint8toInt8 = (uint8: number): number => ((uint8 << 24) >> 24)
-
-const int8ToUint8 = (int8: number): number => {
-    const int = 1 << 7
-
-    return int8 >= int ? (int8 - (int * 2)) : int8
-}
-
 const uintToHex = (uint: number): string => {
     const hex = `0${uint.toString(16)}`
 
@@ -86,10 +78,6 @@ const bitsToBytes = (bits: Bit[]): Uint8Array => {
     return hexToBytes(bitsToHex(bits))
 }
 
-const bitsToInt8 = (bits: Bit[]): number => uint8toInt8(bytesToUint(bitsToBytes(bits)))
-
-const bitsToUint8 = (bits: Bit[]): number => bytesToUint(bitsToBytes(bits))
-
 const bytesToHex = (bytes: Uint8Array): string => bytes.reduce((acc, uint) => `${acc}${uintToHex(uint)}`, '')
 
 const bytesToString = (bytes: Uint8Array): string => {
@@ -134,14 +122,10 @@ const sliceIntoChunks = (arr: any[], chunkSize: number): any[] => {
 
 export {
     isNodeEnv,
-    uint8toInt8,
-    int8ToUint8,
     uintToHex,
     hexToBits,
     hexToBytes,
     bitsToHex,
-    bitsToInt8,
-    bitsToUint8,
     bitsToBytes,
     bytesToUint,
     bytesCompare,

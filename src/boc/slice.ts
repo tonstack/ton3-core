@@ -8,7 +8,6 @@ import {
 } from './hashmap'
 import {
     bitsToHex,
-    bitsToInt8,
     bitsToBytes,
     bytesToString
 } from '../utils/helpers'
@@ -627,16 +626,16 @@ class Slice {
         if (flag.every((bit, i) => bit === FLAG_ADDRESS[i])) {
             // 2 bits flag, 1 bit anycast, 8 bits workchain, 256 bits address hash
             const size = 2 + 1 + 8 + 256
-            const bits = this.preloadBits(size)
-            // Splice 2 because we dont need flag bits
+            // Slice 2 because we dont need flag bits
+            const bits = this.loadBits(size).slice(2)
             // Anycast is currently unused
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const anycast = bits.splice(2, 1)
-            const workchain = bitsToInt8(bits.splice(2, 8))
-            const hash = bitsToHex(bits.splice(2, 256))
+            const _anycast = bits.splice(0, 1)
+            const workchain = bitsToIntUint(bits.splice(0, 8), { type: 'int' })
+            const hash = bitsToHex(bits.splice(0, 256))
             const raw = `${workchain}:${hash}`
 
-            return this.skip(size) && new Address(raw)
+            return new Address(raw)
         }
 
         throw new Error('Slice: bad address flag bits.')
@@ -659,13 +658,13 @@ class Slice {
         if (flag.every((bit, i) => bit === FLAG_ADDRESS[i])) {
             // 2 bits flag, 1 bit anycast, 8 bits workchain, 256 bits address hash
             const size = 2 + 1 + 8 + 256
-            const bits = this.preloadBits(size)
+            const bits = this.preloadBits(size).slice(2)
             // Splice 2 because we dont need flag bits
             // Anycast is currently unused
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const anycast = bits.splice(2, 1)
-            const workchain = bitsToInt8(bits.splice(2, 8))
-            const hash = bitsToHex(bits.splice(2, 256))
+            const _anycast = bits.splice(0, 1)
+            const workchain = bitsToIntUint(bits.splice(0, 8), { type: 'int' })
+            const hash = bitsToHex(bits.splice(0, 256))
             const raw = `${workchain}:${hash}`
 
             return new Address(raw)

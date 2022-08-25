@@ -110,7 +110,7 @@ describe('Address', () => {
             const result3 = () => new Address('ov_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYMg3')
 
             expect(result1).to.throw('Address: can\'t parse address. Unknown type.')
-            expect(result2).to.throw('Address: can\'t parse address. Wrong hashsum.')
+            expect(result2).to.throw('Address: can\'t parse address. Wrong checksum.')
             expect(result3).to.throw('Address: bad address tag.')
         })
     })

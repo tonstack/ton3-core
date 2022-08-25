@@ -12,13 +12,13 @@ import {
     bytesToUint,
     bytesCompare,
     bitsToBytes,
-    bitsToInt8,
     bytesToBits
 } from '../utils/helpers'
 import {
     augment,
     rollback
 } from '../utils/bits'
+import { bitsToIntUint } from '../utils/numbers'
 import { crc32cBytesLe } from '../utils/checksum'
 
 const REACH_BOC_MAGIC_PREFIX = hexToBytes('B5EE9C72')
@@ -274,11 +274,11 @@ const deserializeCell = (remainder: number[], refIndexSize: number): CellData =>
     }
 
     const type: CellType = isExotic
-        ? bitsToInt8(bits.slice(0, 8))
+        ? bitsToIntUint(bits.slice(0, 8), { type: 'int' })
         : CellType.Ordinary
 
     if (isExotic && type === CellType.Ordinary) {
-        throw new Error(`BoC an exotic cell can't be of ordinary type ${bitsToInt8(bits.slice(0, 8))}`)
+        throw new Error(`BoC an exotic cell can't be of ordinary type`)
     }
 
     const pointer: CellPointer = {
