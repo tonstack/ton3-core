@@ -19,7 +19,7 @@ class Mask {
     }
 
     public get level (): number {
-        return 32 - Math.clz32(this._value & 7)
+        return 32 - Math.clz32(this._value)
     }
 
     public get hashIndex (): number {

@@ -43,15 +43,15 @@ const validatePrunedBranch = (bits: Bit[], refs: Cell[]): void => {
     if (bits.length < 16) throw new Error('Pruned Branch cell can\'t has less than 16 bits')
     if (refs.length !== 0) throw new Error('Pruned Branch cell can\'t has refs')
 
-    const mask = new Mask(bitsToIntUint(bits.slice(0, 8), { type: 'uint' }))
+    const mask = new Mask(bitsToIntUint(bits.slice(8, 16), { type: 'uint' }))
 
     if (mask.level < 1 || mask.level > 3) {
         throw new Error('Pruned Branch has an invalid level')
     }
 
     const { hashCount } = mask.apply(mask.level - 1)
-    // mask + ??? + hashCount * (hash + depth)
-    const size = 8 + 8 + hashCount * (HASH_BITS + DEPTH_BITS)
+    // type + mask + (hashCount * (hash + depth))
+    const size = 8 + 8 + (hashCount * (HASH_BITS + DEPTH_BITS))
 
     if (bits.length !== size) {
         throw new Error('Pruned Branch has an invalid data')
@@ -59,7 +59,7 @@ const validatePrunedBranch = (bits: Bit[], refs: Cell[]): void => {
 }
 
 const validateLibraryReference = (bits: Bit[], refs: Cell[]): void => {
-    // mask + hash
+    // type + hash
     const size = 8 + HASH_BITS
 
     if (bits.length !== size) {
@@ -72,7 +72,7 @@ const validateLibraryReference = (bits: Bit[], refs: Cell[]): void => {
 }
 
 const validateMerkleProof = (bits: Bit[], refs: Cell[]): void => {
-    // mask + hash + depth
+    // type + hash + depth
     const size = 8 + HASH_BITS + DEPTH_BITS
 
     if (bits.length !== size) {
@@ -84,22 +84,22 @@ const validateMerkleProof = (bits: Bit[], refs: Cell[]): void => {
     }
 
     const data = Array.from(bits.slice(8))
+    const proofHash = bitsToHex(data.splice(0, HASH_BITS))
+    const proofDepth = bitsToIntUint(data.splice(0, DEPTH_BITS), { type: 'uint' })
+    const refHash = refs[0].hash(0)
+    const refDepth = refs[0].depth(0)
 
-    const proof = bitsToHex(data.splice(0, HASH_BITS))
-    const hash = refs[0].hash(0)
-    const depth = bitsToIntUint(data.splice(0, DEPTH_BITS), { type: 'uint' })
-
-    if (proof !== hash) {
+    if (proofHash !== refHash) {
         throw new Error('Merkle Proof hash mismatch')
     }
 
-    if (depth !== refs[0].depth(0)) {
+    if (proofDepth !== refDepth) {
         throw new Error('Merkle Proof depth mismatch')
     }
 }
 
 const validateMerkleUpdate = (bits: Bit[], refs: Cell[]): void => {
-    // mask + hash + hash + depth + depth
+    // type + hash + hash + depth + depth
     const size = 8 + (HASH_BITS * 2) + (DEPTH_BITS * 2)
 
     if (bits.length !== size) {
@@ -112,22 +112,21 @@ const validateMerkleUpdate = (bits: Bit[], refs: Cell[]): void => {
 
     const data = Array.from(bits.slice(8))
 
-    for (let i = 0; i < 2; i++) {
-        const proof = bitsToHex(data.splice(0, HASH_BITS))
-        const hash = refs[i].hash(0)
+    refs.forEach((ref, i) => {
+        const index = refs.length - i - 1
+        const proofHash = bitsToHex(data.splice(0, HASH_BITS))
+        const proofDepth = bitsToIntUint(data.splice(HASH_BITS * index, DEPTH_BITS), { type: 'uint' })
+        const refHash = ref.hash(0)
+        const refDepth = ref.depth(0)
 
-        if (proof !== hash) {
+        if (proofHash !== refHash) {
             throw new Error(`Merkle Update ref #${i} hash mismatch`)
         }
-    }
 
-    for (let i = 0; i < 2; i++) {
-        const depth = bitsToIntUint(data.splice(0, DEPTH_BITS), { type: 'uint' })
-
-        if (depth !== refs[i].depth(0)) {
+        if (proofDepth !== refDepth) {
             throw Error(`Merkle Update ref #${i} depth mismatch`)
         }
-    }
+    })
 }
 
 const getMapper = (type: CellType): CellTypeMapper => {
