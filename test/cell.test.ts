@@ -4,6 +4,23 @@ import { Cell, CellType, Builder, Slice, BOC } from '../src/boc'
 import { bytesToBits, hexToBits } from '../src/utils/helpers'
 
 describe('Cell', () => {
+    const TYPE_BITS_ORDINARY = [ 1, 1, 1, 1, 1, 1, 1, 1 ] as Bit[]
+    const TYPE_BITS_PRUNED_BRANCH = [ 0, 0, 0, 0, 0, 0, 0, 1 ] as Bit[]
+    const TYPE_BITS_LIBRARY_REFERENCE = [ 0, 0, 0, 0, 0, 0, 1, 0 ] as Bit[]
+    const TYPE_BITS_MERKLE_PROOF = [ 0, 0, 0, 0, 0, 0, 1, 1 ] as Bit[]
+    const TYPE_BITS_MERKLE_UPDATE = [ 0, 0, 0, 0, 0, 1, 0, 0 ] as Bit[]
+    const MASK_LEVEL_0 = [ 0, 0, 0, 0, 0, 0, 0, 0 ] as Bit[]
+    const MASK_LEVEL_1 = [ 0, 0, 0, 0, 0, 0, 0, 1 ] as Bit[]
+    const MASK_LEVEL_2 = [ 0, 0, 0, 0, 0, 0, 1, 1 ] as Bit[]
+    const MASK_LEVEL_3 = [ 0, 0, 0, 0, 0, 1, 1, 1 ] as Bit[]
+    const MASK_LEVEL_4 = [ 0, 0, 0, 0, 1, 1, 1, 1 ] as Bit[]
+    const CELL_EMPTY = new Cell()
+    const CELL_HASH_EMPTY = hexToBits('96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7')
+    const CELL_HASH_INVALID = Array.from({ length: 256 }).fill(0) as Bit[]
+    const CELL_DEPTH_0 = Array.from({ length: 16 }).fill(0) as Bit[]
+    const CELL_DEPTH_1 = Array.from({ length: 15 }).fill(0).concat([ 1 ]) as Bit[]
+
+
     describe('#constructor()', () => {
         it('should create new ordinary cell', () => {
             const cell = new Cell()
@@ -14,127 +31,122 @@ describe('Cell', () => {
         })
 
         it('should create new pruned branch cell', () => {
-            const mask = [ 0, 0, 0, 0, 0, 0, 0, 1 ] as Bit[]
-            const zeroes = Array.from({ length: 8 + 256 + 16 }).fill(0) as Bit[]
-            const cell = new Cell({ type: CellType.PrunedBranch, bits: mask.concat(zeroes) })
+            const bits = [].concat(TYPE_BITS_PRUNED_BRANCH, MASK_LEVEL_1, CELL_HASH_EMPTY, CELL_DEPTH_0)
+            const cell = new Cell({ type: CellType.PrunedBranch, bits })
 
-            expect(cell.bits).to.eql(mask.concat(zeroes))
+            expect(cell.bits).to.eql(bits)
             expect(cell.refs).to.eql([])
             expect(cell.type).to.eq(CellType.PrunedBranch)
         })
 
         it('should create new library reference cell', () => {
-            const zeroes = Array.from({ length: 8 + 256}).fill(0) as Bit[]
-            const cell = new Cell({ type: CellType.LibraryReference, bits: zeroes })
+            const bits = [].concat(TYPE_BITS_LIBRARY_REFERENCE, CELL_HASH_EMPTY)
+            const cell = new Cell({ type: CellType.LibraryReference, bits })
 
-            expect(cell.bits).to.eql(zeroes)
+            expect(cell.bits).to.eql(bits)
             expect(cell.refs).to.eql([])
             expect(cell.type).to.eq(CellType.LibraryReference)
         })
 
         it('should create new merkle proof cell', () => {
-            const ref = new Cell()
-            const mask = Array.from({ length: 8 }).fill(0) as Bit[]
-            const hash = hexToBits('96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7')
-            const depth = Array.from({ length: 16 }).fill(0) as Bit[]
-            const cell = new Cell({ type: CellType.MerkleProof, bits: mask.concat(hash, depth), refs: [ ref ] })
+            const bits = [].concat(TYPE_BITS_MERKLE_PROOF, CELL_HASH_EMPTY, CELL_DEPTH_0)
+            const cell = new Cell({ type: CellType.MerkleProof, bits, refs: [ CELL_EMPTY ] })
 
-            expect(cell.bits).to.eql(mask.concat(hash, depth))
+            expect(cell.bits).to.eql(bits)
             expect(cell.refs.length).to.eq(1)
-            expect(cell.refs[0].eq(ref)).to.eq(true)
+            expect(cell.refs[0].eq(CELL_EMPTY)).to.eq(true)
             expect(cell.type).to.eq(CellType.MerkleProof)
         })
 
         it('should create new merkle update cell', () => {
-            const ref = new Cell()
-            const mask = Array.from({ length: 8 }).fill(0) as Bit[]
-            const hash = hexToBits('96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7')
-            const depth = Array.from({ length: 16 }).fill(0) as Bit[]
-            const cell = new Cell({ type: CellType.MerkleUpdate, bits: mask.concat(hash, hash, depth, depth), refs: [ ref, ref ] })
+            const bits = [].concat(TYPE_BITS_MERKLE_UPDATE, CELL_HASH_EMPTY, CELL_HASH_EMPTY, CELL_DEPTH_0, CELL_DEPTH_0)
+            const cell = new Cell({ type: CellType.MerkleUpdate, bits, refs: [ CELL_EMPTY, CELL_EMPTY ] })
 
-            expect(cell.bits).to.eql(mask.concat(hash, hash, depth, depth))
+            expect(cell.bits).to.eql(bits)
             expect(cell.refs.length).to.eq(2)
-            expect(cell.refs[0].eq(ref)).to.eq(true)
-            expect(cell.refs[1].eq(ref)).to.eq(true)
+            expect(cell.refs[0].eq(CELL_EMPTY)).to.eq(true)
+            expect(cell.refs[1].eq(CELL_EMPTY)).to.eq(true)
             expect(cell.type).to.eq(CellType.MerkleUpdate)
         })
 
         it('should throw errors on bad cell type', () => {
             const result1 = () => new Cell({ type: 0 })
-            const result2 = () => new Cell({ type: 255 })
+            const result2 = () => new Cell({ type: 127 })
+            const result3 = () => new Cell({ type: -127 })
 
             expect(result1).to.throw('Unknown cell type')
             expect(result2).to.throw('Unknown cell type')
+            expect(result3).to.throw('Unknown cell type')
         })
 
         it('should throw errors on bad ordinary cell', () => {
             const result1 = () => new Cell({ type: CellType.Ordinary, bits: Array.from({ length: 1024 }) })
             const result2 = () => new Cell({ type: CellType.Ordinary, refs: Array.from({ length: 5 }) })
 
-            expect(result1).to.throw('Ordinary cell can\'t has more than 1023 bits')
-            expect(result2).to.throw('Ordinary cell can\'t has more than 4 refs')
+            expect(result1).to.throw(`Ordinary cell can't has more than 1023 bits, got "1024"`)
+            expect(result2).to.throw(`Ordinary cell can't has more than 4 refs, got "5"`)
         })
 
         it('should throw errors on bad pruned branch cell', () => {
             const result1 = () => new Cell({ type: CellType.PrunedBranch })
-            const result2 = () => new Cell({ type: CellType.PrunedBranch, bits: Array.from({ length: 16 }), refs: Array.from({ length: 1 }) })
-            const result3 = () => new Cell({ type: CellType.PrunedBranch, bits: Array.from({ length: 16 }).fill(0) as Bit[] })
-            const result4 = () => new Cell({ type: CellType.PrunedBranch, bits: Array.from({ length: 16 }).fill(1) as Bit[] })
+            const result2 = () => new Cell({ type: CellType.PrunedBranch, bits: [].concat(TYPE_BITS_PRUNED_BRANCH, MASK_LEVEL_1, CELL_HASH_EMPTY, CELL_DEPTH_0), refs: [ CELL_EMPTY ] })
+            const result3 = () => new Cell({ type: CellType.PrunedBranch, bits: [].concat(TYPE_BITS_ORDINARY, MASK_LEVEL_1, CELL_HASH_EMPTY, CELL_DEPTH_0) })
+            const result4 = () => new Cell({ type: CellType.PrunedBranch, bits: [].concat(TYPE_BITS_PRUNED_BRANCH, MASK_LEVEL_0, CELL_HASH_EMPTY, CELL_DEPTH_0) })
+            const result5 = () => new Cell({ type: CellType.PrunedBranch, bits: [].concat(TYPE_BITS_PRUNED_BRANCH, MASK_LEVEL_4, CELL_HASH_EMPTY, CELL_DEPTH_0) })
+            const result6 = () => new Cell({ type: CellType.PrunedBranch, bits: [].concat(TYPE_BITS_PRUNED_BRANCH, MASK_LEVEL_1, CELL_HASH_EMPTY, CELL_DEPTH_0, [ 0 ]) })
+            const result7 = () => new Cell({ type: CellType.PrunedBranch, bits: [].concat(TYPE_BITS_PRUNED_BRANCH, MASK_LEVEL_2, CELL_HASH_EMPTY, CELL_DEPTH_0) })
+            const result8 = () => new Cell({ type: CellType.PrunedBranch, bits: [].concat(TYPE_BITS_PRUNED_BRANCH, MASK_LEVEL_3, CELL_HASH_EMPTY, CELL_DEPTH_0) })
 
-            expect(result1).to.throw('Pruned Branch cell can\'t has less than 16 bits')
-            expect(result2).to.throw('Pruned Branch cell can\'t has refs')
-            expect(result3).to.throw('Pruned Branch has an invalid level')
-            expect(result4).to.throw('Pruned Branch has an invalid data')
+            expect(result1).to.throw(`Pruned Branch cell can't has less than (8 + 8 + 256 + 16) bits, got "0"`)
+            expect(result2).to.throw(`Pruned Branch cell can't has refs, got "1"`)
+            expect(result3).to.throw(`Pruned Branch cell type must be exactly 1, got "-1"`)
+            expect(result4).to.throw(`Pruned Branch cell level must be >= 1 and <= 3, got "0"`)
+            expect(result5).to.throw(`Pruned Branch cell level must be >= 1 and <= 3, got "4"`)
+            expect(result6).to.throw(`Pruned Branch cell with level "1" must have exactly 288 bits, got "289"`)
+            expect(result7).to.throw(`Pruned Branch cell with level "2" must have exactly 560 bits, got "288"`)
+            expect(result8).to.throw(`Pruned Branch cell with level "3" must have exactly 832 bits, got "288"`)
         })
 
         it('should throw errors on bad library reference cell', () => {
             const result1 = () => new Cell({ type: CellType.LibraryReference })
-            const result2 = () => new Cell({ type: CellType.LibraryReference, bits: Array.from({ length: 8 + 256 }), refs: Array.from({ length: 1 }) })
+            const result2 = () => new Cell({ type: CellType.LibraryReference, bits: [].concat(TYPE_BITS_LIBRARY_REFERENCE, CELL_HASH_EMPTY), refs: [ CELL_EMPTY ] })
+            const result3 = () => new Cell({ type: CellType.LibraryReference, bits: [].concat(TYPE_BITS_ORDINARY, CELL_HASH_EMPTY) })
 
-            expect(result1).to.throw('Library reference has an invalid data')
-            expect(result2).to.throw('Library reference has an invalid refs')
+            expect(result1).to.throw(`Library Reference cell must have exactly (8 + 256) bits, got "0"`)
+            expect(result2).to.throw(`Library Reference cell can't has refs, got "1"`)
+            expect(result3).to.throw(`Library Reference cell type must be exactly 2, got "-1"`)
         })
 
         it('should throw errors on bad merkle proof cell', () => {
-            const cell = new Cell()
-            const zeroes = Array.from({ length: 8 + 256 + 16 }).fill(0) as Bit[]
-            const mask = Array.from({ length: 8 }).fill(0) as Bit[]
-            const hash = hexToBits('96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7')
-            const depth = Array.from({ length: 16 }).fill(1) as Bit[]
-
             const result1 = () => new Cell({ type: CellType.MerkleProof })
-            const result2 = () => new Cell({ type: CellType.MerkleProof, bits: zeroes })
-            const result3 = () => new Cell({ type: CellType.MerkleProof, bits: zeroes, refs: [ cell ] })
-            const result4 = () => new Cell({ type: CellType.MerkleProof, bits: mask.concat(hash, depth), refs: [ cell ] })
+            const result2 = () => new Cell({ type: CellType.MerkleProof, bits: [].concat(TYPE_BITS_MERKLE_PROOF, CELL_HASH_EMPTY, CELL_DEPTH_0) })
+            const result3 = () => new Cell({ type: CellType.MerkleProof, bits: [].concat(TYPE_BITS_ORDINARY, CELL_HASH_EMPTY, CELL_DEPTH_0), refs: [ CELL_EMPTY ] })
+            const result4 = () => new Cell({ type: CellType.MerkleProof, bits: [].concat(TYPE_BITS_MERKLE_PROOF, CELL_HASH_INVALID, CELL_DEPTH_0), refs: [ CELL_EMPTY ]  })
+            const result5 = () => new Cell({ type: CellType.MerkleProof, bits: [].concat(TYPE_BITS_MERKLE_PROOF, CELL_HASH_EMPTY, CELL_DEPTH_1), refs: [ CELL_EMPTY ]  })
 
-            expect(result1).to.throw('Merkle Proof has an invalid data')
-            expect(result2).to.throw('Merkle Proof has an invalid refs')
-            expect(result3).to.throw('Merkle Proof hash mismatch')
-            expect(result4).to.throw('Merkle Proof depth mismatch')
+            expect(result1).to.throw(`Merkle Proof cell must have exactly (8 + 256 + 16) bits, got "0"`)
+            expect(result2).to.throw(`Merkle Proof cell must have exactly 1 ref, got "0"`)
+            expect(result3).to.throw(`Merkle Proof cell type must be exactly 3, got "-1"`)
+            expect(result4).to.throw(`Merkle Proof cell ref hash must be exactly "0000000000000000000000000000000000000000000000000000000000000000", got "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7"`)
+            expect(result5).to.throw(`Merkle Proof cell ref depth must be exactly "1", got "0"`)
         })
 
         it('should throw errors on bad merkle update cell', () => {
-            const cell = new Cell()
-            const mask = Array.from({ length: 8 }).fill(0) as Bit[]
-            const zeroes = Array.from({ length: 8 + (256 + 16) * 2 }).fill(0) as Bit[]
-            const hash = hexToBits('96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7')
-            const hashBad = Array.from({ length: 256 }).fill(0) as Bit[]
-            const depth = Array.from({ length: 16 }).fill(0) as Bit[]
-            const depthBad = Array.from({ length: 16 }).fill(1) as Bit[]
-
             const result1 = () => new Cell({ type: CellType.MerkleUpdate })
-            const result2 = () => new Cell({ type: CellType.MerkleUpdate, bits: zeroes })
-            const result3 = () => new Cell({ type: CellType.MerkleUpdate, bits: mask.concat(hashBad, hashBad, depth, depthBad), refs: [ cell, cell ] })
-            const result4 = () => new Cell({ type: CellType.MerkleUpdate, bits: mask.concat(hash, hashBad, depth, depthBad), refs: [ cell, cell ] })
-            const result5 = () => new Cell({ type: CellType.MerkleUpdate, bits: mask.concat(hash, hash, depthBad, depthBad), refs: [ cell, cell ] })
-            const result6 = () => new Cell({ type: CellType.MerkleUpdate, bits: mask.concat(hash, hash, depth, depthBad), refs: [ cell, cell ] })
+            const result2 = () => new Cell({ type: CellType.MerkleUpdate, bits: [].concat(TYPE_BITS_MERKLE_UPDATE, CELL_HASH_EMPTY, CELL_HASH_EMPTY, CELL_DEPTH_0, CELL_DEPTH_0) })
+            const result3 = () => new Cell({ type: CellType.MerkleUpdate, bits: [].concat(TYPE_BITS_ORDINARY, CELL_HASH_EMPTY, CELL_HASH_EMPTY, CELL_DEPTH_0, CELL_DEPTH_0), refs: [ CELL_EMPTY, CELL_EMPTY ] })
+            const result4 = () => new Cell({ type: CellType.MerkleUpdate, bits: [].concat(TYPE_BITS_MERKLE_UPDATE, CELL_HASH_INVALID, CELL_HASH_EMPTY, CELL_DEPTH_0, CELL_DEPTH_0), refs: [ CELL_EMPTY, CELL_EMPTY ]  })
+            const result5 = () => new Cell({ type: CellType.MerkleUpdate, bits: [].concat(TYPE_BITS_MERKLE_UPDATE, CELL_HASH_EMPTY, CELL_HASH_EMPTY, CELL_DEPTH_1, CELL_DEPTH_0), refs: [ CELL_EMPTY, CELL_EMPTY ]  })
+            const result6 = () => new Cell({ type: CellType.MerkleUpdate, bits: [].concat(TYPE_BITS_MERKLE_UPDATE, CELL_HASH_EMPTY, CELL_HASH_INVALID, CELL_DEPTH_0, CELL_DEPTH_0), refs: [ CELL_EMPTY, CELL_EMPTY ]  })
+            const result7 = () => new Cell({ type: CellType.MerkleUpdate, bits: [].concat(TYPE_BITS_MERKLE_UPDATE, CELL_HASH_EMPTY, CELL_HASH_EMPTY, CELL_DEPTH_0, CELL_DEPTH_1), refs: [ CELL_EMPTY, CELL_EMPTY ]  })
 
-            expect(result1).to.throw('Merkle Update has an invalid data')
-            expect(result2).to.throw('Merkle Update has an invalid refs')
-            expect(result3).to.throw('Merkle Update ref #0 hash mismatch')
-            expect(result4).to.throw('Merkle Update ref #1 hash mismatch')
-            expect(result5).to.throw('Merkle Update ref #0 depth mismatch')
-            expect(result6).to.throw('Merkle Update ref #1 depth mismatch')
+            expect(result1).to.throw(`Merkle Update cell must have exactly (8 + (2 * (256 + 16))) bits, got "0"`)
+            expect(result2).to.throw(`Merkle Update cell must have exactly 2 refs, got "0"`)
+            expect(result3).to.throw(`Merkle Update cell type must be exactly 4, got "-1"`)
+            expect(result4).to.throw(`Merkle Update cell ref #0 hash must be exactly "0000000000000000000000000000000000000000000000000000000000000000", got "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7"`)
+            expect(result5).to.throw(`Merkle Update cell ref #0 depth must be exactly "1", got "0"`)
+            expect(result6).to.throw(`Merkle Update cell ref #1 hash must be exactly "0000000000000000000000000000000000000000000000000000000000000000", got "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7"`)
+            expect(result7).to.throw(`Merkle Update cell ref #1 depth must be exactly "1", got "0"`)
         })
     })
 

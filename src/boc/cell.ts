@@ -35,26 +35,39 @@ interface CellOptions {
 }
 
 const validateOrdinary = (bits: Bit[], refs: Cell[]): void => {
-    if (bits.length > 1023) throw new Error('Ordinary cell can\'t has more than 1023 bits')
-    if (refs.length > 4) throw new Error('Ordinary cell can\'t has more than 4 refs')
+    if (bits.length > 1023) throw new Error(`Ordinary cell can't has more than 1023 bits, got "${bits.length}"`)
+    if (refs.length > 4) throw new Error(`Ordinary cell can't has more than 4 refs, got "${refs.length}"`)
 }
 
 const validatePrunedBranch = (bits: Bit[], refs: Cell[]): void => {
-    if (bits.length < 16) throw new Error('Pruned Branch cell can\'t has less than 16 bits')
-    if (refs.length !== 0) throw new Error('Pruned Branch cell can\'t has refs')
+    // type + mask + (higher hashes * (hash + depth))
+    const minSize = 8 + 8 + (1 * (HASH_BITS + DEPTH_BITS))
+
+    if (bits.length < minSize) { 
+        throw new Error(`Pruned Branch cell can't has less than (8 + 8 + 256 + 16) bits, got "${bits.length}"`)
+    }
+
+    if (refs.length !== 0) {
+        throw new Error(`Pruned Branch cell can't has refs, got "${refs.length}"`)
+    }
+
+    const type = bitsToIntUint(bits.slice(0, 8), { type: 'int' })
+
+    if (type !== CellType.PrunedBranch) {
+        throw new Error(`Pruned Branch cell type must be exactly ${CellType.PrunedBranch}, got "${type}"`)
+    }
 
     const mask = new Mask(bitsToIntUint(bits.slice(8, 16), { type: 'uint' }))
 
     if (mask.level < 1 || mask.level > 3) {
-        throw new Error('Pruned Branch has an invalid level')
+        throw new Error(`Pruned Branch cell level must be >= 1 and <= 3, got "${mask.level}"`)
     }
 
     const { hashCount } = mask.apply(mask.level - 1)
-    // type + mask + (hashCount * (hash + depth))
     const size = 8 + 8 + (hashCount * (HASH_BITS + DEPTH_BITS))
 
     if (bits.length !== size) {
-        throw new Error('Pruned Branch has an invalid data')
+        throw new Error(`Pruned Branch cell with level "${mask.level}" must have exactly ${size} bits, got "${bits.length}"`)
     }
 }
 
@@ -63,11 +76,17 @@ const validateLibraryReference = (bits: Bit[], refs: Cell[]): void => {
     const size = 8 + HASH_BITS
 
     if (bits.length !== size) {
-        throw new Error('Library reference has an invalid data')
+        throw new Error(`Library Reference cell must have exactly (8 + 256) bits, got "${bits.length}"`)
     }
 
     if (refs.length !== 0) {
-        throw new Error('Library reference has an invalid refs')
+        throw new Error(`Library Reference cell can't has refs, got "${refs.length}"`)
+    }
+
+    const type = bitsToIntUint(bits.slice(0, 8), { type: 'int' })
+
+    if (type !== CellType.LibraryReference) {
+        throw new Error(`Library Reference cell type must be exactly ${CellType.LibraryReference}, got "${type}"`)
     }
 }
 
@@ -76,11 +95,17 @@ const validateMerkleProof = (bits: Bit[], refs: Cell[]): void => {
     const size = 8 + HASH_BITS + DEPTH_BITS
 
     if (bits.length !== size) {
-        throw new Error('Merkle Proof has an invalid data')
+        throw new Error(`Merkle Proof cell must have exactly (8 + 256 + 16) bits, got "${bits.length}"`)
     }
 
     if (refs.length !== 1) {
-        throw new Error('Merkle Proof has an invalid refs')
+        throw new Error(`Merkle Proof cell must have exactly 1 ref, got "${refs.length}"`)
+    }
+
+    const type = bitsToIntUint(bits.slice(0, 8), { type: 'int' })
+
+    if (type !== CellType.MerkleProof) {
+        throw new Error(`Merkle Proof cell type must be exactly ${CellType.MerkleProof}, got "${type}"`)
     }
 
     const data = Array.from(bits.slice(8))
@@ -90,24 +115,30 @@ const validateMerkleProof = (bits: Bit[], refs: Cell[]): void => {
     const refDepth = refs[0].depth(0)
 
     if (proofHash !== refHash) {
-        throw new Error('Merkle Proof hash mismatch')
+        throw new Error(`Merkle Proof cell ref hash must be exactly "${proofHash}", got "${refHash}"`)
     }
 
     if (proofDepth !== refDepth) {
-        throw new Error('Merkle Proof depth mismatch')
+        throw new Error(`Merkle Proof cell ref depth must be exactly "${proofDepth}", got "${refDepth}"`)
     }
 }
 
 const validateMerkleUpdate = (bits: Bit[], refs: Cell[]): void => {
     // type + hash + hash + depth + depth
-    const size = 8 + (HASH_BITS * 2) + (DEPTH_BITS * 2)
+    const size = 8 + (2 * (HASH_BITS + DEPTH_BITS))
 
     if (bits.length !== size) {
-        throw new Error('Merkle Update has an invalid data')
+        throw new Error(`Merkle Update cell must have exactly (8 + (2 * (256 + 16))) bits, got "${bits.length}"`)
     }
 
     if (refs.length !== 2) {
-        throw new Error('Merkle Update has an invalid refs')
+        throw new Error(`Merkle Update cell must have exactly 2 refs, got "${refs.length}"`)
+    }
+
+    const type = bitsToIntUint(bits.slice(0, 8), { type: 'int' })
+
+    if (type !== CellType.MerkleUpdate) {
+        throw new Error(`Merkle Update cell type must be exactly ${CellType.MerkleUpdate}, got "${type}"`)
     }
 
     const data = Array.from(bits.slice(8))
@@ -120,11 +151,11 @@ const validateMerkleUpdate = (bits: Bit[], refs: Cell[]): void => {
         const refDepth = ref.depth(0)
 
         if (proofHash !== refHash) {
-            throw new Error(`Merkle Update ref #${i} hash mismatch`)
+            throw new Error(`Merkle Update cell ref #${i} hash must be exactly "${proofHash}", got "${refHash}"`)
         }
 
         if (proofDepth !== refDepth) {
-            throw Error(`Merkle Update ref #${i} depth mismatch`)
+            throw Error(`Merkle Update cell ref #${i} depth must be exactly "${proofDepth}", got "${refDepth}"`)
         }
     })
 }
