@@ -43,7 +43,7 @@ class Builder {
     }
 
     private storeNumber (value: bigint, size: number): this {
-        const bits = [ ...Array(size) ]
+        const bits = Array.from({ length: size })
             .map((_el, i) => Number(((value >> BigInt(i)) & 1n) === 1n) as Bit)
             .reverse()
 

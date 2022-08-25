@@ -187,8 +187,8 @@ describe('BOC', () => {
 
         it('should deserialize-serialize-deserialize boc with exotic cells', () => {
             const cell1 = BOC.fromStandard(BOC_LAST_BASE64)
-            const hex = BOC.toHexStandard(cell1)
-            const cell2 = BOC.fromStandard(hex)
+            const base64standard1 = BOC.toBase64Standard(cell1)
+            const cell2 = BOC.fromStandard(base64standard1)
 
             expect(cell1.hash()).to.eq(BOC_LAST_HASH)
             expect(cell2.hash()).to.eq(BOC_LAST_HASH)

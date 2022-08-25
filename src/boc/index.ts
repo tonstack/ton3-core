@@ -1,5 +1,6 @@
 import { Builder } from './builder'
 import { Slice } from './slice'
+import { Mask } from './mask'
 import {
     Cell,
     CellType,
@@ -211,6 +212,7 @@ class BOC {
 export {
     BOC,
     BOCOptions,
+    Mask,
     Cell,
     CellType,
     CellOptions,

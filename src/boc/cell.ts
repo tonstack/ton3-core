@@ -50,7 +50,7 @@ const validatePrunedBranch = (bits: Bit[], refs: Cell[]): void => {
     }
 
     const { hashCount } = mask.apply(mask.level - 1)
-    // level + ??? + hashCount * (hash + depth)
+    // mask + ??? + hashCount * (hash + depth)
     const size = 8 + 8 + hashCount * (HASH_BITS + DEPTH_BITS)
 
     if (bits.length !== size) {
@@ -59,7 +59,7 @@ const validatePrunedBranch = (bits: Bit[], refs: Cell[]): void => {
 }
 
 const validateLibraryReference = (bits: Bit[], refs: Cell[]): void => {
-    // level + hash
+    // mask + hash
     const size = 8 + HASH_BITS
 
     if (bits.length !== size) {
@@ -72,7 +72,7 @@ const validateLibraryReference = (bits: Bit[], refs: Cell[]): void => {
 }
 
 const validateMerkleProof = (bits: Bit[], refs: Cell[]): void => {
-    // level + hash + depth
+    // mask + hash + depth
     const size = 8 + HASH_BITS + DEPTH_BITS
 
     if (bits.length !== size) {
@@ -99,7 +99,7 @@ const validateMerkleProof = (bits: Bit[], refs: Cell[]): void => {
 }
 
 const validateMerkleUpdate = (bits: Bit[], refs: Cell[]): void => {
-    // level + hash + hash + depth + depth
+    // mask + hash + hash + depth + depth
     const size = 8 + (HASH_BITS * 2) + (DEPTH_BITS * 2)
 
     if (bits.length !== size) {
@@ -130,32 +130,38 @@ const validateMerkleUpdate = (bits: Bit[], refs: Cell[]): void => {
     }
 }
 
-const validateUnknown = () => {
-    throw new Error('Unknown cell type')
-}
+const getMapper = (type: CellType): CellTypeMapper => {
+    const map = new Map<CellType, CellTypeMapper>([
+        [ CellType.Ordinary, {
+            validate: validateOrdinary,
+            mask: (_b: Bit[], r: Cell[]) => new Mask(r.reduce((acc, el) => acc | el.mask.value, 0))
+        } ],
+        [ CellType.PrunedBranch, {
+            validate: validatePrunedBranch,
+            mask: (b: Bit[]) => new Mask(bitsToIntUint(b.slice(0, 8), { type: 'uint' }))
+        } ],
+        [ CellType.LibraryReference, {
+            validate: validateLibraryReference,
+            mask: () => new Mask(0)
+        } ],
+        [ CellType.MerkleProof, {
+            validate: validateMerkleProof,
+            mask: (_b: Bit[], r: Cell[]) => new Mask(r[0].mask.value >> 1)
+        } ],
+        [ CellType.MerkleUpdate, {
+            validate: validateMerkleUpdate,
+            mask: (_b: Bit[], r: Cell[]) => new Mask((r[0].mask.value | r[1].mask.value) >> 1)
+        } ]
+    ])
 
-const mapper = new Map<CellType, CellTypeMapper>([
-    [ CellType.Ordinary, {
-        validate: validateOrdinary,
-        mask: (_b: Bit[], r: Cell[]) => new Mask(r.reduce((acc, el) => acc | el.mask.value, 0))
-    } ],
-    [ CellType.PrunedBranch, {
-        validate: validatePrunedBranch,
-        mask: (b: Bit[]) => new Mask(bitsToIntUint(b.slice(0, 8), { type: 'uint' }))
-    } ],
-    [ CellType.LibraryReference, {
-        validate: validateLibraryReference,
-        mask: () => new Mask(0)
-    } ],
-    [ CellType.MerkleProof, {
-        validate: validateMerkleProof,
-        mask: (_b: Bit[], r: Cell[]) => new Mask(r[0].mask.value >> 1)
-    } ],
-    [ CellType.MerkleUpdate, {
-        validate: validateMerkleUpdate,
-        mask: (_b: Bit[], r: Cell[]) => new Mask((r[0].mask.value | r[1].mask.value) >> 1)
-    } ]
-])
+    const result = map.get(type)
+
+    if (result === undefined) {
+        throw new Error('Unknown cell type')
+    }
+
+    return result
+}
 
 class Cell {
     private _bits: Bit[]
@@ -196,7 +202,7 @@ class Cell {
             type = CellType.Ordinary
         } = options || {}
 
-        const { validate, mask } = mapper.get(type) || { validate: validateUnknown }
+        const { validate, mask } = getMapper(type)
 
         validate(bits, refs)
 
@@ -311,7 +317,6 @@ class Cell {
             : 0
 
         for (let levelIndex = 0, hashIndex = 0; levelIndex <= this.mask.level; levelIndex++) {
-            if (!this.mask.isSignificant(levelIndex)) continue
             if (hashIndex < hashIndexOffset) {
                 hashIndex++
 
@@ -325,29 +330,25 @@ class Cell {
                 throw new Error('Can\'t deserialize cell')
             }
 
-            const level = levelIndex + Number(isMerkle)
+            const refLevel = levelIndex + Number(isMerkle)
             const refsDescriptor = this.getRefsDescriptor(this.mask.apply(levelIndex))
             const bitsDescriptor = this.getBitsDescriptor()
             const data = hashIndex !== hashIndexOffset
                 ? hexToBits(this.hashes[hashIndex - hashIndexOffset - 1])
                 : this.getAugmentedBits()
 
-            const { repr, depth } = this._refs.concat(this._refs).reduce((acc, ref, i) => {
-                const isDepthCalculation = i < this._refs.length
+            const { depthRepr, hashRepr, depth } = this._refs.reduce((acc, ref) => {
+                const refDepth = ref.depth(refLevel)
+                const refHash = ref.hash(refLevel)
 
-                if (isDepthCalculation) {
-                    const refDepth = ref.depth(level)
-
-                    acc.repr = acc.repr.concat(this.getDepthDescriptor(refDepth))
-                    acc.depth = Math.max(acc.depth, refDepth)
-                } else {
-                    const refHash = ref.hash(level)
-
-                    acc.repr = acc.repr.concat(hexToBits(refHash))
-                }
+                acc.depthRepr = acc.depthRepr.concat(this.getDepthDescriptor(refDepth))
+                acc.hashRepr = acc.hashRepr.concat(hexToBits(refHash))
+                acc.depth = Math.max(acc.depth, refDepth)
 
                 return acc
-            }, { repr: [].concat(refsDescriptor, bitsDescriptor, data), depth: 0 })
+            }, { depthRepr: [] as Bit[], hashRepr: [] as Bit[], depth: 0 })
+
+            const representation = [].concat(refsDescriptor, bitsDescriptor, data, depthRepr, hashRepr)
 
             if (this._refs.length && depth >= 1024) {
                 throw new Error('Cell depth can\'t be more than 1024')
@@ -356,7 +357,7 @@ class Cell {
             const dest = hashIndex - hashIndexOffset
 
             this.depths[dest] = this._refs.length ? depth + 1 : depth
-            this.hashes[dest] = sha256(bitsToBytes(repr))
+            this.hashes[dest] = sha256(bitsToBytes(representation))
 
             hashIndex++
         }
@@ -498,7 +499,7 @@ class Cell {
     /**
      * Print cell as fift-hex
      * 
-     * @param {number} [indent=0]
+     * @param {number} [indent=1] Indentation of nested elements
      *
      * @example
      * ```ts
@@ -511,14 +512,14 @@ class Cell {
      *
      * @return {string}
      */
-    public print (indent: number = 0): string {
+    public print (indent: number = 1, size = 0): string {
         const bits = Array.from(this._bits)
         const areDivisible = bits.length % 4 === 0
         const augmented = !areDivisible ? augment(bits, 4) : bits
         const fiftHex = `${bitsToHex(augmented).toUpperCase()}${!areDivisible ? '_' : ''}`
-        const output = [ `${' '.repeat(indent)}x{${fiftHex}}\n` ]
+        const output = [ `${' '.repeat(indent * size)}x{${fiftHex}}\n` ]
 
-        this._refs.forEach(ref => output.push(ref.print(indent + 1)))
+        this._refs.forEach(ref => output.push(ref.print(indent, size + 1)))
 
         return output.join('')
     }

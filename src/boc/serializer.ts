@@ -2,7 +2,6 @@
 
 import type { Bit } from '../types/bit'
 import { Builder } from './builder'
-import { Slice } from './slice'
 import {
     Cell,
     CellType
@@ -62,9 +61,9 @@ interface BuilderNode {
 
 interface CellPointer {
     cell?: Cell
-    cellType: CellType
-    cellBuilder: Builder
-    refIndexes: number[]
+    type: CellType
+    builder: Builder
+    refs: number[]
 }
 
 interface CellData {
@@ -274,21 +273,18 @@ const deserializeCell = (remainder: number[], refIndexSize: number): CellData =>
         throw new Error('BoC not enough bytes for an exotic cell type')
     }
 
-    const cellType: CellType = isExotic
+    const type: CellType = isExotic
         ? bitsToInt8(bits.slice(0, 8))
         : CellType.Ordinary
 
-    if (isExotic && cellType === CellType.Ordinary) {
+    if (isExotic && type === CellType.Ordinary) {
         throw new Error(`BoC an exotic cell can't be of ordinary type ${bitsToInt8(bits.slice(0, 8))}`)
     }
 
-    const cellBuilder = new Builder(bits.length).storeBits(bits)
-    const pointer: CellPointer = { cellBuilder, cellType, refIndexes: [] }
-
-    for (let i = 0; i < totalRefs; i += 1) {
-        const refIndex = bytesToUint(remainder.splice(0, refIndexSize))
-
-        pointer.refIndexes.push(refIndex)
+    const pointer: CellPointer = {
+        type,
+        builder: new Builder(bits.length).storeBits(bits),
+        refs: Array.from({ length: totalRefs }).map(() => bytesToUint(remainder.splice(0, refIndexSize)))
     }
 
     return {
@@ -315,75 +311,60 @@ const deserialize = (data: Uint8Array, checkMerkleProofs: boolean): Cell[] => {
         pointers.push(deserialized.pointer)
     }
 
-    Object.keys(pointers)
-        .reverse()
-        .forEach((i) => {
-            const pointerIndex = parseInt(i, 10)
-            const pointer = pointers[pointerIndex]
-            const { cellBuilder, cellType } = pointer
+    Array.from({ length: pointers.length }).forEach((_el, i) => {
+        const pointerIndex = pointers.length - i - 1
+        const pointer = pointers[pointerIndex]
+        const { builder: cellBuilder, type: cellType } = pointer
 
-            pointer.refIndexes.forEach((refIndex) => {
-                const { cellBuilder: refBuilder, cellType: refType } = pointers[refIndex]
+        pointer.refs.forEach((refIndex) => {
+            const { builder: refBuilder, type: refType } = pointers[refIndex]
 
-                if (refIndex < pointerIndex) {
-                    throw new Error('Topological order is broken')
-                }
+            if (refIndex < pointerIndex) {
+                throw new Error('Topological order is broken')
+            }
 
-                if (refType === CellType.MerkleProof || refType === CellType.MerkleUpdate) {
-                    hasMerkleProofs = true
-                }
-
-                cellBuilder.storeRef(refBuilder.cell(refType))
-            })
-
-            // TODO: check if Merkle Proofs can be only on significant level
-            if (cellType === CellType.MerkleProof || cellType === CellType.MerkleUpdate) {
+            if (refType === CellType.MerkleProof || refType === CellType.MerkleUpdate) {
                 hasMerkleProofs = true
             }
 
-            pointer.cell = cellBuilder.cell(cellType)
+            cellBuilder.storeRef(refBuilder.cell(refType))
         })
+
+        // TODO: check if Merkle Proofs can be only on significant level
+        if (cellType === CellType.MerkleProof || cellType === CellType.MerkleUpdate) {
+            hasMerkleProofs = true
+        }
+
+        pointer.cell = cellBuilder.cell(cellType)
+    })
 
     if (checkMerkleProofs && !hasMerkleProofs) {
         throw new Error('BOC does not contain Merkle Proofs')
     }
 
-    return root_list.reduce((acc, refIndex) => acc.concat([ pointers[refIndex].cell ]), [])
+    return root_list.map(refIndex => pointers[refIndex].cell)
 }
 
-const depthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, number> } => {
+const depthFirstSort = (root: Cell[]): { cells: Cell[], hashmap: Map<string, number> } => {
     // TODO: fix multiple root cells serialization
 
-    const hashmap = new Map<string, number>()
-    const stack: CellNode[] = [ { cell: root, children: root.refs.length, scanned: 0 } ]
-    const cells: { cell: Cell, hash: string }[] = [ { cell: root, hash: root.hash() } ]
-
-    hashmap.set(cells[0].hash, 0)
-
-    // Add cell to cells list and to hashmap
-    const append = (node: Cell, hash: string): void => {
-        cells.push({ cell: node, hash })
-        hashmap.set(hash, cells.length - 1)
-    }
-
-    // Reorder cells list and hashmap if duplicate found
-    const reappend = (index: number): void => {
-        cells.push(cells.splice(index, 1)[0])
-        cells.slice(index).forEach((el, i) => hashmap.set(el.hash, index + i))
-    }
+    const stack: CellNode[] = [ { cell: new Cell({ refs: root }), children: root.length, scanned: 0 } ]
+    const cells: { cell: Cell, hash: string }[] = []
+    const hashIndexes = new Map<string, number>()
 
     // Process tree node to ordered cells list
     const process = (node: CellNode): void => {
         // eslint-disable-next-line no-plusplus, no-param-reassign
         const ref = node.cell.refs[node.scanned++]
         const hash = ref.hash()
-        const index = hashmap.get(hash)
+        const index = hashIndexes.get(hash)
+        const length = index !== undefined
+            ? cells.push(cells.splice(index, 1, null)[0])
+            : cells.push({ cell: ref, hash })
 
         stack.push({ cell: ref, children: ref.refs.length, scanned: 0 })
 
-        return index === undefined
-            ? append(ref, hash)
-            : reappend(index)
+        hashIndexes.set(hash, length - 1)
     }
 
     // Loop through multi-tree and make depth-first search till last node
@@ -405,45 +386,36 @@ const depthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, numbe
         }
     }
 
-    return {
-        cells: cells.map(el => el.cell),
-        hashmap
-    }
+    const result = cells
+        .filter(el => el !== null)
+        .reduce((acc, { cell, hash }, i) => {
+            acc.cells.push(cell)
+            acc.hashmap.set(hash, i)
+
+            return acc
+        }, { cells: [] as Cell[], hashmap: new Map<string, number>() })
+
+    return result
 }
 
-const breadthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, number> } => {
-    // TODO: fix multiple root cells serialization
+const breadthFirstSort = (root: Cell[]): { cells: Cell[], hashmap: Map<string, number> } => {
+    // TODO: test non-standard root cells serialization
 
-    const hashmap = new Map<string, number>()
-    const stack: Cell[] = [ root ]
-    const cells: { cell: Cell, hash: string }[] = [ { cell: root, hash: root.hash() } ]
-
-    hashmap.set(cells[0].hash, 0)
-
-    // Add cell to cells list and to hashmap
-    const append = (node: Cell, hash: string): void => {
-        cells.push({ cell: node, hash })
-        hashmap.set(hash, cells.length - 1)
-    }
-
-    // Reorder cells list and hashmap if duplicate found
-    const reappend = (index: number): void => {
-        // Move cell to the last position of array
-        cells.push(cells.splice(index, 1)[0])
-        // Change hash indexes after pulling cell from the middle of an array
-        cells.slice(index).forEach((el, i) => hashmap.set(el.hash, index + i))
-    }
+    const stack = [ ...root ]
+    const cells = root.map(el => ({ cell: el, hash: el.hash() }))
+    const hashIndexes = new Map(cells.map((el, i) => ([ el.hash, i ])))
 
     // Process tree node to ordered cells list
     const process = (node: Cell): void => {
         const hash = node.hash()
-        const index = hashmap.get(hash)
+        const index = hashIndexes.get(hash)
+        const length = index !== undefined
+            ? cells.push(cells.splice(index, 1, null)[0])
+            : cells.push({ cell: node, hash })
 
         stack.push(node)
 
-        return index === undefined
-            ? append(node, hash)
-            : reappend(index)
+        hashIndexes.set(hash, length - 1)
     }
 
     // Loop through multi-tree and make breadth-first search till last node
@@ -457,17 +429,23 @@ const breadthFirstSort = (root: Cell): { cells: Cell[], hashmap: Map<string, num
         stack.splice(0, length)
     }
 
-    return {
-        cells: cells.map(el => el.cell),
-        hashmap
-    }
+    const result = cells
+        .filter(el => el !== null)
+        .reduce((acc, { cell, hash }, i) => {
+            acc.cells.push(cell)
+            acc.hashmap.set(hash, i)
+
+            return acc
+        }, { cells: [] as Cell[], hashmap: new Map<string, number>() })
+
+    return result
 }
 
 const serializeCell = (cell: Cell, hashmap: Map<string, number>, refIndexSize: number): Bit[] => {
     const representation = [].concat(cell.getRefsDescriptor(), cell.getBitsDescriptor(), cell.getAugmentedBits())
     const serialized = cell.refs.reduce((acc, ref) => {
         const refIndex = hashmap.get(ref.hash())
-        const bits = [ ...Array(refIndexSize) ]
+        const bits = Array.from({ length: refIndexSize })
             .map((_el, i) => Number(((refIndex >> i) & 1) === 1) as Bit)
             .reverse()
 
@@ -478,8 +456,8 @@ const serializeCell = (cell: Cell, hashmap: Map<string, number>, refIndexSize: n
 }
 
 const serialize = (root: Cell[], options: BOCOptions = {}): Uint8Array => {
-    // TODO: fix more than 1 root cells support
-    const standard = root[0]
+    // TODO: test more than 1 root cells support
+
     const {
         has_index = false,
         has_cache_bits = false,
@@ -489,8 +467,8 @@ const serialize = (root: Cell[], options: BOCOptions = {}): Uint8Array => {
     } = options
 
     const { cells: cells_list, hashmap } = topological_order === 'breadth-first'
-        ? breadthFirstSort(standard)
-        : depthFirstSort(standard)
+        ? breadthFirstSort(root)
+        : depthFirstSort(root)
 
     const cells_num = cells_list.length
     const size = cells_num.toString(2).length
