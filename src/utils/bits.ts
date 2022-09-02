@@ -1,4 +1,4 @@
-import { Bit } from '../types/bit'
+import type { Bit } from '../types/bit'
 
 /**
  * Augment bits with 1 and leading 0 to be divisible by 8 or 4 without remainder.

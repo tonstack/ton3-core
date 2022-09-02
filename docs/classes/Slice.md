@@ -14,6 +14,8 @@ Cell Slice
 ### Methods
 
 - [skip](Slice.md#skip)
+- [skipBits](Slice.md#skipbits)
+- [skipRefs](Slice.md#skiprefs)
 - [skipDict](Slice.md#skipdict)
 - [loadRef](Slice.md#loadref)
 - [preloadRef](Slice.md#preloadref)
@@ -75,6 +77,24 @@ ___
 
 ▸ **skip**(`size`): [`Slice`](Slice.md)
 
+Alias for .skipBits()
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `size` | `number` |
+
+#### Returns
+
+[`Slice`](Slice.md)
+
+___
+
+### skipBits
+
+▸ **skipBits**(`size`): [`Slice`](Slice.md)
+
 Skip bits from [Slice](Slice.md)
 
 **`example`**
@@ -85,9 +105,9 @@ const builder = new Builder()
 
 builder.storeBits([ 0, 1, 1, 0 ])
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
-console.log(slice.skip(2).loadBits(2)) // [ 1, 0 ]
+console.log(slice.skipBits(2).loadBits(2)) // [ 1, 0 ]
 ```
 
 #### Parameters
@@ -102,11 +122,44 @@ console.log(slice.skip(2).loadBits(2)) // [ 1, 0 ]
 
 ___
 
+### skipRefs
+
+▸ **skipRefs**(`size`): [`Slice`](Slice.md)
+
+Skip refs from [Slice](Slice.md)
+
+**`example`**
+```ts
+import { Builder, Slice } from 'ton3-core'
+
+const builder = new Builder()
+const cell1 = new Builder().cell()
+const cell2 = new Builder().cell()
+
+builder.storeRefs([ cell1, cell2 ])
+
+const slice = builder.cell().slice()
+
+console.log(slice.skipRefs(1).loadRef()) // cell2
+```
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `size` | `number` | Total refs should be skipped |
+
+#### Returns
+
+[`Slice`](Slice.md)
+
+___
+
 ### skipDict
 
 ▸ **skipDict**(): [`Slice`](Slice.md)
 
-Same as .loadDict() but will return instance of [Slice](Slice.md) with unloaded dict
+Skip dict from [Slice](Slice.md)
 
 #### Returns
 
@@ -129,7 +182,7 @@ const ref = new Builder()
 
 builder.storeRef(ref.cell())
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadRef()) // Cell
 ```
@@ -166,7 +219,7 @@ const builder = new Builder()
 
 builder.storeBit(1)
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadBit()) // 1
 ```
@@ -203,7 +256,7 @@ const builder = new Builder()
 
 builder.storeBits([ 0, 1 ])
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadBits(2)) // [ 0, 1 ]
 ```
@@ -252,7 +305,7 @@ const builder = new Builder()
 
 builder.storeInt(-14, 15)
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadInt(15)) // -14
 ```
@@ -337,7 +390,7 @@ const builder = new Builder()
 
 builder.storeUint(14, 9)
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadUint(9)) // 14
 ```
@@ -422,7 +475,7 @@ const builder = new Builder()
 
 builder.storeVarInt(-101101, 16)
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadVarInt(16)) // -101101
 ```
@@ -507,7 +560,7 @@ const builder = new Builder()
 
 builder.storeVarUint(101101, 16)
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadVarUint(16)) // 101101
 ```
@@ -592,7 +645,7 @@ const builder = new Builder()
 
 builder.storeBytes(new Uint8Array([ 255, 255 ]))
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadBytes(16)) // [ 255, 255 ]
 ```
@@ -641,7 +694,7 @@ const builder = new Builder()
 
 builder.storeString('Привет, мир!')
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadString()) // 'Привет, мир!'
 ```
@@ -691,7 +744,7 @@ const address = new Address('kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny')
 
 builder.storeAddress(address)
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadAddress().toString())
 // 'kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny'
@@ -730,7 +783,7 @@ const coins = new Coins('100')
 
 builder.storeCoins(coins)
 
-const slice = Slice.parse(builder.cell())
+const slice = builder.cell().slice()
 
 console.log(slice.loadCoins().toString()) // '100'
 ```
@@ -767,9 +820,9 @@ ___
 
 ### loadDict
 
-▸ **loadDict**(): [`Cell`](Cell.md)
+▸ **loadDict**<`K`, `V`\>(`keySize`, `options?`): [`HashmapE`](HashmapE.md)<`K`, `V`\>
 
-Read [HashmapE](HashmapE.md) as [Cell](Cell.md) from [Slice](Slice.md)
+Read [HashmapE](HashmapE.md) from [Slice](Slice.md)
 
 **`example`**
 ```ts
@@ -780,25 +833,55 @@ const dict = new HashmapE(16)
 
 builder.storeDict(dict)
 
-const slice = Slice.parse(builder.cell())
-const cell = slice.loadDict()
+const slice = builder.cell().slice()
+const entries = [ ...slice.loadDict() ]
+
+console.log(entries) // []
 ```
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `K` | [`Bit`](../README.md#bit)[] |
+| `V` | [`Cell`](Cell.md) |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `keySize` | `number` |
+| `options?` | [`HashmapOptions`](../interfaces/HashmapOptions.md)<`K`, `V`\> |
 
 #### Returns
 
-[`Cell`](Cell.md)
+[`HashmapE`](HashmapE.md)<`K`, `V`\>
 
 ___
 
 ### preloadDict
 
-▸ **preloadDict**(): [`Cell`](Cell.md)
+▸ **preloadDict**<`K`, `V`\>(`keySize`, `options?`): [`HashmapE`](HashmapE.md)<`K`, `V`\>
 
 Same as .loadDict() but will not mutate [Slice](Slice.md)
 
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `K` | [`Bit`](../README.md#bit)[] |
+| `V` | [`Cell`](Cell.md) |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `keySize` | `number` |
+| `options?` | [`HashmapOptions`](../interfaces/HashmapOptions.md)<`K`, `V`\> |
+
 #### Returns
 
-[`Cell`](Cell.md)
+[`HashmapE`](HashmapE.md)<`K`, `V`\>
 
 ___
 

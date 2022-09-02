@@ -1,7 +1,5 @@
 import { crc16BytesBe } from './utils/checksum'
 import {
-    uint8toInt8,
-    int8ToUint8,
     bytesToBase64,
     base64ToBytes,
     hexToBytes,
@@ -214,15 +212,17 @@ class Address {
         const bytes = base64ToBytes(base64)
         const data = Array.from(bytes)
         const address = data.splice(0, 34)
-        const hashsum = data.splice(0, 2)
+        const checksum = data.splice(0, 2)
         const crc = crc16BytesBe(address)
 
-        if (!bytesCompare(crc, hashsum)) {
-            throw new Error('Address: can\'t parse address. Wrong hashsum.')
+        if (!bytesCompare(crc, checksum)) {
+            throw new Error('Address: can\'t parse address. Wrong checksum.')
         }
 
-        const tag = address.shift()
-        const workchain = uint8toInt8(address.shift())
+        const { buffer } = new Uint8Array(address.splice(0, 2))
+        const view = new DataView(buffer)
+        const tag = view.getUint8(0)
+        const workchain = view.getInt8(1)
         const hash = new Uint8Array(address.splice(0, 32))
         const { bounceable, testOnly } = Address.decodeTag(tag)
 
@@ -364,10 +364,9 @@ class Address {
         }
 
         const tag = Address.encodeTag({ bounceable, testOnly })
-        const address = [ tag, int8ToUint8(workchain) ].concat(Array.from(this._hash))
-        const hashsum = crc16BytesBe(address)
-        const addressWithHashsum = address.concat(Array.from(hashsum))
-        const base64 = bytesToBase64(addressWithHashsum)
+        const address = new Uint8Array([ tag, workchain, ...this._hash ])
+        const checksum = crc16BytesBe(address)
+        const base64 = bytesToBase64(new Uint8Array([ ...address, ...checksum ]))
 
         return urlSafe
             ? base64.replace(/\//g, '_').replace(/\+/g, '-')

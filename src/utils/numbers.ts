@@ -1,4 +1,4 @@
-import { Bit } from '../types/bit'
+import type { Bit } from '../types/bit'
 
 const bitsToBigUint = (bits: Bit[]): { value: bigint, isSafe: boolean } => {
     if (!bits.length) return { value: 0n, isSafe: true }

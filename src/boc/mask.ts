@@ -1,10 +1,17 @@
 class Mask {
     private _value: number
 
+    private _hashIndex: number
+
+    private _hashCount: number
+
     constructor (mask: number | Mask) {
         this._value = mask instanceof Mask
             ? mask.value
             : mask
+
+        this._hashIndex = Mask.countSetBits(this._value)
+        this._hashCount = this._hashIndex + 1
     }
 
     public get value (): number {
@@ -12,35 +19,23 @@ class Mask {
     }
 
     public get level (): number {
-        let mask = this._value & 7
-
-        for (let i = 0; i <= 3; i++) {
-            if (!mask) return i
-
-            mask = mask >> 1
-        }
-
-        return 3
+        return 32 - Math.clz32(this._value)
     }
 
     public get hashIndex (): number {
-        return Mask.countBits(this._value)
+        return this._hashIndex
     }
 
     public get hashCount (): number {
-        return this.hashIndex + 1
+        return this._hashCount
     }
 
     public apply (level: number): Mask {
         return new Mask(this._value & ((1 << level) - 1))
     }
 
-    public isSignificant (level: number): boolean {
-        return level === 0 || ((this._value >> (level - 1)) % 2 !== 0)
-    }
-
     // count binary ones
-    private static countBits (n: number): number {
+    private static countSetBits (n: number): number {
         n = n - ((n >> 1) & 0x55555555)
         n = (n & 0x33333333) + ((n >> 2) & 0x33333333)
 

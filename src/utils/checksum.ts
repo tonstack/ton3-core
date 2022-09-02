@@ -1,8 +1,8 @@
-// CRC16-CCITT
+// CRC16-XMODEM (poly = 0x1021, init = 0)
 const crc16 = (data: Uint8Array | number[]): number => {
     const POLY = 0x1021
     const bytes = new Uint8Array(data)
-    const result = bytes.reduce((acc, el) => {
+    const int16 = bytes.reduce((acc, el) => {
         let crc = acc ^ (el << 8)
 
         for (let i = 0; i < 8; i++) {
@@ -14,10 +14,12 @@ const crc16 = (data: Uint8Array | number[]): number => {
         return crc
     }, 0) & 0xffff
 
-    return result
+    const [ uint16 ] = new Uint16Array([ int16 ])
+
+    return uint16
 }
 
-// crc16 bytes in big-endian order
+// CRC16 bytes in big-endian order
 const crc16BytesBe = (data: Uint8Array | number[]): Uint8Array => {
     const crc = crc16(data)
     const buffer = new ArrayBuffer(2)
@@ -46,7 +48,7 @@ const crc32c = (data: Uint8Array | number[]): number => {
     return uint32
 }
 
-// crc32c bytes in little-endian order
+// CRC32C bytes in little-endian order
 const crc32cBytesLe = (data: Uint8Array | number[]): Uint8Array => {
     const crc = crc32c(data)
     const buffer = new ArrayBuffer(4)

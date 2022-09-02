@@ -1,10 +1,13 @@
-import { Bit } from '../types/bit'
-import { Cell } from './cell'
+import type { Bit } from '../types/bit'
+import type { Cell } from './cell'
 import { Coins } from '../coins'
 import { Address } from '../address'
 import {
+    HashmapE,
+    HashmapOptions
+} from './hashmap'
+import {
     bitsToHex,
-    bitsToInt8,
     bitsToBytes,
     bytesToString
 } from '../utils/helpers'
@@ -38,6 +41,15 @@ class Slice {
     }
 
     /**
+     * Alias for .skipBits()
+     *
+     * @return {this}
+     */
+    public skip (size: number): this {
+        return this.skipBits(size)
+    }
+
+    /**
      * Skip bits from {@link Slice}
      *
      * @param {number} size - Total bits should be skipped
@@ -50,16 +62,16 @@ class Slice {
      *
      * builder.storeBits([ 0, 1, 1, 0 ])
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
-     * console.log(slice.skip(2).loadBits(2)) // [ 1, 0 ]
+     * console.log(slice.skipBits(2).loadBits(2)) // [ 1, 0 ]
      * ```
      *
      * @return {this}
      */
-    public skip (size: number): Slice {
+    public skipBits (size: number): this {
         if (this._bits.length < size) {
-            throw new Error('Slice: skip bits overflow.')
+            throw new Error('Slice: bits overflow.')
         }
 
         this._bits.splice(0, size)
@@ -68,14 +80,56 @@ class Slice {
     }
 
     /**
-     * Same as .loadDict() but will return instance of {@link Slice} with unloaded dict
+     * Skip refs from {@link Slice}
+     *
+     * @param {number} size - Total refs should be skipped
+     *
+     * @example
+     * ```ts
+     * import { Builder, Slice } from 'ton3-core'
+     *
+     * const builder = new Builder()
+     * const cell1 = new Builder().cell()
+     * const cell2 = new Builder().cell()
+     *
+     * builder.storeRefs([ cell1, cell2 ])
+     *
+     * const slice = builder.cell().slice()
+     *
+     * console.log(slice.skipRefs(1).loadRef()) // cell2
+     * ```
+     *
+     * @return {this}
+     */
+    public skipRefs (size: number): this {
+        if (this._refs.length < size) {
+            throw new Error('Slice: refs overflow.')
+        }
+
+        this._refs.splice(0, size)
+
+        return this
+    }
+
+    /**
+     * Skip dict from {@link Slice}
      *
      * @return {this}
      */
     public skipDict (): this {
-        this.loadDict()
+        // if (this._bits.length === 0) {
+        //     throw new Error('Slice: skip dict overflow.')
+        // }
 
-        return this
+        // if (this.preloadBit() === 1 && this._refs.length === 0) {
+        //     throw new Error('Slice: skip dict overflow.')
+        // }
+
+        const isEmpty = this.loadBit() === 0
+
+        return !isEmpty
+            ? this.skipRefs(1)
+            : this
     }
 
     /**
@@ -90,7 +144,7 @@ class Slice {
      *
      * builder.storeRef(ref.cell())
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadRef()) // Cell
      * ```
@@ -129,7 +183,7 @@ class Slice {
      *
      * builder.storeBit(1)
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadBit()) // 1
      * ```
@@ -170,7 +224,7 @@ class Slice {
      *
      * builder.storeBits([ 0, 1 ])
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadBits(2)) // [ 0, 1 ]
      * ```
@@ -211,7 +265,7 @@ class Slice {
      *
      * builder.storeInt(-14, 15)
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadInt(15)) // -14
      * ```
@@ -272,7 +326,7 @@ class Slice {
      *
      * builder.storeUint(14, 9)
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadUint(9)) // 14
      * ```
@@ -333,7 +387,7 @@ class Slice {
      *
      * builder.storeVarInt(-101101, 16)
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadVarInt(16)) // -101101
      * ```
@@ -405,7 +459,7 @@ class Slice {
      *
      * builder.storeVarUint(101101, 16)
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadVarUint(16)) // 101101
      * ```
@@ -475,7 +529,7 @@ class Slice {
      *
      * builder.storeBytes(new Uint8Array([ 255, 255 ]))
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadBytes(16)) // [ 255, 255 ]
      * ```
@@ -512,7 +566,7 @@ class Slice {
      *
      * builder.storeString('Привет, мир!')
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadString()) // 'Привет, мир!'
      * ```
@@ -552,7 +606,7 @@ class Slice {
      *
      * builder.storeAddress(address)
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadAddress().toString())
      * // 'kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny'
@@ -572,16 +626,16 @@ class Slice {
         if (flag.every((bit, i) => bit === FLAG_ADDRESS[i])) {
             // 2 bits flag, 1 bit anycast, 8 bits workchain, 256 bits address hash
             const size = 2 + 1 + 8 + 256
-            const bits = this.preloadBits(size)
-            // Splice 2 because we dont need flag bits
+            // Slice 2 because we dont need flag bits
+            const bits = this.loadBits(size).slice(2)
             // Anycast is currently unused
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const anycast = bits.splice(2, 1)
-            const workchain = bitsToInt8(bits.splice(2, 8))
-            const hash = bitsToHex(bits.splice(2, 256))
+            const _anycast = bits.splice(0, 1)
+            const workchain = bitsToIntUint(bits.splice(0, 8), { type: 'int' })
+            const hash = bitsToHex(bits.splice(0, 256))
             const raw = `${workchain}:${hash}`
 
-            return this.skip(size) && new Address(raw)
+            return new Address(raw)
         }
 
         throw new Error('Slice: bad address flag bits.')
@@ -604,13 +658,13 @@ class Slice {
         if (flag.every((bit, i) => bit === FLAG_ADDRESS[i])) {
             // 2 bits flag, 1 bit anycast, 8 bits workchain, 256 bits address hash
             const size = 2 + 1 + 8 + 256
-            const bits = this.preloadBits(size)
+            const bits = this.preloadBits(size).slice(2)
             // Splice 2 because we dont need flag bits
             // Anycast is currently unused
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const anycast = bits.splice(2, 1)
-            const workchain = bitsToInt8(bits.splice(2, 8))
-            const hash = bitsToHex(bits.splice(2, 256))
+            const _anycast = bits.splice(0, 1)
+            const workchain = bitsToIntUint(bits.splice(0, 8), { type: 'int' })
+            const hash = bitsToHex(bits.splice(0, 256))
             const raw = `${workchain}:${hash}`
 
             return new Address(raw)
@@ -633,7 +687,7 @@ class Slice {
      *
      * builder.storeCoins(coins)
      *
-     * const slice = Slice.parse(builder.cell())
+     * const slice = builder.cell().slice()
      *
      * console.log(slice.loadCoins().toString()) // '100'
      * ```
@@ -658,7 +712,7 @@ class Slice {
     }
 
     /**
-     * Read {@link HashmapE} as {@link Cell} from {@link Slice}
+     * Read {@link HashmapE} from {@link Slice}
      *
      * @example
      * ```ts
@@ -669,43 +723,35 @@ class Slice {
      *
      * builder.storeDict(dict)
      *
-     * const slice = Slice.parse(builder.cell())
-     * const cell = slice.loadDict()
+     * const slice = builder.cell().slice()
+     * const entries = [ ...slice.loadDict() ]
+     * 
+     * console.log(entries) // []
      * ```
      *
-     * @return {Cell}
+     * @return {HashmapE}
      */
-    public loadDict (): Cell {
-        const isEmpty = this.preloadBit() === 0
+    public loadDict <K = Bit[], V = Cell>(keySize: number, options?: HashmapOptions<K, V>): HashmapE<K, V> {
+        const dictConstructor = this.loadBit()
+        const isEmpty = dictConstructor === 0
 
-        if (isEmpty) {
-            this.skip(1)
-
-            return null
-        }
-
-        return new Cell({
-            bits: [ this.loadBit() ],
-            refs: [ this.loadRef() ]
-        })
+        return !isEmpty
+            ? HashmapE.parse<K, V>(keySize, new Slice([ dictConstructor ], [ this.loadRef() ]), options)
+            : new HashmapE<K, V>(keySize, options)
     }
 
     /**
      * Same as .loadDict() but will not mutate {@link Slice}
      *
-     * @return {Cell}
+     * @return {HashmapE}
      */
-    public preloadDict (): Cell {
-        const isEmpty = this.preloadBit() === 0
+    public preloadDict <K = Bit[], V = Cell>(keySize: number, options?: HashmapOptions<K, V>): HashmapE<K, V> {
+        const dictConstructor = this.preloadBit()
+        const isEmpty = dictConstructor === 0
 
-        if (isEmpty) {
-            return null
-        }
-
-        return new Cell({
-            bits: [ this.preloadBit() ],
-            refs: [ this.preloadRef() ]
-        })
+        return !isEmpty
+            ? HashmapE.parse<K, V>(keySize, new Slice([ dictConstructor ], [ this.preloadRef() ]), options)
+            : new HashmapE<K, V>(keySize, options)
     }
 
     /**

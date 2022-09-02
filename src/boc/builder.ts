@@ -1,9 +1,9 @@
-import { Bit } from '../types/bit'
+import type { Bit } from '../types/bit'
+import type { Slice } from './slice'
 import {
     Cell,
     CellType
 } from './cell'
-import { Slice } from './slice'
 import type { Address } from '../address'
 import type { Coins } from '../coins'
 import type { HashmapE } from './hashmap'
@@ -43,7 +43,7 @@ class Builder {
     }
 
     private storeNumber (value: bigint, size: number): this {
-        const bits = [ ...Array(size) ]
+        const bits = Array.from({ length: size })
             .map((_el, i) => Number(((value >> BigInt(i)) & 1n) === 1n) as Bit)
             .reverse()
 
@@ -333,7 +333,7 @@ class Builder {
      * @returns {this}
      */
     public storeDict (hashmap: HashmapE<any, any>): this {
-        const slice = Slice.parse(hashmap.cell())
+        const slice = hashmap.cell().slice()
 
         this.storeSlice(slice)
 
