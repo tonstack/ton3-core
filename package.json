@@ -1,6 +1,6 @@
 {
   "name": "ton3-core",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "TON low-level API tools",
   "main": "./dist/index.js",
   "scripts": {
