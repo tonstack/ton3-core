@@ -93,7 +93,7 @@ const stringToBytes = (value: string): Uint8Array => {
 }
 
 const bytesToBase64 = (data: Uint8Array | number[]): string => {
-    const bytes = Array.from(data)
+    const bytes = new Uint8Array(data)
     const str = String.fromCharCode(...bytes)
 
     return isNodeEnv
