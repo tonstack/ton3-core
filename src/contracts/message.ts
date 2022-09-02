@@ -5,7 +5,6 @@ import { Address } from '../address'
 import { hexToBytes } from '../utils/helpers'
 import {
     Builder,
-    Slice,
     Cell
 } from '../boc'
 
@@ -52,18 +51,18 @@ class Message {
             ? Message.signed(this.body, key)
             : this.body
 
-        message.storeSlice(Slice.parse(this.header))
+        message.storeSlice(this.header.slice())
 
         if (this.state !== null) {
             message.storeBit(1)
 
             if (
                 // We need at least 1 bit for the body
-                message.remainder >= this.state.bits.length + 1
-                && message.refs.length + this.state.refs.length <= 4
+                message.remainder >= (this.state.bits.length + 1)
+                && (message.refs.length + this.state.refs.length) <= 4
             ) {
                 message.storeBit(0)
-                    .storeSlice(Slice.parse(this.state))
+                    .storeSlice(this.state.slice())
             } else {
                 message.storeBit(1)
                     .storeRef(this.state)
@@ -78,7 +77,7 @@ class Message {
                 && message.refs.length + body.refs.length <= 4
             ) {
                 message.storeBit(0)
-                    .storeSlice(Slice.parse(body))
+                    .storeSlice(body.slice())
             } else {
                 message.storeBit(1)
                     .storeRef(body)
@@ -96,7 +95,7 @@ class Message {
 
         return new Builder()
             .storeBytes(signature)
-            .storeSlice(Slice.parse(data))
+            .storeSlice(data.slice())
             .cell()
     }
 

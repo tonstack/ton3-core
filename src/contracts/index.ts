@@ -1,4 +1,8 @@
-export { ContractBase } from './base'
+export { ContractLibrary } from './libraries'
+export {
+    ContractBaseOptions,
+    ContractBase
+} from './base'
 export {
     MessageExternalIn,
     MessageInternal
