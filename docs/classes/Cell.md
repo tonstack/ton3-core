@@ -248,7 +248,7 @@ ___
 
 ### print
 
-▸ **print**(`indent?`): `string`
+▸ **print**(`indent?`, `size?`): `string`
 
 Print cell as fift-hex
 
@@ -265,7 +265,8 @@ console.log(cell.print()) // x{_}
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
-| `indent` | `number` | `0` |
+| `indent` | `number` | `1` |
+| `size` | `number` | `0` |
 
 #### Returns
 
