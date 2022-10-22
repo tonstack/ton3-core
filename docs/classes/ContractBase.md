@@ -8,10 +8,6 @@
 
 - [constructor](ContractBase.md#constructor)
 
-### Properties
-
-- [EMPTY\_CODE](ContractBase.md#empty_code)
-
 ### Accessors
 
 - [workchain](ContractBase.md#workchain)
@@ -22,21 +18,13 @@
 
 ### constructor
 
-• **new ContractBase**(`workchain`, `code`, `storage?`)
+• **new ContractBase**(`options`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `workchain` | `number` |
-| `code` | [`Cell`](Cell.md) |
-| `storage?` | [`Cell`](Cell.md) |
-
-## Properties
-
-### EMPTY\_CODE
-
-▪ `Static` **EMPTY\_CODE**: [`Cell`](Cell.md)
+| `options` | [`ContractBaseOptions`](../interfaces/ContractBaseOptions.md) |
 
 ## Accessors
 

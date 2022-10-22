@@ -18,7 +18,6 @@
 ### Methods
 
 - [apply](Mask.md#apply)
-- [isSignificant](Mask.md#issignificant)
 
 ## Constructors
 
@@ -87,19 +86,3 @@ ___
 #### Returns
 
 [`Mask`](Mask.md)
-
-___
-
-### isSignificant
-
-▸ **isSignificant**(`level`): `boolean`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `level` | `number` |
-
-#### Returns
-
-`boolean`

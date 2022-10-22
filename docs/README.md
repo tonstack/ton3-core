@@ -17,7 +17,7 @@ ton3-core
 - [HashmapOptions](interfaces/HashmapOptions.md)
 - [BOCOptions](interfaces/BOCOptions.md)
 - [CoinsOptions](interfaces/CoinsOptions.md)
-- [StateInitOptions](interfaces/StateInitOptions.md)
+- [ContractBaseOptions](interfaces/ContractBaseOptions.md)
 - [KeyPair](interfaces/KeyPair.md)
 - [MnemonicOptions](interfaces/MnemonicOptions.md)
 
@@ -33,6 +33,7 @@ ton3-core
 - [Slice](classes/Slice.md)
 - [Coins](classes/Coins.md)
 - [ContractBase](classes/ContractBase.md)
+- [ContractLibrary](classes/ContractLibrary.md)
 - [MessageInternal](classes/MessageInternal.md)
 - [MessageExternalIn](classes/MessageExternalIn.md)
 - [MnemonicBIP39](classes/MnemonicBIP39.md)
@@ -61,8 +62,6 @@ ton3-core
 - [crc32cBytesLe](README.md#crc32cbytesle)
 - [sha256](README.md#sha256)
 - [sha512](README.md#sha512)
-- [uint8toInt8](README.md#uint8toint8)
-- [int8ToUint8](README.md#int8touint8)
 - [uintToHex](README.md#uinttohex)
 - [hexToBits](README.md#hextobits)
 - [hexToBytes](README.md#hextobytes)
@@ -71,8 +70,6 @@ ton3-core
 - [bytesToBits](README.md#bytestobits)
 - [bitsToHex](README.md#bitstohex)
 - [bitsToBytes](README.md#bitstobytes)
-- [bitsToInt8](README.md#bitstoint8)
-- [bitsToUint8](README.md#bitstouint8)
 - [bytesToHex](README.md#bytestohex)
 - [bytesToString](README.md#bytestostring)
 - [stringToBytes](README.md#stringtobytes)
@@ -382,38 +379,6 @@ ___
 
 ___
 
-### uint8toInt8
-
-▸ **uint8toInt8**(`uint8`): `number`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `uint8` | `number` |
-
-#### Returns
-
-`number`
-
-___
-
-### int8ToUint8
-
-▸ **int8ToUint8**(`int8`): `number`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `int8` | `number` |
-
-#### Returns
-
-`number`
-
-___
-
 ### uintToHex
 
 ▸ **uintToHex**(`uint`): `string`
@@ -540,38 +505,6 @@ ___
 #### Returns
 
 `Uint8Array`
-
-___
-
-### bitsToInt8
-
-▸ **bitsToInt8**(`bits`): `number`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `bits` | [`Bit`](README.md#bit)[] |
-
-#### Returns
-
-`number`
-
-___
-
-### bitsToUint8
-
-▸ **bitsToUint8**(`bits`): `number`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `bits` | [`Bit`](README.md#bit)[] |
-
-#### Returns
-
-`number`
 
 ___
 
