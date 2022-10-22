@@ -695,7 +695,7 @@ class Slice {
      * @return {Coins}
      */
     public loadCoins (decimals: number = 9): Coins {
-        const coins = this.loadVarUint(16)
+        const coins = this.loadVarBigUint(16)
 
         return new Coins(coins, { isNano: true, decimals })
     }
@@ -706,7 +706,7 @@ class Slice {
      * @return {Coins}
      */
     public preloadCoins (decimals: number = 9): Coins {
-        const coins = this.preloadVarUint(16)
+        const coins = this.preloadVarBigUint(16)
 
         return new Coins(coins, { isNano: true, decimals })
     }
