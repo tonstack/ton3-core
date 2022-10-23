@@ -41,16 +41,23 @@ console.log(text === result) // true
 
 | Feature                                     | Status  |
 |---------------------------------------------|-------- |
-| Ordinary BOC (de)serialization              | ✅      |
+| BOC ordinary/exotic (de)serialization       | ✅      |
 | Builder, Cell, Slice                        | ✅      |
 | Hashmap (dictionary) (de)serialization      | ✅      |
-| Mnemonic/keypair with bip39 + ed25519       | ✅      |
-| Coins (class for Toncoin, Nanocoin e.t.c.)  | ✅      |
+| HashmapE (dictionary) (de)serialization     | ✅      |
+| Mnemonic/keypair BIP39 standard             | ✅      |
+| Mnemonic/keypair TON standard               | ✅      |
+| Coins (class for TON, JETTON, e.t.c.)       | ✅      |
 | Address (class for TON address)             | ✅      |
 | Message layouts (such as MessageX e.t.c.)   | ✅      |
-| Old "tonweb" style mnemonic support         | ❌      |
+| Contracts (abstract TON contract class)     | ✅      |
 | ~100% tests coverage                        | ❌      |
-| Pre-release code review                     | ❌      |
+
+## Donations
+You can support library author by sending any amount of TON to address below
+```
+UQCcJpog-XAzY7tK6uqCd6QrEBlgocPXdXgIG3ev1Dxg5dl2
+```
 
 ## License
 
