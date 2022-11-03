@@ -14,7 +14,7 @@ import {
 
 const getNodeSubtle = (): SubtleCrypto | null => {
     try {
-        const { webcrypto } = require('node:crypto')
+        const { webcrypto } = require('crypto')
 
         return webcrypto.subtle
     } catch (err) {
