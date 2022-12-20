@@ -2,9 +2,9 @@ import bip0039en from './bip-0039-en.json'
 import { KeyPair } from './key-pair'
 import {
     normalize,
-    genereteSeed,
-    genereteSeedAsync,
-    genereteWords,
+    generateSeed,
+    generateSeedAsync,
+    generateWords,
     generateKeyPair
 } from './utlis'
 
@@ -37,8 +37,8 @@ class MnemonicBIP39 {
             keyLength = 64
         } = options || {}
 
-        const words = mnemonic.length ? mnemonic : genereteWords()
-        const seed = genereteSeed(words, this.generateSalt(salt), rounds, keyLength).slice(0, 32)
+        const words = mnemonic.length ? mnemonic : generateWords()
+        const seed = generateSeed(words, this.generateSalt(salt), rounds, keyLength).slice(0, 32)
         const keys = generateKeyPair(seed)
 
         this._words = words
@@ -58,34 +58,34 @@ class MnemonicBIP39 {
         return this._keys
     }
 
-    public static genereteWords (): string[] {
-        return genereteWords()
+    public static generateWords (): string[] {
+        return generateWords()
     }
 
     public static generateKeyPair (seed: Uint8Array): KeyPair {
         return generateKeyPair(seed)
     }
 
-    public static genereteSeed (
+    public static generateSeed (
         mnemonic: string[],
         salt = null,
         rounds = 2048,
         keyLength = 64
     ): Uint8Array {
         const _salt = 'mnemonic' + (salt !== null ? normalize(salt) : '')
-        const seed = genereteSeed(mnemonic, _salt, rounds, keyLength)
+        const seed = generateSeed(mnemonic, _salt, rounds, keyLength)
 
         return seed.slice(0, 32)
     }
 
-    public static async genereteSeedAsync (
+    public static async generateSeedAsync (
         mnemonic: string[],
         salt = null,
         rounds = 2048,
         keyLength = 64
     ): Promise<Uint8Array> {
         const _salt = 'mnemonic' + (salt !== null ? normalize(salt) : '')
-        const seed = await genereteSeedAsync(mnemonic, _salt, rounds, keyLength)
+        const seed = await generateSeedAsync(mnemonic, _salt, rounds, keyLength)
 
         return seed.slice(0, 32)
     }
