@@ -173,6 +173,49 @@ class Slice {
     }
 
     /**
+     * Read maybe ref from {@link Slice}
+     *
+     * @example
+     * ```ts
+     * import { Builder, Slice } from 'ton3-core'
+     *
+     * const builder1 = new Builder()
+     * const builder2 = new Builder()
+     * const ref = new Builder()
+     *
+     * builder1.storeBit(0)
+     * 
+     * builder2
+     *  .storeBit(1)
+     *  .storeRef(ref.cell())
+     *
+     * const slice1 = builder1.cell().slice()
+     * const slice2 = builder2.cell().slice()
+     *
+     * console.log(slice1.loadMaybeRef()) // null
+     * console.log(slice2.loadMaybeRef()) // Cell
+     * ```
+     *
+     * @return {Cell | null}
+     */
+    public loadMaybeRef (): Cell | null {
+        return this.loadBit() === 1
+            ? this.loadRef()
+            : null
+    }
+
+    /**
+     * Same as .loadMaybeRef() but will not mutate {@link Slice}
+     *
+     * @return {Cell | null}
+     */
+    public preloadMaybeRef (): Cell | null {
+        return this.preloadBit() === 1
+            ? this.preloadRef()
+            : null
+    }
+
+    /**
      * Read bit from {@link Slice}
      *
      * @example
