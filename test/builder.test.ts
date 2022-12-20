@@ -167,6 +167,69 @@ describe('Builder', () => {
 
             expect(result).to.throw('Builder: refs overflow. Can\'t add 1 refs. Only 0 refs left.')
         })
+
+        it('should throw error on bad data', () => {
+            // @ts-ignore
+            const result1 = () => builder.storeRef(null)
+            // @ts-ignore
+            const result2 = () => builder.storeRef(undefined)
+            // @ts-ignore
+            const result3 = () => builder.storeRef(new Builder())
+
+            expect(result1).to.throw('Builder: can\'t store ref, because it\'s type is not a Cell')
+            expect(result2).to.throw('Builder: can\'t store ref, because it\'s type is not a Cell')
+            expect(result3).to.throw('Builder: can\'t store ref, because it\'s type is not a Cell')
+        })
+    })
+
+    describe('#storeMaybeRef()', () => {
+        it('should store unary one and ref', () => {
+            const ref = new Builder().cell()
+            const result = builder.storeMaybeRef(ref)
+
+            expect(result.bits[0]).to.eq(1)
+            expect(result.bits.length).to.eq(1)
+            expect(result.refs[0]).to.eq(ref)
+            expect(result.refs.length).to.eq(1)
+        })
+
+        it('should store unary zero', () => {
+            const result = builder.storeMaybeRef(null)
+
+            expect(result.bits[0]).to.eq(0)
+            expect(result.bits.length).to.eq(1)
+            expect(result.refs.length).to.eq(0)
+        })
+
+        it('should throw error on overflow refs', () => {
+            const ref = new Builder().cell()
+
+            builder.storeMaybeRef(ref)
+                .storeMaybeRef(ref)
+                .storeMaybeRef(ref)
+                .storeMaybeRef(ref)
+
+            const result = () => builder.storeMaybeRef(ref)
+
+            expect(result).to.throw('Builder: refs overflow. Can\'t add 1 refs. Only 0 refs left.')
+        })
+
+        it('should throw error on overflow bits', () => {
+            const builder1 = new Builder(1).storeBit(1)
+            const result = () => builder1.storeMaybeRef(null)
+
+            expect(result).to.throw('Builder: bits overflow. Can\'t add 1 bits. Only 0 bits left.')
+        })
+
+        it('should throw error on bad data', () => {
+            // @ts-ignore
+            const result1 = () => builder.storeMaybeRef(undefined)
+            // @ts-ignore
+            const result2 = () => builder.storeMaybeRef(new Builder())
+
+            expect(result1).to.throw('Builder: can\'t store ref, because it\'s type is not a Cell')
+            expect(result2).to.throw('Builder: can\'t store ref, because it\'s type is not a Cell')
+        })
     })
 
     describe('#storeRefs()', () => {
@@ -193,14 +256,37 @@ describe('Builder', () => {
 
             expect(result).to.throw('Builder: refs overflow. Can\'t add 5 refs. Only 4 refs left.')
         })
+
+        it('should throw error on bad data', () => {
+            // @ts-ignore
+            const result1 = () => builder.storeRefs([ null ])
+            // @ts-ignore
+            const result2 = () => builder.storeRefs([ new Builder() ])
+
+            expect(result1).to.throw('Builder: can\'t store ref, because it\'s type is not a Cell')
+            expect(result2).to.throw('Builder: can\'t store ref, because it\'s type is not a Cell')
+        })
     })
 
     describe('#storeBit()', () => {
         it('should store bit', () => {
-            const result = builder.storeBit(1)
+            const result = builder
+                .storeBit(1)
+                .storeBit(0)
 
             expect(result.bits[0]).to.eq(1)
-            expect(result.bits.length).to.eq(1)
+            expect(result.bits[1]).to.eq(0)
+            expect(result.bits.length).to.eq(2)
+        })
+
+        it('should store boolean', () => {
+            const result = builder
+                .storeBit(true)
+                .storeBit(false)
+
+            expect(result.bits[0]).to.eq(1)
+            expect(result.bits[1]).to.eq(0)
+            expect(result.bits.length).to.eq(2)
         })
 
         it('should throw error on bad data', () => {
@@ -211,9 +297,9 @@ describe('Builder', () => {
             // @ts-ignore
             const result3 = () => builder.storeBit(null)
 
-            expect(result1).to.throw('Builder: can\'t store bit, because it\'s type not Number or value doesn\'t equals 0 nor 1.')
-            expect(result2).to.throw('Builder: can\'t store bit, because it\'s type not Number or value doesn\'t equals 0 nor 1.')
-            expect(result3).to.throw('Builder: can\'t store bit, because it\'s type not Number or value doesn\'t equals 0 nor 1.')
+            expect(result1).to.throw('Builder: can\'t store bit, because it\'s type is not a Number or Boolean, or value doesn\'t equals 0 nor 1.')
+            expect(result2).to.throw('Builder: can\'t store bit, because it\'s type is not a Number or Boolean, or value doesn\'t equals 0 nor 1.')
+            expect(result3).to.throw('Builder: can\'t store bit, because it\'s type is not a Number or Boolean, or value doesn\'t equals 0 nor 1.')
         })
 
         it('should throw error on overflow', () => {
@@ -319,6 +405,19 @@ describe('Builder', () => {
 
             expect(result.bits).to.eql([ 0, 0 ])
             expect(result.bits.length).to.eq(2)
+        })
+
+        it('should throw error on bad data', () => {
+            // @ts-ignore
+            const result1 = () => builder.storeAddress(undefined)
+            // @ts-ignore
+            const result2 = () => builder.storeAddress({})
+            // @ts-ignore
+            const result3 = () => builder.storeAddress([])
+
+            expect(result1).to.throw('Builder: can\'t store address, because it\'s type is not an Address.')
+            expect(result2).to.throw('Builder: can\'t store address, because it\'s type is not an Address.')
+            expect(result3).to.throw('Builder: can\'t store address, because it\'s type is not an Address.')
         })
     })
 

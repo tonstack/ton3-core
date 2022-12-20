@@ -1,8 +1,8 @@
 import { MnemonicBIP39 } from './mnemonic-bip39'
 import {
     normalize,
-    genereteSeed,
-    genereteSeedAsync
+    generateSeed,
+    generateSeedAsync
 } from './utlis'
 
 const TON_SALT = 'TON default seed'
@@ -18,14 +18,14 @@ class Mnemonic extends MnemonicBIP39 {
         })
     }
 
-    public static genereteSeed (mnemonic: string[]): Uint8Array {
-        const seed = genereteSeed(mnemonic, normalize(TON_SALT), TON_ROUNDS, TON_KEY_LENGTH)
+    public static generateSeed (mnemonic: string[]): Uint8Array {
+        const seed = generateSeed(mnemonic, normalize(TON_SALT), TON_ROUNDS, TON_KEY_LENGTH)
 
         return seed.slice(0, TON_KEY_LENGTH)
     }
 
-    public static async genereteSeedAsync (mnemonic: string[]): Promise<Uint8Array> {
-        const seed = await genereteSeedAsync(mnemonic, normalize(TON_SALT), TON_ROUNDS, TON_KEY_LENGTH)
+    public static async generateSeedAsync (mnemonic: string[]): Promise<Uint8Array> {
+        const seed = await generateSeedAsync(mnemonic, normalize(TON_SALT), TON_ROUNDS, TON_KEY_LENGTH)
 
         return seed.slice(0, TON_KEY_LENGTH)
     }

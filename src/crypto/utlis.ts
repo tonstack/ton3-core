@@ -88,7 +88,7 @@ const generateKeyPair = (seed: Uint8Array): KeyPair => {
     }
 }
 
-const genereteWords = (): string[] => {
+const generateWords = (): string[] => {
     const entropy = nacl.randomBytes(32)
     const checkSumBits = deriveChecksumBits(entropy)
     const entropyBits = bytesToBits(entropy)
@@ -103,7 +103,7 @@ const genereteWords = (): string[] => {
     return words
 }
 
-const genereteSeed = (
+const generateSeed = (
     mnemonic: string[],
     salt: string,
     rounds: number,
@@ -116,7 +116,7 @@ const genereteSeed = (
     return bytes
 }
 
-const genereteSeedAsync = async (
+const generateSeedAsync = async (
     mnemonic: string[],
     salt: string,
     rounds: number,
@@ -134,8 +134,8 @@ const normalize = (value: string): string => {
 export {
     deriveChecksumBits,
     generateKeyPair,
-    genereteWords,
-    genereteSeed,
-    genereteSeedAsync,
+    generateWords,
+    generateSeed,
+    generateSeedAsync,
     normalize
 }

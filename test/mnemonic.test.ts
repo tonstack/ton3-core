@@ -45,7 +45,7 @@ describe('Mnemonic', () => {
 
     describe('#generateWords()', () => {
         it('should generate words', () => {
-            const words = Mnemonic.genereteWords()
+            const words = Mnemonic.generateWords()
 
             expect(words.length).to.eq(24)
         })
@@ -53,7 +53,7 @@ describe('Mnemonic', () => {
 
     describe('#generateSeed()', () => {
         it('should generate seed', () => {
-            const seed = Mnemonic.genereteSeed(TEST_WORDS)
+            const seed = Mnemonic.generateSeed(TEST_WORDS)
 
             expect(bytesToHex(seed)).to.eq(TEST_SEED)
         })
@@ -61,7 +61,7 @@ describe('Mnemonic', () => {
 
     describe('#generateSeedAsync()', () => {
         it('should generate seed asynchronous', async () => {
-            const seed = await Mnemonic.genereteSeedAsync(TEST_WORDS)
+            const seed = await Mnemonic.generateSeedAsync(TEST_WORDS)
 
             expect(bytesToHex(seed)).to.eq(TEST_SEED)
         })
@@ -114,7 +114,7 @@ describe('MnemonicBIP39', () => {
 
     describe('#generateWords()', () => {
         it('should generate words', () => {
-            const words = MnemonicBIP39.genereteWords()
+            const words = MnemonicBIP39.generateWords()
 
             expect(words.length).to.eq(24)
         })
@@ -122,7 +122,7 @@ describe('MnemonicBIP39', () => {
 
     describe('#generateSeed()', () => {
         it('should generate seed', () => {
-            const seed = MnemonicBIP39.genereteSeed(TEST_WORDS)
+            const seed = MnemonicBIP39.generateSeed(TEST_WORDS)
 
             expect(bytesToHex(seed)).to.eq(TEST_SEED)
         })
@@ -130,7 +130,7 @@ describe('MnemonicBIP39', () => {
 
     describe('#generateSeedAsync()', () => {
         it('should generate seed asynchronous', async () => {
-            const seed = await MnemonicBIP39.genereteSeedAsync(TEST_WORDS)
+            const seed = await MnemonicBIP39.generateSeedAsync(TEST_WORDS)
 
             expect(bytesToHex(seed)).to.eq(TEST_SEED)
         })

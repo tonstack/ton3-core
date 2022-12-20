@@ -22,10 +22,10 @@
 
 ### Methods
 
-- [genereteWords](MnemonicBIP39.md#generetewords)
+- [generateWords](MnemonicBIP39.md#generatewords)
 - [generateKeyPair](MnemonicBIP39.md#generatekeypair)
-- [genereteSeed](MnemonicBIP39.md#genereteseed)
-- [genereteSeedAsync](MnemonicBIP39.md#genereteseedasync)
+- [generateSeed](MnemonicBIP39.md#generateseed)
+- [generateSeedAsync](MnemonicBIP39.md#generateseedasync)
 
 ## Constructors
 
@@ -72,9 +72,9 @@ ___
 
 ## Methods
 
-### genereteWords
+### generateWords
 
-▸ `Static` **genereteWords**(): `string`[]
+▸ `Static` **generateWords**(): `string`[]
 
 #### Returns
 
@@ -98,9 +98,9 @@ ___
 
 ___
 
-### genereteSeed
+### generateSeed
 
-▸ `Static` **genereteSeed**(`mnemonic`, `salt?`, `rounds?`, `keyLength?`): `Uint8Array`
+▸ `Static` **generateSeed**(`mnemonic`, `salt?`, `rounds?`, `keyLength?`): `Uint8Array`
 
 #### Parameters
 
@@ -117,9 +117,9 @@ ___
 
 ___
 
-### genereteSeedAsync
+### generateSeedAsync
 
-▸ `Static` **genereteSeedAsync**(`mnemonic`, `salt?`, `rounds?`, `keyLength?`): `Promise`<`Uint8Array`\>
+▸ `Static` **generateSeedAsync**(`mnemonic`, `salt?`, `rounds?`, `keyLength?`): `Promise`<`Uint8Array`\>
 
 #### Parameters
 

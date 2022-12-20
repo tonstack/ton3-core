@@ -1,16 +1,18 @@
 import type { Bit } from '../types/bit'
-import type { Slice } from './slice'
+import type { Coins } from '../coins'
+import type { HashmapE } from './hashmap'
+import { Address } from '../address'
+import { Slice } from './slice'
 import {
     Cell,
     CellType
 } from './cell'
-import type { Address } from '../address'
-import type { Coins } from '../coins'
-import type { HashmapE } from './hashmap'
 import {
     bitsToBytes,
     stringToBytes
 } from '../utils/helpers'
+
+type BitLike = Bit | number | boolean
 
 /**
  * Cell Builder
@@ -30,9 +32,37 @@ class Builder {
         this._refs = []
     }
 
+    private checkSliceType (slice: Slice): void {
+        if (slice instanceof Slice === false) {
+            throw new Error('Builder: can\'t store slice, because it\'s type is not a Slice.')
+        }
+    }
+
+    private checkAddressType (address: Address): void {
+        if (address instanceof Address === false) {
+            throw new Error('Builder: can\'t store address, because it\'s type is not an Address.')
+        }
+    }
+
+    private checkBitsTypeAndNormalize (bits: BitLike[]): Bit[] {
+        return bits.map(bit => {
+            if (bit !== 0 && bit !== 1 && bit !== false && bit !== true) {
+                throw new Error('Builder: can\'t store bit, because it\'s type is not a Number or Boolean, or value doesn\'t equals 0 nor 1.')
+            }
+
+            return (bit === 1 || bit === true) ? 1 : 0
+        })
+    }
+
     private checkBitsOverflow (size: number): void {
         if (size > this.remainder) {
             throw new Error(`Builder: bits overflow. Can't add ${size} bits. Only ${this.remainder} bits left.`)
+        }
+    }
+
+    private checkRefsType (refs: Cell[]): void {
+        if (!refs.every(cell => cell instanceof Cell === true)) {
+            throw new Error('Builder: can\'t store ref, because it\'s type is not a Cell.')
         }
     }
 
@@ -109,6 +139,8 @@ class Builder {
      * @returns {this}
      */
     public storeSlice (slice: Slice): this {
+        this.checkSliceType(slice)
+
         const { bits, refs } = slice
 
         this.checkBitsOverflow(bits.length)
@@ -128,10 +160,26 @@ class Builder {
      * @returns {this}
      */
     public storeRef (ref: Cell): this {
+        this.checkRefsType([ ref ])
         this.checkRefsOverflow(1)
         this._refs.push(ref)
 
         return this
+    }
+
+    /**
+     * Add unary one bit and cell to instance refs or unary zero bit.
+     *
+     * @param {(Cell | null)} ref - {@link Cell} or null to reference.
+     *
+     * @returns {this}
+     */
+    public storeMaybeRef (ref: Cell | null): this {
+        if (ref === null) {
+            return this.storeBit(0)
+        }
+
+        return this.storeBit(1).storeRef(ref)
     }
 
     /**
@@ -142,6 +190,7 @@ class Builder {
      * @returns {this}
      */
     public storeRefs (refs: Cell[]): this {
+        this.checkRefsType(refs)
         this.checkRefsOverflow(refs.length)
         this._refs.push(...refs)
 
@@ -151,17 +200,15 @@ class Builder {
     /**
      * Store one bit in instance.
      *
-     * @param {(Bit | number)} bit - 1 or 0.
+     * @param {(Bit | number | boolean)} bit - 1 or 0.
      *
      * @returns {this}
      */
-    public storeBit (bit: Bit | number): this {
-        if (bit !== 0 && bit !== 1) {
-            throw new Error('Builder: can\'t store bit, because it\'s type not Number or value doesn\'t equals 0 nor 1.')
-        }
+    public storeBit (bit: BitLike): this {
+        const value = this.checkBitsTypeAndNormalize([ bit ])
 
         this.checkBitsOverflow(1)
-        this._bits.push(bit)
+        this._bits = this._bits.concat(value)
 
         return this
     }
@@ -173,9 +220,11 @@ class Builder {
      *
      * @returns {this}
      */
-    public storeBits (bits: Bit[]): this {
-        this.checkBitsOverflow(bits.length)
-        this._bits = this._bits.concat(bits)
+    public storeBits (bits: BitLike[]): this {
+        const value = this.checkBitsTypeAndNormalize(bits)
+
+        this.checkBitsOverflow(value.length)
+        this._bits = this._bits.concat(value)
 
         return this
     }
@@ -296,6 +345,7 @@ class Builder {
         const anycast = 0
         const addressBitsSize = 2 + 1 + 8 + 256
 
+        this.checkAddressType(address)
         this.checkBitsOverflow(addressBitsSize)
         this.storeBits([ 1, 0 ])
         this.storeUint(anycast, 1)

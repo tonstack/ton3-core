@@ -208,6 +208,84 @@ describe('Slice', () => {
         })
     })
 
+    describe('#loadMaybeRef(), #preloadMaybeRef()', () => {
+        it('should load ref', () => {
+            const ref = new Builder().cell()
+
+            builder.storeMaybeRef(ref)
+
+            const slice = builder.cell().slice()
+            const result1 = slice.loadMaybeRef()
+            const result2 = slice.refs.length
+            const result3 = slice.bits.length
+
+            expect(result1).to.eq(ref)
+            expect(result2).to.eq(0)
+            expect(result3).to.eq(0)
+        })
+
+        it('should load null', () => {
+            builder.storeMaybeRef(null)
+
+            const slice = builder.cell().slice()
+            const result1 = slice.loadMaybeRef()
+            const result2 = slice.refs.length
+            const result3 = slice.bits.length
+
+            expect(result1).to.eq(null)
+            expect(result2).to.eq(0)
+            expect(result3).to.eq(0)
+        })
+
+        it('should preload ref without splicing refs and bits', () => {
+            const ref = new Builder().cell()
+
+            builder.storeMaybeRef(ref)
+
+            const slice = builder.cell().slice()
+            const result1 = slice.preloadMaybeRef()
+            const result2 = slice.refs.length
+            const result3 = slice.bits.length
+            const result4 = slice.bits[0]
+
+            expect(result1).to.eq(ref)
+            expect(result2).to.eq(1)
+            expect(result3).to.eq(1)
+            expect(result4).to.eq(1)
+        })
+
+        it('should preload null without splicing bits', () => {
+            builder.storeMaybeRef(null)
+
+            const slice = builder.cell().slice()
+            const result1 = slice.preloadMaybeRef()
+            const result2 = slice.refs.length
+            const result3 = slice.bits.length
+            const result4 = slice.bits[0]
+
+            expect(result1).to.eq(null)
+            expect(result2).to.eq(0)
+            expect(result3).to.eq(1)
+            expect(result4).to.eq(0)
+        })
+
+        it('should throw error on overflow', () => {
+            builder.storeBit(1)
+
+            const slice = builder.cell().slice()
+
+            const result1 = () => slice.preloadMaybeRef()
+            const result2 = () => slice.loadMaybeRef()
+            const result3 = () => slice.preloadMaybeRef()
+            const result4 = () => slice.loadMaybeRef()
+
+            expect(result1).to.throw('Slice: refs overflow.')
+            expect(result2).to.throw('Slice: refs overflow.')
+            expect(result3).to.throw('Slice: bits overflow.')
+            expect(result4).to.throw('Slice: bits overflow.')
+        })
+    })
+
     describe('#loadBit(), #preloadBit()', () => {
         it('should load bit', () => {
             builder.storeBit(1)
