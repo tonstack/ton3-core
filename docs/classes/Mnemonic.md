@@ -22,10 +22,10 @@
 
 ### Methods
 
-- [genereteWords](Mnemonic.md#generetewords)
+- [generateWords](Mnemonic.md#generatewords)
 - [generateKeyPair](Mnemonic.md#generatekeypair)
-- [genereteSeed](Mnemonic.md#genereteseed)
-- [genereteSeedAsync](Mnemonic.md#genereteseedasync)
+- [generateSeed](Mnemonic.md#generateseed)
+- [generateSeedAsync](Mnemonic.md#generateseedasync)
 
 ## Constructors
 
@@ -87,9 +87,9 @@ MnemonicBIP39.keys
 
 ## Methods
 
-### genereteWords
+### generateWords
 
-▸ `Static` **genereteWords**(): `string`[]
+▸ `Static` **generateWords**(): `string`[]
 
 #### Returns
 
@@ -97,7 +97,7 @@ MnemonicBIP39.keys
 
 #### Inherited from
 
-[MnemonicBIP39](MnemonicBIP39.md).[genereteWords](MnemonicBIP39.md#generetewords)
+[MnemonicBIP39](MnemonicBIP39.md).[generateWords](MnemonicBIP39.md#generatewords)
 
 ___
 
@@ -121,9 +121,9 @@ ___
 
 ___
 
-### genereteSeed
+### generateSeed
 
-▸ `Static` **genereteSeed**(`mnemonic`): `Uint8Array`
+▸ `Static` **generateSeed**(`mnemonic`): `Uint8Array`
 
 #### Parameters
 
@@ -137,13 +137,13 @@ ___
 
 #### Overrides
 
-[MnemonicBIP39](MnemonicBIP39.md).[genereteSeed](MnemonicBIP39.md#genereteseed)
+[MnemonicBIP39](MnemonicBIP39.md).[generateSeed](MnemonicBIP39.md#generateseed)
 
 ___
 
-### genereteSeedAsync
+### generateSeedAsync
 
-▸ `Static` **genereteSeedAsync**(`mnemonic`): `Promise`<`Uint8Array`\>
+▸ `Static` **generateSeedAsync**(`mnemonic`): `Promise`<`Uint8Array`\>
 
 #### Parameters
 
@@ -157,4 +157,4 @@ ___
 
 #### Overrides
 
-[MnemonicBIP39](MnemonicBIP39.md).[genereteSeedAsync](MnemonicBIP39.md#genereteseedasync)
+[MnemonicBIP39](MnemonicBIP39.md).[generateSeedAsync](MnemonicBIP39.md#generateseedasync)

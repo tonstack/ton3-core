@@ -50,9 +50,9 @@ ton3-core
 - [serialize](README.md#serialize)
 - [deriveChecksumBits](README.md#derivechecksumbits)
 - [generateKeyPair](README.md#generatekeypair)
-- [genereteWords](README.md#generetewords)
-- [genereteSeed](README.md#genereteseed)
-- [genereteSeedAsync](README.md#genereteseedasync)
+- [generateWords](README.md#generatewords)
+- [generateSeed](README.md#generateseed)
+- [generateSeedAsync](README.md#generateseedasync)
 - [normalize](README.md#normalize)
 - [augment](README.md#augment)
 - [rollback](README.md#rollback)
@@ -180,9 +180,9 @@ ___
 
 ___
 
-### genereteWords
+### generateWords
 
-▸ **genereteWords**(): `string`[]
+▸ **generateWords**(): `string`[]
 
 #### Returns
 
@@ -190,9 +190,9 @@ ___
 
 ___
 
-### genereteSeed
+### generateSeed
 
-▸ **genereteSeed**(`mnemonic`, `salt`, `rounds`, `keyLength`): `Uint8Array`
+▸ **generateSeed**(`mnemonic`, `salt`, `rounds`, `keyLength`): `Uint8Array`
 
 #### Parameters
 
@@ -209,9 +209,9 @@ ___
 
 ___
 
-### genereteSeedAsync
+### generateSeedAsync
 
-▸ **genereteSeedAsync**(`mnemonic`, `salt`, `rounds`, `keyLength`): `Promise`<`Uint8Array`\>
+▸ **generateSeedAsync**(`mnemonic`, `salt`, `rounds`, `keyLength`): `Promise`<`Uint8Array`\>
 
 #### Parameters
 

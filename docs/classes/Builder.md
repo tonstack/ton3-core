@@ -22,6 +22,7 @@ Cell Builder
 
 - [storeSlice](Builder.md#storeslice)
 - [storeRef](Builder.md#storeref)
+- [storeMaybeRef](Builder.md#storemayberef)
 - [storeRefs](Builder.md#storerefs)
 - [storeBit](Builder.md#storebit)
 - [storeBits](Builder.md#storebits)
@@ -157,6 +158,24 @@ Add cell to instance refs.
 
 ___
 
+### storeMaybeRef
+
+▸ **storeMaybeRef**(`ref`): [`Builder`](Builder.md)
+
+Add unary one bit and cell to instance refs or unary zero bit.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `ref` | [`Cell`](Cell.md) | [Cell](Cell.md) or null to reference. |
+
+#### Returns
+
+[`Builder`](Builder.md)
+
+___
+
 ### storeRefs
 
 ▸ **storeRefs**(`refs`): [`Builder`](Builder.md)
@@ -185,7 +204,7 @@ Store one bit in instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `bit` | `number` | 1 or 0. |
+| `bit` | `BitLike` | 1 or 0. |
 
 #### Returns
 
@@ -203,7 +222,7 @@ Store multiple bits as array in instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `bits` | [`Bit`](../README.md#bit)[] | Array of 1 and/or 0. |
+| `bits` | `BitLike`[] | Array of 1 and/or 0. |
 
 #### Returns
 

@@ -19,6 +19,8 @@ Cell Slice
 - [skipDict](Slice.md#skipdict)
 - [loadRef](Slice.md#loadref)
 - [preloadRef](Slice.md#preloadref)
+- [loadMaybeRef](Slice.md#loadmayberef)
+- [preloadMaybeRef](Slice.md#preloadmayberef)
 - [loadBit](Slice.md#loadbit)
 - [preloadBit](Slice.md#preloadbit)
 - [loadBits](Slice.md#loadbits)
@@ -198,6 +200,51 @@ ___
 ▸ **preloadRef**(): [`Cell`](Cell.md)
 
 Same as .loadRef() but will not mutate [Slice](Slice.md)
+
+#### Returns
+
+[`Cell`](Cell.md)
+
+___
+
+### loadMaybeRef
+
+▸ **loadMaybeRef**(): [`Cell`](Cell.md)
+
+Read maybe ref from [Slice](Slice.md)
+
+**`example`**
+```ts
+import { Builder, Slice } from 'ton3-core'
+
+const builder1 = new Builder()
+const builder2 = new Builder()
+const ref = new Builder()
+
+builder1.storeBit(0)
+
+builder2
+ .storeBit(1)
+ .storeRef(ref.cell())
+
+const slice1 = builder1.cell().slice()
+const slice2 = builder2.cell().slice()
+
+console.log(slice1.loadMaybeRef()) // null
+console.log(slice2.loadMaybeRef()) // Cell
+```
+
+#### Returns
+
+[`Cell`](Cell.md)
+
+___
+
+### preloadMaybeRef
+
+▸ **preloadMaybeRef**(): [`Cell`](Cell.md)
+
+Same as .loadMaybeRef() but will not mutate [Slice](Slice.md)
 
 #### Returns
 
