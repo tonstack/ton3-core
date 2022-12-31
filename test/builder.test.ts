@@ -144,6 +144,18 @@ describe('Builder', () => {
 
             expect(result).to.throw('Builder: refs overflow. Can\'t add 2 refs. Only 1 refs left.')
         })
+
+
+        it('should throw error on bad data', () => {
+            const result1 = () => builder.storeSlice(null)
+            const result2 = () => builder.storeSlice(undefined)
+            // @ts-ignore
+            const result3 = () => builder.storeSlice(0)
+
+            expect(result1).to.throw('Builder: can\'t store slice, because it\'s type is not a Slice.')
+            expect(result2).to.throw('Builder: can\'t store slice, because it\'s type is not a Slice.')
+            expect(result3).to.throw('Builder: can\'t store slice, because it\'s type is not a Slice.')
+        })
     })
 
     describe('#storeRef()', () => {
