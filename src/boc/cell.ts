@@ -142,11 +142,12 @@ const validateMerkleUpdate = (bits: Bit[], refs: Cell[]): void => {
     }
 
     const data = Array.from(bits.slice(8))
+    const hashes = [ data.splice(0, HASH_BITS), data.splice(0, HASH_BITS) ].map(el => bitsToHex(el))
+    const depths = [ data.splice(0, DEPTH_BITS), data.splice(0, DEPTH_BITS) ].map(el => bitsToIntUint(el, { type: 'uint' }))
 
     refs.forEach((ref, i) => {
-        const index = refs.length - i - 1
-        const proofHash = bitsToHex(data.splice(0, HASH_BITS))
-        const proofDepth = bitsToIntUint(data.splice(HASH_BITS * index, DEPTH_BITS), { type: 'uint' })
+        const proofHash = hashes[i]
+        const proofDepth = depths[i]
         const refHash = ref.hash(0)
         const refDepth = ref.depth(0)
 
@@ -168,7 +169,7 @@ const getMapper = (type: CellType): CellTypeMapper => {
         } ],
         [ CellType.PrunedBranch, {
             validate: validatePrunedBranch,
-            mask: (b: Bit[]) => new Mask(bitsToIntUint(b.slice(0, 8), { type: 'uint' }))
+            mask: (b: Bit[]) => new Mask(bitsToIntUint(b.slice(8, 16), { type: 'uint' }))
         } ],
         [ CellType.LibraryReference, {
             validate: validateLibraryReference,
@@ -340,6 +341,7 @@ class Cell {
     }
 
     private initialize (): void {
+        const hasRefs = this._refs.length > 0
         const isMerkle = [ CellType.MerkleProof, CellType.MerkleUpdate ].includes(this.type)
         const isPrunedBranch = this.type === CellType.PrunedBranch
         const hashIndexOffset = isPrunedBranch
@@ -347,6 +349,10 @@ class Cell {
             : 0
 
         for (let levelIndex = 0, hashIndex = 0; levelIndex <= this.mask.level; levelIndex++) {
+            if (!this.mask.isSignificant(levelIndex)) {
+                continue
+            }
+
             if (hashIndex < hashIndexOffset) {
                 hashIndex++
 
@@ -386,7 +392,7 @@ class Cell {
 
             const dest = hashIndex - hashIndexOffset
 
-            this.depths[dest] = this._refs.length ? depth + 1 : depth
+            this.depths[dest] = depth + Number(hasRefs)
             this.hashes[dest] = sha256(bitsToBytes(representation))
 
             hashIndex++

@@ -30,6 +30,12 @@ class Mask {
         return this._hashCount
     }
 
+    public isSignificant (level: number): boolean {
+        const result = level === 0 || (this._value >> (level - 1)) % 2 !== 0
+
+        return result
+    }
+
     public apply (level: number): Mask {
         return new Mask(this._value & ((1 << level) - 1))
     }

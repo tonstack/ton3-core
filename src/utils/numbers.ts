@@ -4,6 +4,7 @@ const bitsToBigUint = (bits: Bit[]): { value: bigint, isSafe: boolean } => {
     if (!bits.length) return { value: 0n, isSafe: true }
 
     const value = bits
+        .slice()
         .reverse()
         .reduce((acc, bit, i) => (BigInt(bit) * (2n ** BigInt(i)) + acc), 0n)
 
